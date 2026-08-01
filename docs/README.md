@@ -8,6 +8,7 @@ Thư mục `docs/` tổng hợp toàn bộ định hướng chiến lược, thu
 
 | File tài liệu | Nội dung chính |
 |:---|:---|
+| 🏆 [FINAL_MASTER_SPECIFICATION.md](./FINAL_MASTER_SPECIFICATION.md) | **BẢN THIẾT KẾ HOÀN CHỈNH CUỐI CÙNG**: Đã chốt 100% Thuần Việt, Trọng tâm Tiểu học Lớp 1-5, Bộ 3 Thú Cưng, Quà 0đ thực tế, Giao diện Nút to & Giọng đọc 🔊. |
 | 🎒 [PRIMARY_ZERO_COST_PLAN.md](./PRIMARY_ZERO_COST_PLAN.md) | **CHIẾN LƯỢC TRỌNG TÂM TIỂU HỌC & CHI PHÍ 0 VNĐ**: Tập trung Lớp 1-5 độ tuổi vàng, Hạ tầng Supabase + Vercel + VietQR PayOS hoàn toàn 0 VNĐ. |
 | 🤖 [MASTER_DEVELOPMENT_PROMPT.md](./MASTER_DEVELOPMENT_PROMPT.md) | **MASTER SYSTEM PROMPT & DIRECTIVE FRAMEWORK**: File chỉ đạo tổng thể dành cho Lập trình viên & AI Assistant phát triển các phân hệ tiếp theo. |
 | 🇻🇳 [VIETNAMESE_CULTURE_DESIGN.md](./VIETNAMESE_CULTURE_DESIGN.md) | **KHUNG THIẾT KẾ CHUẨN VĂN HÓA GIA ĐÌNH VIỆT NAM**: 5 trụ cột thuần Việt (Hiếu thảo, SGK Bộ GD&ĐT, Quà gắn kết gia đình, Ngôn ngữ mộc mạc, Zalo notification). |
