@@ -1,6 +1,68 @@
 export const booksData = {
   kids: [
     {
+      id: 'ba_chu_heo_con',
+      title: 'Ba Chú Heo Con',
+      subtitle: 'Bài học về sự cẩn thận và tính kiên cố',
+      emoji: '🐷',
+      stars: 4,
+      pages: [
+        {
+          text: 'Ngày xửa ngày xưa, có ba chú heo con rời mẹ đi dựng nhà riêng. Chú heo thứ nhất lười biếng, chỉ muốn làm cho nhanh nên dựng một căn nhà bằng rơm. Chú heo thứ hai ham chơi, dựng một căn nhà bằng gỗ sơ sài. Chỉ có chú heo thứ ba là chăm chỉ, chịu khó vận chuyển từng viên gạch để xây một ngôi nhà bằng gạch vô cùng kiên cố.',
+          image: '/assets/books/ba_chu_heo_con_1.jpg'
+        },
+        {
+          text: 'Một ngày nọ, con Sói Xám xuất hiện. Nó tìm đến nhà chú heo thứ nhất, thổi phù một cái là căn nhà rơm sụp đổ. Chú heo thứ nhất vội chạy sang nhà chú heo thứ hai. Con Sói lại xông đến, thổi mạnh vài cái làm căn nhà gỗ cũng gãy đổ tan tành. Ba chú heo vội vã chạy thục mạng sang nhà chú heo thứ ba.',
+          image: '/assets/books/ba_chu_heo_con_2.jpg'
+        },
+        {
+          text: 'Con Sói Xám tìm đến nhà chú heo thứ ba, nó hít thật sâu và thổi hết sức nhưng căn nhà bằng gạch vững chắc vẫn không hề lay chuyển. Sói Xám tức giận leo qua đường ống khói vào nhà, nhưng chú heo thứ ba đã thông minh chuẩn bị sẵn một nồi nước sôi dưới bếp. Sói ngã vào nồi nước sôi và vội vã tháo chạy mất hút. Ba chú heo mừng rỡ và học được bài học đắt giá về sự cẩn thận.',
+          image: '/assets/books/ba_chu_heo_con_3.jpg'
+        }
+      ],
+      quiz: {
+        question: 'Tại sao căn nhà gạch của chú heo thứ ba lại chống lại được con Sói Xám?',
+        options: [
+          'Vì con Sói Xám đã mệt nên không còn sức thổi.',
+          'Vì chú heo thứ ba không lười biếng, chịu khó bỏ nhiều sức lực và thời gian xây dựng một ngôi nhà kiên cố từ từng viên gạch.',
+          'Vì ngôi nhà được làm từ những nhánh cành cây rất dẻo.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Hãy luôn làm việc cẩn thận, chuẩn bị chu đáo và không ngại gian khổ. Sự siêng năng và cẩn thận sẽ mang lại sự an toàn và thành công lâu dài!'
+      }
+    },
+    {
+      id: 'tiet_kiem_tien_tieu_vat',
+      title: 'Bé Học Quản Lý Tiền Tiêu Vặt',
+      subtitle: 'Giáo dục tư duy tài chính tuổi thơ',
+      emoji: '🐷',
+      stars: 5,
+      pages: [
+        {
+          text: 'Tùng Anh là một cậu bé học lớp 2 rất ngoan. Mỗi khi giúp bố mẹ lau dọn nhà cửa sạch sẽ hay đạt điểm 10 trắc nghiệm, cậu lại được bố mẹ thưởng một số tiền tiêu vặt nhỏ. Trước đây, cứ có tiền là Tùng Anh lại chạy ngay ra tiệm tạp hóa mua kẹo ngọt và đồ chơi nhựa.',
+          image: '/assets/books/tiet_kiem_1.jpg'
+        },
+        {
+          text: 'Một hôm, Tùng Anh nhìn thấy một bộ sách truyện lịch sử rất hay ở nhà sách nhưng giá lại khá cao. Cậu hỏi mua thì mẹ nhẹ nhàng bảo: "Con hãy thử dùng heo đất tiết kiệm số tiền tiêu vặt bố mẹ thưởng nhé. Khi đủ tiền, con sẽ tự tay mua bộ sách này!". Tùng Anh quyết định nuôi một chú heo đất màu hồng xinh xinh.',
+          image: '/assets/books/tiet_kiem_2.jpg'
+        },
+        {
+          text: 'Mỗi lần nhận thưởng, Tùng Anh chia tiền làm 3 phần: 1 phần bỏ vào heo đất tiết kiệm, 1 phần dùng mua đồ dùng học tập cần thiết, và 1 phần nhỏ dành bỏ quỹ từ thiện. Sau 2 tháng kiên trì bỏ heo đất, Tùng Anh ngạc nhiên thấy chú heo nặng trịch. Cậu vui mừng đập heo đất và tự tay trả tiền mua bộ sách yêu thích. Cậu nhận ra niềm vui từ sự tự lập!',
+          image: '/assets/books/tiet_kiem_3.jpg'
+        }
+      ],
+      quiz: {
+        question: 'Tùng Anh đã làm thế nào để có đủ tiền mua bộ sách truyện yêu thích mà không phải xin thêm mẹ?',
+        options: [
+          'Cậu mượn tiền của các bạn trong lớp.',
+          'Cậu kiên trì bỏ heo đất tiết kiệm số tiền thưởng làm việc nhà và đạt điểm cao trong 2 tháng.',
+          'Cậu đòi mẹ mua ngay cho mình.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Biết tiết kiệm và chi tiêu hợp lý sẽ giúp con đạt được những mục tiêu lớn hơn trong tương lai và trở thành người sống có trách nhiệm, tự lập!'
+      }
+    },
+    {
       id: 'su_tich_hat_lua',
       title: 'Sự Tích Hạt Lúa',
       subtitle: 'Bài học về lòng hiếu thảo, quý trọng hạt lúa',
