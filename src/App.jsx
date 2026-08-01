@@ -379,6 +379,12 @@ function AppContent() {
         setChildBalance(bal)
         setChildTransactions(txs)
         setWeeklyPlans(plns)
+        // Đồng bộ trạng thái hoàn thành SGK/Sách/Toán từ DB
+        const doneMap = {}
+        comps.filter(c => c.child_id === childId && c.status === 'approved').forEach(c => {
+          if (c.task_id?.startsWith('sgk-')) doneMap[c.task_id.replace('sgk-', '')] = true
+        })
+        setSgkCompletedLessons(prev => ({ ...prev, ...doneMap }))
       } else {
         // Chỉ ở màn hình chọn hồ sơ
         const kids = await fetchChildren()
@@ -718,6 +724,15 @@ function AppContent() {
 
   // Bé hoàn thành đọc sách và trả lời đúng câu hỏi trắc nghiệm
   const handleBookFinished = async (book) => {
+    // Chống nhận sao trùng: kiểm tra xem đã hoàn thành chưa
+    const alreadyDone = completions.some(
+      c => c.child_id === profile.child.id && c.task_id === 'book-' + book.id && c.status === 'approved'
+    )
+    if (alreadyDone) {
+      showToast('📚 Bé đã nhận sao cho quyển sách này rồi! Hãy đọc quyển khác nhé!')
+      setReadingBook(null)
+      return
+    }
     try {
       const mockTask = {
         id: 'book-' + book.id,
@@ -749,6 +764,15 @@ function AppContent() {
 
   // Bé hoàn thành học toán và trả lời đúng toàn bộ câu hỏi trắc nghiệm
   const handleMathTopicFinished = async (topic) => {
+    // Chống nhận sao trùng: kiểm tra xem đã hoàn thành chưa
+    const alreadyDone = completions.some(
+      c => c.child_id === profile.child.id && c.task_id === 'math-' + topic.id && c.status === 'approved'
+    )
+    if (alreadyDone) {
+      showToast('🧮 Bé đã nhận sao cho chủ đề Toán này rồi! Hãy thử chủ đề khác nhé!')
+      setSelectedMathTopic(null)
+      return
+    }
     try {
       const mockTask = {
         id: 'math-' + topic.id,
@@ -2890,7 +2914,8 @@ function AppContent() {
                       const quiz = selectedLesson.quizzes[sgkQuizIndex]
                       const isLast = sgkQuizIndex === selectedLesson.quizzes.length - 1
                       const totalQuiz = selectedLesson.quizzes.length
-                      const earnedStars = Math.max(1, Math.round((sgkQuizScore / totalQuiz) * (selectedTextbook?.stars || 5)))
+                      const passRate = sgkQuizScore / totalQuiz
+                      const earnedStars = passRate >= 0.5 ? Math.round(passRate * (selectedTextbook?.stars || 5)) : 0
                       const mascotPraise = ['Tuyệt vời! Bé giỏi quá! 🌟', 'Rực rỡ! Cứ thế này nhé! 🚀', 'Siêu đỉnh luôn nè! 💫', 'Wow! Bé học giỏi thật! 🎯']
                       const mascot = sgkQuizCorrect
                         ? { emoji: '🤩', msg: mascotPraise[sgkQuizIndex % mascotPraise.length] }
@@ -2900,11 +2925,16 @@ function AppContent() {
 
                       /* ===== MÀN TỔNG KẾT SAU KHI LÀM XONG ===== */
                       if (sgkQuizDone) {
+                        const sgkAlreadyDone = completions.some(
+                          c => c.child_id === profile.child.id && c.task_id === 'sgk-' + selectedLesson.id && c.status === 'approved'
+                        )
                         const rankMsg = sgkQuizScore === totalQuiz
                           ? { title: 'XUẤT SẮC! 🏆', msg: 'Bé trả lời đúng tất cả câu hỏi! Thần đồng của bố mẹ đây rồi!' }
                           : sgkQuizScore >= totalQuiz * 0.7
                             ? { title: 'RẤT GIỎI! 🌟', msg: 'Kết quả tuyệt vời! Chỉ còn một chút nữa là hoàn hảo!' }
-                            : { title: 'HOÀN THÀNH! 🎉', msg: 'Bé đã học xong bài này rồi! Làm lại để đạt điểm cao hơn nhé!' }
+                            : sgkQuizScore >= totalQuiz * 0.5
+                              ? { title: 'HOÀN THÀNH! 🎉', msg: 'Bé đã vượt qua! Làm lại để đạt điểm cao hơn nhé!' }
+                              : { title: 'CẦN ÔN LẠI! 📖', msg: 'Bé cần đọc lại bài và thử lại nhé! Đúng từ 50% câu hỏi mới nhận được sao.' }
                         return (
                           <div className="sgk-summary-card">
                             <div className="sgk-summary-confetti">🎉 ✨ 🎊 ✨ 🎉</div>
@@ -2941,13 +2971,14 @@ function AppContent() {
                               >
                                 🔄 Chơi lại
                               </button>
-                              <button
-                                type="button"
-                                className="sgk-btn-finish"
-                                onClick={async () => {
-                                  setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
-                                  try {
-                                    if (earnedStars > 0) {
+                              {earnedStars > 0 && !sgkAlreadyDone ? (
+                                <button
+                                  type="button"
+                                  className="sgk-btn-finish"
+                                  onClick={async () => {
+                                    setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
+                                    try {
+                                      setChildBalance(prev => prev + earnedStars)
                                       await addStars(familyId, profile.child.id, earnedStars, `Hoàn thành bài học SGK: ${selectedLesson.title}`)
                                       await submitCompletion(
                                         familyId,
@@ -2961,21 +2992,46 @@ function AppContent() {
                                         `Bé đã hoàn thành bài học SGK: ${selectedLesson.title}`,
                                         'approved'
                                       )
+                                      showToast(`🎉 Rực rỡ! Bé được cộng +${earnedStars} ⭐ vào Ví Sao!`)
+                                      confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
+                                    } catch (err) {
+                                      showToast('Lỗi nhận sao SGK: ' + err.message)
+                                      console.warn('Lỗi ghi nhận hoàn thành SGK:', err)
                                     }
-                                    showToast(`🎉 Rực rỡ! Bé được cộng +${earnedStars} ⭐ vào Ví Sao!`)
-                                    confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
-                                  } catch (err) {
-                                    showToast('Lỗi nhận sao SGK: ' + err.message)
-                                    console.warn('Lỗi ghi nhận hoàn thành SGK:', err)
-                                  }
-                                  setSelectedLesson(null)
-                                  setSgkLessonView('content')
-                                  resetSgkQuiz()
-                                  loadAppData()
-                                }}
-                              >
-                                🏆 Nhận {earnedStars} Sao! ⭐
-                              </button>
+                                    setSelectedLesson(null)
+                                    setSgkLessonView('content')
+                                    resetSgkQuiz()
+                                    loadAppData()
+                                  }}
+                                >
+                                  🏆 Nhận {earnedStars} Sao! ⭐
+                                </button>
+                              ) : sgkAlreadyDone ? (
+                                <button
+                                  type="button"
+                                  className="sgk-btn-finish"
+                                  onClick={() => {
+                                    showToast('📗 Bé đã nhận sao cho bài này rồi!')
+                                    setSelectedLesson(null)
+                                    setSgkLessonView('content')
+                                    resetSgkQuiz()
+                                  }}
+                                >
+                                  ✅ Đã hoàn thành trước đó
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="sgk-btn-finish"
+                                  onClick={() => {
+                                    setSelectedLesson(null)
+                                    setSgkLessonView('content')
+                                    resetSgkQuiz()
+                                  }}
+                                >
+                                  📖 Về đọc lại bài
+                                </button>
+                              )}
                             </div>
                           </div>
                         )
