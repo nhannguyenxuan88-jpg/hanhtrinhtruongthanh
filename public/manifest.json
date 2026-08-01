@@ -1,0 +1,18 @@
+{
+  "name": "Hành Trình Trưởng Thành",
+  "short_name": "Trưởng Thành",
+  "description": "Ứng dụng rèn luyện nếp sống tốt, hoàn thành nhiệm vụ & đổi sao nhận quà ý nghĩa!",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

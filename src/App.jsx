@@ -38,6 +38,7 @@ import { mathData } from './lib/mathData'
 import { textbookData } from './lib/textbookData'
 import { textbookData8 } from './lib/textbookData8'
 import GameArcade from './components/GameArcade'
+import { getLevelInfo, calculateStreak, calculateBadges } from './lib/gamification'
 import './App.css'
 
 const ANIMAL_EMOJIS = ['🦊', '🐨', '🦁', '🐯', '🐼', '🐰', '🐸', '🦄', '🐷', '🐱', '🐶', '🐵']
@@ -1239,6 +1240,13 @@ function AppContent() {
           </button>
           <button 
             type="button"
+            className={`nav-tab-btn ${activeTab === 'stats' ? 'active' : ''}`}
+            onClick={() => setActiveTab('stats')}
+          >
+            📊 Thống Kê
+          </button>
+          <button 
+            type="button"
             className={`nav-tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
@@ -1882,6 +1890,83 @@ function AppContent() {
               </div>
             </div>
           )}
+          
+          {/* Tab 6: Thống Kê Tiến Độ */}
+          {activeTab === 'stats' && (
+            <div className="tab-pane">
+              <h3 className="section-title">📊 Thống Kê Tiến Độ Rèn Luyện & Học Tập</h3>
+              
+              {/* Thẻ KPI tổng quan */}
+              <div className="stats-overview-grid">
+                <div className="stat-kpi-card">
+                  <span className="stat-kpi-icon">👶</span>
+                  <div>
+                    <div className="stat-kpi-val">{children.length}</div>
+                    <div className="stat-kpi-label">Hồ sơ trẻ em</div>
+                  </div>
+                </div>
+                <div className="stat-kpi-card">
+                  <span className="stat-kpi-icon">⭐</span>
+                  <div>
+                    <div className="stat-kpi-val">{completions.filter(c => c.status === 'approved').reduce((s, c) => s + (c.stars || 0), 0)}</div>
+                    <div className="stat-kpi-label">Tổng Sao Thưởng Đã Duyệt</div>
+                  </div>
+                </div>
+                <div className="stat-kpi-card">
+                  <span className="stat-kpi-icon">🎯</span>
+                  <div>
+                    <div className="stat-kpi-val">{completions.filter(c => c.status === 'approved').length}</div>
+                    <div className="stat-kpi-label">Lượt Hoàn Thành Bài / Nhiệm Vụ</div>
+                  </div>
+                </div>
+                <div className="stat-kpi-card">
+                  <span className="stat-kpi-icon">🎁</span>
+                  <div>
+                    <div className="stat-kpi-val">{redemptions.filter(r => r.status === 'fulfilled').length}</div>
+                    <div className="stat-kpi-label">Phần Thưởng Đã Trao</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Biểu đồ cột CSS 7 ngày gần nhất */}
+              {(() => {
+                const days7 = []
+                const now = new Date()
+                for (let i = 6; i >= 0; i--) {
+                  const d = new Date(now)
+                  d.setDate(now.getDate() - i)
+                  const dStr = d.toISOString().split('T')[0]
+                  const dayLabel = i === 0 ? 'Hôm nay' : `${d.getDate()}/${d.getMonth() + 1}`
+                  const dayStars = completions
+                    .filter(c => c.status === 'approved' && c.created_at?.startsWith(dStr))
+                    .reduce((sum, c) => sum + (c.stars || 0), 0)
+                  days7.push({ dateStr: dStr, label: dayLabel, stars: dayStars })
+                }
+                const maxStarsInWeek = Math.max(10, ...days7.map(d => d.stars))
+
+                return (
+                  <div className="chart-container-card">
+                    <h4>📈 Sao Kiếm Được Trong 7 Ngày Gần Nhất</h4>
+                    <p className="subtitle" style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
+                      Biểu đồ phản ánh mức độ tích cực học tập & làm việc nhà của các con
+                    </p>
+                    <div className="css-bar-chart">
+                      {days7.map((d, i) => {
+                        const pct = Math.round((d.stars / maxStarsInWeek) * 100)
+                        return (
+                          <div key={i} className="chart-col">
+                            {d.stars > 0 && <span className="chart-bar-val">+{d.stars}</span>}
+                            <div className="chart-bar-fill" style={{ height: `${Math.max(4, pct)}%` }}></div>
+                            <span className="chart-col-label">{d.label}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+          )}
 
         </main>
       </div>
@@ -1890,6 +1975,10 @@ function AppContent() {
 
   // Màn hình 4: Giao diện dành cho các con
   if (profile.type === 'child') {
+    const levelInfo = getLevelInfo(childBalance)
+    const streakInfo = calculateStreak(completions, childTransactions)
+    const badgesList = calculateBadges(completions, childTransactions, streakInfo.currentStreak)
+
     return (
       <div className="dashboard-container kid-theme">
         {/* Header con */}
@@ -1899,6 +1988,28 @@ function AppContent() {
             <div>
               <h2>Bé: {profile.child.name} {loadingData && <span className="spinner-sm"></span>} 🌟</h2>
               <p className="subtitle">Bé đang làm rất tốt! Cố gắng tích lũy thêm sao nhé.</p>
+            </div>
+          </div>
+
+          {/* Level Widget & Streak Widget */}
+          <div className="kid-header-widgets">
+            <div className="level-badge-widget">
+              <span className="level-icon">{levelInfo.emoji}</span>
+              <div className="level-details">
+                <span className="level-title">Lv.{levelInfo.level} {levelInfo.name}</span>
+                <div className="xp-progress-bar-track">
+                  <div className="xp-progress-bar-fill" style={{ width: `${levelInfo.progressPct}%` }}></div>
+                </div>
+                <span className="xp-text">{levelInfo.starsToNext > 0 ? `Còn ${levelInfo.starsToNext} ⭐ lên ${levelInfo.nextLevelName}` : 'Cấp tối đa!'}</span>
+              </div>
+            </div>
+
+            <div className="streak-widget">
+              <span className="streak-fire-anim">🔥</span>
+              <div>
+                <span className="streak-count">{streakInfo.currentStreak}</span>
+                <span className="streak-label"> Ngày Streak</span>
+              </div>
             </div>
           </div>
 
@@ -1968,6 +2079,13 @@ function AppContent() {
             }}
           >
             📗 Sách Giáo Khoa
+          </button>
+          <button 
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'badges' ? 'active' : ''}`}
+            onClick={() => setActiveTab('badges')}
+          >
+            🏅 Thành Tựu
           </button>
           <button 
             type="button"
@@ -3176,6 +3294,27 @@ function AppContent() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Tab con 6: Huy Hiệu & Thành Tựu */}
+          {activeTab === 'badges' && (
+            <div className="tab-pane">
+              <h3 className="section-title text-center">🏅 Bảng Thành Tựu & Huy Hiệu Của Bé</h3>
+              <p className="subtitle text-center">Tích lũy kinh nghiệm và làm nhiều bài học để mở khóa tất cả huy hiệu nhé!</p>
+              
+              <div className="badges-grid">
+                {badgesList.map(badge => (
+                  <div key={badge.id} className={`badge-card ${badge.unlocked ? 'unlocked' : 'locked'}`}>
+                    <span className="badge-emoji">{badge.emoji}</span>
+                    <h4 className="badge-name">{badge.name}</h4>
+                    <p className="badge-desc">{badge.desc}</p>
+                    <span className="badge-progress">
+                      {badge.unlocked ? '✅ Đã đạt được' : `🔒 Tiến độ: ${badge.progressText}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

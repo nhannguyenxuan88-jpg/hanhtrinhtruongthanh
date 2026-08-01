@@ -4194,3 +4194,267 @@ body {
   }
 }
 
+/* ==================== V2.0 GAMIFICATION & STATS STYLES ==================== */
+
+/* Kid Header Level & Streak Widget */
+.kid-header-widgets {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.level-badge-widget {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.level-icon {
+  font-size: 26px;
+}
+
+.level-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.level-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.xp-progress-bar-track {
+  width: 110px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.xp-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.xp-text {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Fire Streak Widget */
+.streak-widget {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.2));
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-radius: 18px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+}
+
+.streak-fire-anim {
+  font-size: 24px;
+  animation: pulse-fire 1.2s infinite ease-in-out alternate;
+}
+
+@keyframes pulse-fire {
+  0% { transform: scale(1) rotate(-5deg); filter: drop-shadow(0 0 2px #f59e0b); }
+  100% { transform: scale(1.15) rotate(5deg); filter: drop-shadow(0 0 8px #ef4444); }
+}
+
+.streak-count {
+  font-size: 18px;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+.streak-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fcd34d;
+  text-transform: uppercase;
+}
+
+/* Badges Grid */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.badge-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 18px 14px;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.badge-card.unlocked {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.15);
+  transform: translateY(-2px);
+}
+
+.badge-card.locked {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+
+.badge-emoji {
+  font-size: 42px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.badge-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.badge-card.unlocked .badge-name {
+  color: #38bdf8;
+}
+
+.badge-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.badge-progress {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+
+.badge-card.unlocked .badge-progress {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+/* Parent Stats Dashboard */
+.stats-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-kpi-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-kpi-icon {
+  font-size: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-kpi-val {
+  font-size: 24px;
+  font-weight: 900;
+  color: #f8fafc;
+  line-height: 1.1;
+}
+
+.stat-kpi-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Pure CSS Bar Chart */
+.chart-container-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.css-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 180px;
+  padding-top: 20px;
+  gap: 12px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.chart-bar-fill {
+  width: 100%;
+  max-width: 38px;
+  background: linear-gradient(180deg, #38bdf8, #6366f1);
+  border-radius: 8px 8px 4px 4px;
+  min-height: 4px;
+  transition: height 0.5s ease;
+  position: relative;
+}
+
+.chart-bar-fill:hover {
+  background: linear-gradient(180deg, #60a5fa, #818cf8);
+}
+
+.chart-bar-val {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.chart-col-label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+
