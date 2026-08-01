@@ -725,6 +725,7 @@ function AppContent() {
         stars: book.stars || 8,
         child_id: profile.child.id
       }
+      setChildBalance(prev => prev + mockTask.stars)
       await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành đọc sách: ${book.title}`)
       await submitCompletion(
         familyId, 
@@ -755,6 +756,7 @@ function AppContent() {
         stars: topic.stars || 8,
         child_id: profile.child.id
       }
+      setChildBalance(prev => prev + mockTask.stars)
       await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành Toán tư duy: ${topic.title}`)
       await submitCompletion(
         familyId, 

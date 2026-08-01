@@ -233,10 +233,20 @@ export async function reviewRedemption(familyId, redemption, fulfill) {
 
 // ---------- Sổ sao ----------
 export async function addStars(familyId, childId, amount, reason) {
-  const { error } = await supabase
-    .from('star_transactions')
-    .insert({ family_id: familyId, child_id: childId, amount, reason })
-  if (error) throw error
+  if (!childId) return
+  try {
+    const { error } = await supabase
+      .from('star_transactions')
+      .insert({ 
+        family_id: familyId || '00000000-0000-0000-0000-000000000000', 
+        child_id: childId, 
+        amount: amount, 
+        reason: reason || '' 
+      })
+    if (error) console.warn('Cảnh báo addStars Supabase:', error.message)
+  } catch (err) {
+    console.warn('Cảnh báo addStars catch:', err.message)
+  }
 }
 
 export async function fetchBalance(childId) {
