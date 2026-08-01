@@ -1238,10 +1238,16 @@ function AppContent() {
                               {child?.avatar} {child?.name}
                             </span>
                             <div className="details text-left">
-                              <strong>{tasks.find(t => t.id === comp.task_id)?.title || 'Nhiệm vụ'}</strong>
+                              <strong>
+                                {tasks.find(t => t.id === comp.task_id)?.title || 
+                                 comp.child_note || 
+                                 (comp.task_id?.startsWith('sgk-') ? 'Bài học Sách Giáo Khoa' : 
+                                  comp.task_id?.startsWith('math-') ? 'Bài tập Toán tư duy' : 
+                                  comp.task_id?.startsWith('book-') ? 'Đọc sách truyện' : 'Nhiệm vụ rèn luyện')}
+                              </strong>
                               <span className="time">{formatTime(comp.created_at)}</span>
                               
-                              {comp.child_note && (
+                              {comp.child_note && tasks.find(t => t.id === comp.task_id)?.title && (
                                 <div className="child-note-bubble">
                                   💬 Con nhắn: "{comp.child_note}"
                                 </div>
@@ -2947,10 +2953,11 @@ function AppContent() {
                                       `Bé đã hoàn thành bài học SGK: ${selectedLesson.title}`
                                     )
                                   } catch (err) {
+                                    showToast('Lỗi gửi duyệt SGK: ' + err.message)
                                     console.warn('Lỗi ghi nhận hoàn thành SGK:', err)
                                   }
                                   confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
-                                  showToast(`🎉 Xuất sắc! Bé được +${earnedStars} Sao!`)
+                                  showToast(`🚀 Đã gửi yêu cầu nhận +${earnedStars} Sao! Chờ bố mẹ duyệt nhé.`)
                                   setSelectedLesson(null)
                                   setSgkLessonView('content')
                                   resetSgkQuiz()
