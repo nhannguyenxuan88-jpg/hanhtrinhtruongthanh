@@ -4059,6 +4059,111 @@ body {
     height: 52px !important;
     font-size: 22px !important;
   }
+
+  /* 12. Trang đọc bài Sách & Trắc nghiệm SGK (SGK Reader & Quiz Footer Mobile) */
+  .sgk-page-footer {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 18px 14px !important;
+    gap: 12px !important;
+  }
+
+  .sgk-footer-mascot {
+    font-size: 36px !important;
+  }
+
+  .sgk-footer-bubble {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .sgk-footer-msg {
+    width: 100% !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+  }
+
+  .sgk-footer-sub {
+    font-size: 13px !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+  .sgk-start-quiz-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    white-space: normal !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .sgk-book-page {
+    padding: 10px 6px !important;
+  }
+
+  .sgk-page-lines-bg {
+    padding: 16px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .sgk-reader-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px 10px !important;
+  }
+
+  .sgk-reader-title-row {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .sgk-reader-progress {
+    justify-content: center !important;
+  }
+
+  .sgk-subject-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 14px 12px !important;
+    text-align: center !important;
+  }
+
+  .sgk-subject-header-content {
+    justify-content: center !important;
+  }
+
+  .sgk-subject-grid, .sgk-lessons-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .sgk-quiz-wrapper {
+    padding: 14px 8px !important;
+  }
+
+  .sgk-quiz-card {
+    padding: 18px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .sgk-quiz-question {
+    font-size: 1.15rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .sgk-quiz-options {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .sgk-option-btn {
+    padding: 14px 12px !important;
+    font-size: 15px !important;
+  }
 }
 
 @media (max-width: 480px) {
