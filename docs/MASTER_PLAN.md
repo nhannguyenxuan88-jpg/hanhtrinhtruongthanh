@@ -1,73 +1,76 @@
-# 📖 Kế Hoạch Tổng Thể Dự Án "Hành Trình Trưởng Thành" (Master Plan)
+# 🏆 HỆ SINH THÁI "HÀNH TRÌNH TRƯỞNG THÀNH" (Unified Master Growth Architecture)
 
-## 📌 1. Tầm Nhìn & Sứ Mệnh Project
-
-**"Hành Trình Trưởng Thành"** là nền tảng công nghệ giáo dục (EdTech SaaS) giúp trẻ em tự giác hình thành nếp sống tốt, chăm chỉ đọc sách, học bài và giúp đỡ việc nhà thông qua cơ chế Gamification (Tích sao đổi quà), thuật toán thông minh và sự đồng hành tích cực của Bố Mẹ.
+Đúng như tên gọi **"Hành Trình Trưởng Thành"**, ứng dụng không phải là một tập hợp tính năng rời rạc, mà là một **Hệ Thống Phiêu Lưu Nhập Vai Trưởng Thành (RPG Growth Adventure)** được kết nối chặt chẽ qua 4 Chặng phát triển nhân cách, trí tuệ và tình cảm của trẻ từ Lớp 1 đến Lớp 9.
 
 ---
 
-## 🏛️ 2. Kiến Trúc 5 Trụ Cột Thương Mại Hóa
+## 🗺️ SƠ ĐỒ LIÊN KẾT TỔNG THỂ (4 CHẶNG TRƯỞNG THÀNH)
 
 ```mermaid
 graph TD
-    A[Hành Trình Trưởng Thành v2.5+] --> B[Trụ cột 1: PLG & Commercialization]
-    A --> C[Trụ cột 2: Advanced Logic & Algorithms]
-    A --> D[Trụ cột 3: Standardized Content]
-    A --> E[Trụ cột 4: AI & Value-Added Features]
-    A --> F[Trụ cột 5: School Portal & Security]
+    A[🏆 HÀNH TRÌNH TRƯỞNG THÀNH] --> CHANG1[📍 CHẶNG 1: NẾP SỐNG & TỰ LẬP]
+    A --> CHANG2[📍 CHẶNG 2: TRÍ TUỆ & TRI THỨC]
+    A --> CHANG3[📍 CHẶNG 3: TÀI CHÍNH & NHÂN ÁI]
+    A --> CHANG4[📍 CHẶNG 4: GẮN KẾT GIA ĐÌNH]
 
-    B --> B1[14-Day Free VIP Trial]
-    B --> B2[Free Forever No-Lock Plan]
-    B --> B3[VietQR / PayOS Auto Payment]
-    
-    C --> C1[Spaced Repetition Review]
-    C --> C2[Habit Score Index 0-100]
-    C --> C3[Anti-Cheating Reading Pace]
-    C --> C4[Dynamic Star Multipliers]
+    CHANG1 --> C1_1[🖨️ Bảng Tủ Lạnh QR + Auto-Approve]
+    CHANG1 --> C1_2[🦊 Nuôi Thú Cưng Bằng Việc Tốt]
+    CHANG1 --> C1_3[📊 Habit Score Index 0-100]
 
-    D --> D1[Full Primary & Secondary Textbooks Lớp 1-9]
-    D --> D2[English Kids Corner with Audio]
-    D --> D3[Financial Literacy Savings]
+    CHANG2 --> C2_1[📗 SGK Lớp 1-9 & Spaced Repetition]
+    CHANG2 --> C2_2[⏱️ Thuật Toán Chống Đọc Lướt]
+    CHANG2 --> C2_3[📻 Audio Bedtime Podcast Đêm]
 
-    E --> E1[AI Tutor Wisdom Owl]
-    E --> E2[Zalo / Email Weekly Digest]
+    CHANG3 --> C3_1[🐷 Heo Đất Tiết Kiệm & Quản Lý Tiền]
+    CHANG3 --> C3_2[🎟️ Kho Quà 0 Đồng & Góc Điều Ước]
+    CHANG3 --> C3_3[🌱 Ngân Hàng Sao Từ Thiện Nhí]
 
-    F --> F1[Teacher & School Portal]
-    F --> F2[COPPA & Privacy Compliance]
+    CHANG4 --> C4_1[🍳 Thử Thách Cả Nhà Cuối Tuần]
+    CHANG4 --> C4_2[🖼️ Sổ Tay Kỷ Niệm 1 Năm Lớn Khôn]
+    CHANG4 --> C4_3[💡 Trợ Lý AI Bố Mẹ Thông Thái]
 ```
 
 ---
 
-## 🗓️ 3. Lộ Trình Phát Triển Chi Tiết (Product Roadmap)
-
-### Giai đoạn 1: Chuẩn Hóa Logic & Trải Nghiệm Học Tập (Hiện tại - Tháng 8/2026)
-- [x] **Xác thực & Hồ sơ Netflix**: Bảo mật PIN 4 chữ số cho Bố Mẹ và từng bé.
-- [x] **Gamification v1**: Tích sao, đổi quà, duyệt yêu cầu, khu game đổi vé 5 phút.
-- [x] **Level & Streak**: Hệ thống 6 cấp độ (🌱 Mầm Non $\rightarrow$ 🏆 Thần Đồng), chuỗi lửa 🔥 daily streak, bảng 6 huy hiệu thành tựu.
-- [x] **Thống kê Bố Mẹ**: Biểu đồ cột CSS 7 ngày gần nhất & thẻ KPI.
-- [x] **Lưu trữ vĩnh viễn**: Dual-sync LocalStorage + Supabase database chống mất dữ liệu.
-- [ ] **Thuật toán Chống Đọc Lướt & Thưởng Sao Động**: Kiểm tra thời gian dừng trang + Bonus tự giác trước 20h.
-
-### Giai đoạn 2: Thương Mại Hóa PLG & Cổng Thanh Toán (Tháng 9/2026)
-- [ ] **Bảng Subscriptions & 14 Ngày VIP Trial**: Đăng ký mới tự động mở 100% tính năng 14 ngày không cần thẻ.
-- [ ] **Free Plan Vĩnh Viễn**: Hết 14 ngày giữ nguyên số sao, không khóa app, cho phép dùng tính năng cơ bản.
-- [ ] **Tích hợp VietQR / PayOS**: Quét mã tự động kích hoạt gói Pro (49k/tháng hoặc 399k/năm) sau 2 giây.
-- [ ] **Mã Giới Thiệu (Referral System)**: Mời bạn bè nhận thêm 10 ngày VIP cho cả 2 gia đình.
-
-### Giai đoạn 3: Thuật Toán Nâng Cao & Trợ Lý AI (Tháng 10/2026)
-- [ ] **Thuật toán Spaced Repetition**: Tự động đưa các câu hỏi làm sai vào kế hoạch ôn tập thứ 7 / CN.
-- [ ] **Chỉ số Nếp sống (Habit Score 0-100)**: Đánh giá độ tự giác, đúng giờ và kiên trì của bé.
-- [ ] **AI Gia sư "Cú Thông Thái 🦉"**: Tích hợp Google Gemini API giải đáp thắc mắc bài học an toàn cho trẻ.
-- [ ] **Báo cáo Zalo ZNS / Email hàng tuần**: Tự động gửi tổng kết thành tích của bé tới Bố Mẹ tối CN.
-
-### Giai đoạn 4: Mở Rộng Kho Nội Dung & Portal Trường Học (Tháng 11/2026+)
-- [ ] **Bổ sung SGK Lớp 1, 3, 4, 5, 6, 7, 9**: Đầy đủ bộ sách *Kết nối tri thức*, *Cánh Diều*, *Chân trời sáng tạo*.
-- [ ] **Góc Tiếng Anh & Heo Đất Tiết Kiệm**: Bài đọc tiếng Anh có âm thanh & quy đổi Sao sang tiền tiết kiệm thực tế.
-- [ ] **School Portal**: Dành cho Giáo viên giao bài tập tuần cho cả lớp & theo dõi báo cáo.
+## 📍 CHẶNG 1: RÈN NẾP SỐNG & TÍNH TỰ LẬP (Nền Tảng Khởi Đầu)
+- **Mục tiêu**: Biến việc nhà (dọn phòng, gấp chăn, rửa bát) từ "nghĩa vụ bị ép buộc" thành "thói quen tự giác vui vẻ".
+- **Mối liên kết logic**:
+  1. **Bảng Tự Giác Tủ Lạnh QR**: Bé tích ô dán nhãn thực tế trên tủ lạnh $\rightarrow$ Cuối tuần Bố Mẹ quét QR 1s đồng bộ Sao vào App. Bật chế độ *Auto-Approve* giúp Bố Mẹ không bị áp lực mở máy duyệt mỗi ngày.
+  2. **Thú Cưng Tự Giác (Virtual Pet 🦊)**: Bé chọn chú Cáo nhỏ. Thú cưng "ăn" bằng Sao việc tốt. Bé tự giác làm việc nhà để nuôi chú Cáo lớn lên và tiến hóa.
+  3. **Chỉ Số Nếp Sống (Habit Score 0-100)**: Tổng hợp độ đúng giờ, tính tự giác và kiên trì hiển thị trực quan cho Bố Mẹ theo dõi.
 
 ---
 
-## 📌 4. Hướng Dẫn Thực Hiện Khi Quay Lại
-1. Mở file [ALGORITHMS_DESIGNS.md](./ALGORITHMS_DESIGNS.md) để xem công thức và logic toán học của các thuật toán cần cài đặt.
-2. Mở file [COMMERCIALIZATION_MODEL.md](./COMMERCIALIZATION_MODEL.md) để xem kịch bản dùng thử 14 ngày & tích hợp cổng VietQR PayOS.
-3. Mở file [TECHNICAL_SCHEMA_API.md](./TECHNICAL_SCHEMA_API.md) để lấy mã SQL tạo bảng database và các hàm API helper.
+## 📍 CHẶNG 2: RÈN TRÍ TUỆ & TRI THỨC (Nâng Cao Năng Lực)
+- **Mục tiêu**: Biến việc học bài SGK, làm toán tư duy và đọc sách thành một chuyến phiêu lưu mở khóa thế giới.
+- **Mối liên kết logic**:
+  1. **SGK Lớp 1-9 & Toán Tư Duy (Cấu trúc 3 bước)**: Khởi động $\rightarrow$ Luyện tập $\rightarrow$ Vận dụng thực tế.
+  2. **Thuật Toán Chống Đọc Lướt & Spaced Repetition**: Đảm bảo bé đọc ngẫm nghĩ kỹ bài mới cho trắc nghiệm. Các câu sai tự động được đưa vào kế hoạch ôn tập thứ 7 / CN.
+  3. **Audio Bedtime Podcast**: Sau 21h30 chuyển giao diện đêm dịu mắt, phát giọng đọc câu chuyện Hạt giống tâm hồn cho bé nghe trước khi ngủ.
+
+---
+
+## 📍 CHẶNG 3: TRÍ TUỆ TÀI CHÍNH & TÂM HỒN NHÂN ÁI (Bản Lĩnh & Đạo Đức)
+- **Mục tiêu**: Dạy bé bài học về giá trị lao động, quản lý tiền bạc và lòng yêu thương cộng đồng.
+- **Mối liên kết logic**:
+  1. **Kho Quà 0 Đồng & Góc Điều Ước**: Bé đổi Sao lấy các đặc quyền thực tế (xem hoạt hình, chọn món ăn tối, đi dạo cùng Bố Mẹ) hoặc kiên trì tích lũy 500 ⭐ cho một mục tiêu lớn (Delayed Gratification).
+  2. **Heo Đất Tiết Kiệm**: Bố Mẹ quy đổi Sao thành tiền thưởng nhỏ $\rightarrow$ Bé tập chia làm 3 hũ: Tiết kiệm mua đồ lớn, Chi tiêu học tập và Từ thiện.
+  3. **Ngân Hàng Sao Từ Thiện**: Bé đóng góp 50 ⭐ $\rightarrow$ Góp 1 cây xanh / 1 quyển sách cho trẻ em vùng cao.
+
+---
+
+## 📍 CHẶNG 4: GẮN KẾT & KỶ NIỆM GIA ĐÌNH (Tình Yêu Thương Bền Chặt)
+- **Mục tiêu**: Kết nối Bố Mẹ và Bé trực tiếp ngoài đời thực, lưu giữ trọn vẹn tuổi thơ của con.
+- **Mối liên kết logic**:
+  1. **Thử Thách Gia Đình Cuối Tuần**: Sáng Thứ 7 phát động thử thách cả nhà cùng vào bếp / đạp xe công viên $\rightarrow$ Nhận Sao đồng đội và gắn kết tình cảm.
+  2. **Sổ Tay Kỷ Niệm Lớn Khôn**: Lưu lại hình ảnh minh chứng 1 năm $\rightarrow$ Sinh nhật bé tự xuất clip *"1 Năm Hành Trình Trưởng Thành của Con"*.
+  3. **Sổ Tay Bố Mẹ Thông Thái (AI Parent Advisor)**: Trợ lý AI tư vấn tâm lý nuôi dạy con khoa học cho Bố Mẹ.
+
+---
+
+## 🚀 TÓM TẮT MÔ HÌNH THƯƠNG MẠI HÓA (PLG SAAS)
+
+1. **🎁 14 NgàyVIP Free Trial**: Đăng ký mới dùng 100% full tính năng không cần thẻ.
+2. **🌱 Free Plan Vĩnh Viễn**: Hết 14 ngày không khóa app, giữ 100% sao và lịch sử.
+3. **👑 Gói Pro (49k/tháng hoặc 399k/năm)**: Mở full kho SGK Lớp 1-9, AI Gia sư, Zalo Báo cáo tuần & Thanh toán VietQR PayOS quét mã 2s.
+4. **🤝 Mã Giới Thiệu (Referral)**: Mời phụ huynh trong lớp cùng dùng $\rightarrow$ Tặng thêm 10 ngày VIP cho cả 2 gia đình.
