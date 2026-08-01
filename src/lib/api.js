@@ -118,8 +118,8 @@ export async function fetchCompletions() {
   return data
 }
 
-// Con bấm "Hoàn thành" -> tạo bản ghi chờ duyệt
-export async function submitCompletion(familyId, task, proofImage = null, childNote = '') {
+// Con bấm "Hoàn thành" -> tạo bản ghi (mặc định pending, với bài học app tự duyệt thì approved)
+export async function submitCompletion(familyId, task, proofImage = null, childNote = '', status = 'pending') {
   const { data, error } = await supabase
     .from('completions')
     .insert({
@@ -129,6 +129,7 @@ export async function submitCompletion(familyId, task, proofImage = null, childN
       stars: task.stars,
       proof_image: proofImage,
       child_note: childNote,
+      status: status,
     })
     .select()
     .single()

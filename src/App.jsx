@@ -722,25 +722,27 @@ function AppContent() {
       const mockTask = {
         id: 'book-' + book.id,
         title: `Đọc sách: ${book.title}`,
-        stars: book.stars,
+        stars: book.stars || 8,
         child_id: profile.child.id
       }
+      await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành đọc sách: ${book.title}`)
       await submitCompletion(
         familyId, 
         mockTask, 
         null, 
-        `Bé đã đọc xong truyện và trả lời đúng câu đố tương tác! Bài học: ${book.quiz.moral}`
+        `Bé đã đọc xong truyện "${book.title}" và trả lời đúng câu đố! Bài học: ${book.quiz?.moral || ''}`,
+        'approved'
       )
-      showToast(`Đã gửi yêu cầu đọc sách "${book.title}"! Chờ bố mẹ duyệt nhé. 🚀`)
+      showToast(`🎉 Rực rỡ! Bé được nhận +${mockTask.stars} ⭐ khi đọc xong "${book.title}"!`)
       confetti({
-        particleCount: 80,
-        spread: 60,
+        particleCount: 120,
+        spread: 70,
         origin: { y: 0.6 }
       })
       setReadingBook(null)
       loadAppData()
     } catch (err) {
-      showToast('Lỗi gửi hoàn thành đọc sách: ' + err.message)
+      showToast('Lỗi nhận sao đọc sách: ' + err.message)
     }
   }
 
@@ -750,25 +752,27 @@ function AppContent() {
       const mockTask = {
         id: 'math-' + topic.id,
         title: `Toán tư duy: ${topic.title}`,
-        stars: topic.stars,
+        stars: topic.stars || 8,
         child_id: profile.child.id
       }
+      await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành Toán tư duy: ${topic.title}`)
       await submitCompletion(
         familyId, 
         mockTask, 
         null, 
-        `Bé đã hoàn thành học toán tư duy và trả lời đúng các thử thách của chủ đề: ${topic.title}`
+        `Bé đã hoàn thành học toán tư duy và trả lời đúng các thử thách của chủ đề: ${topic.title}`,
+        'approved'
       )
-      showToast(`Đã gửi yêu cầu học toán "${topic.title}"! Chờ bố mẹ duyệt nhé. 🚀`)
+      showToast(`🎉 Tuyệt vời! Bé được nhận +${mockTask.stars} ⭐ khi làm xong Toán tư duy!`)
       confetti({
-        particleCount: 80,
-        spread: 60,
+        particleCount: 120,
+        spread: 70,
         origin: { y: 0.6 }
       })
       setSelectedMathTopic(null)
       loadAppData()
     } catch (err) {
-      showToast('Lỗi gửi hoàn thành Toán tư duy: ' + err.message)
+      showToast('Lỗi nhận sao học toán: ' + err.message)
     }
   }
 
@@ -2941,23 +2945,27 @@ function AppContent() {
                                 onClick={async () => {
                                   setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
                                   try {
-                                    await submitCompletion(
-                                      familyId,
-                                      {
-                                        id: 'sgk-' + selectedLesson.id,
-                                        title: `${selectedTextbook?.subject || 'SGK'}: ${selectedLesson.title}`,
-                                        stars: earnedStars,
-                                        child_id: profile.child.id
-                                      },
-                                      null,
-                                      `Bé đã hoàn thành bài học SGK: ${selectedLesson.title}`
-                                    )
+                                    if (earnedStars > 0) {
+                                      await addStars(familyId, profile.child.id, earnedStars, `Hoàn thành bài học SGK: ${selectedLesson.title}`)
+                                      await submitCompletion(
+                                        familyId,
+                                        {
+                                          id: 'sgk-' + selectedLesson.id,
+                                          title: `${selectedTextbook?.subject || 'SGK'}: ${selectedLesson.title}`,
+                                          stars: earnedStars,
+                                          child_id: profile.child.id
+                                        },
+                                        null,
+                                        `Bé đã hoàn thành bài học SGK: ${selectedLesson.title}`,
+                                        'approved'
+                                      )
+                                    }
+                                    showToast(`🎉 Rực rỡ! Bé được cộng +${earnedStars} ⭐ vào Ví Sao!`)
+                                    confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
                                   } catch (err) {
-                                    showToast('Lỗi gửi duyệt SGK: ' + err.message)
+                                    showToast('Lỗi nhận sao SGK: ' + err.message)
                                     console.warn('Lỗi ghi nhận hoàn thành SGK:', err)
                                   }
-                                  confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
-                                  showToast(`🚀 Đã gửi yêu cầu nhận +${earnedStars} Sao! Chờ bố mẹ duyệt nhé.`)
                                   setSelectedLesson(null)
                                   setSgkLessonView('content')
                                   resetSgkQuiz()
