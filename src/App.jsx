@@ -366,7 +366,7 @@ function AppContent() {
         }
       } else if (profile?.type === 'child') {
         const childId = profile.child.id
-        const [tks, comps, rws, bal, txs, plns] = await Promise.all([
+        const [tks, dbComps, rws, dbBal, txs, plns] = await Promise.all([
           fetchTasks(),
           fetchCompletions(),
           fetchRewards(),
@@ -374,13 +374,37 @@ function AppContent() {
           fetchTransactions(childId),
           fetchWeeklyPlans()
         ])
-        setTasks(tks)
+
+        // Nạp và hợp nhất dữ liệu từ localStorage dự phòng
+        let localComps = []
+        try {
+          const saved = localStorage.getItem('child_completions_' + childId)
+          if (saved) localComps = JSON.parse(saved)
+        } catch (e) {}
+
+        const compsMap = new Map()
+        ;(dbComps || []).forEach(c => compsMap.set(c.task_id || c.id, c))
+        localComps.forEach(c => {
+          if (!compsMap.has(c.task_id || c.id)) compsMap.set(c.task_id || c.id, c)
+        })
+        const comps = Array.from(compsMap.values())
+
+        const localBal = Number(localStorage.getItem('child_balance_' + childId) || 0)
+        const bal = Math.max(dbBal || 0, localBal)
+
+        try {
+          localStorage.setItem('child_completions_' + childId, JSON.stringify(comps))
+          localStorage.setItem('child_balance_' + childId, bal)
+        } catch (e) {}
+
+        setTasks(tks || [])
         setCompletions(comps)
-        setRewards(rws)
+        setRewards(rws || [])
         setChildBalance(bal)
-        setChildTransactions(txs)
-        setWeeklyPlans(plns)
-        // Đồng bộ trạng thái hoàn thành SGK/Sách/Toán từ DB
+        setChildTransactions(txs || [])
+        setWeeklyPlans(plns || [])
+
+        // Đồng bộ trạng thái hoàn thành SGK/Sách/Toán từ DB & localStorage
         const doneMap = {}
         comps.filter(c => c.child_id === childId && c.status === 'approved').forEach(c => {
           if (c.task_id?.startsWith('sgk-')) doneMap[c.task_id.replace('sgk-', '')] = true
@@ -723,6 +747,28 @@ function AppContent() {
     }
   }
 
+  // Helper lưu nhanh hoàn thành + sao vào localStorage dự phòng
+  const saveChildCompletionLocal = (childId, compItem, addStarsCount = 0) => {
+    if (!childId) return
+    try {
+      const key = 'child_completions_' + childId
+      let saved = JSON.parse(localStorage.getItem(key) || '[]')
+      const exists = saved.some(c => (c.task_id || c.id) === (compItem.task_id || compItem.id))
+      if (!exists) {
+        saved.unshift(compItem)
+        localStorage.setItem(key, JSON.stringify(saved))
+      }
+      if (addStarsCount !== 0) {
+        const balKey = 'child_balance_' + childId
+        const curBal = Number(localStorage.getItem(balKey) || 0)
+        const nextBal = Math.max(0, curBal + addStarsCount)
+        localStorage.setItem(balKey, nextBal)
+      }
+    } catch (e) {
+      console.warn('saveChildCompletionLocal error:', e)
+    }
+  }
+
   // Bé hoàn thành đọc sách và trả lời đúng câu hỏi trắc nghiệm
   const handleBookFinished = async (book) => {
     // Chống nhận sao trùng: kiểm tra xem đã hoàn thành chưa
@@ -742,6 +788,14 @@ function AppContent() {
         child_id: profile.child.id
       }
       setChildBalance(prev => prev + mockTask.stars)
+      saveChildCompletionLocal(profile.child.id, {
+        id: 'book-' + book.id,
+        task_id: 'book-' + book.id,
+        child_id: profile.child.id,
+        stars: mockTask.stars,
+        status: 'approved',
+        created_at: new Date().toISOString()
+      }, mockTask.stars)
       await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành đọc sách: ${book.title}`)
       await submitCompletion(
         familyId, 
@@ -782,6 +836,14 @@ function AppContent() {
         child_id: profile.child.id
       }
       setChildBalance(prev => prev + mockTask.stars)
+      saveChildCompletionLocal(profile.child.id, {
+        id: 'math-' + topic.id,
+        task_id: 'math-' + topic.id,
+        child_id: profile.child.id,
+        stars: mockTask.stars,
+        status: 'approved',
+        created_at: new Date().toISOString()
+      }, mockTask.stars)
       await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành Toán tư duy: ${topic.title}`)
       await submitCompletion(
         familyId, 
@@ -3097,6 +3159,14 @@ function AppContent() {
                                     setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
                                     try {
                                       setChildBalance(prev => prev + earnedStars)
+                                      saveChildCompletionLocal(profile.child.id, {
+                                        id: 'sgk-' + selectedLesson.id,
+                                        task_id: 'sgk-' + selectedLesson.id,
+                                        child_id: profile.child.id,
+                                        stars: earnedStars,
+                                        status: 'approved',
+                                        created_at: new Date().toISOString()
+                                      }, earnedStars)
                                       await addStars(familyId, profile.child.id, earnedStars, `Hoàn thành bài học SGK: ${selectedLesson.title}`)
                                       await submitCompletion(
                                         familyId,

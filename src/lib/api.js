@@ -120,21 +120,36 @@ export async function fetchCompletions() {
 
 // Con bấm "Hoàn thành" -> tạo bản ghi (mặc định pending, với bài học app tự duyệt thì approved)
 export async function submitCompletion(familyId, task, proofImage = null, childNote = '', status = 'pending') {
-  const { data, error } = await supabase
-    .from('completions')
-    .insert({
-      family_id: familyId,
-      task_id: task.id,
-      child_id: task.child_id,
-      stars: task.stars,
-      proof_image: proofImage,
-      child_note: childNote,
-      status: status,
-    })
-    .select()
-    .single()
-  if (error) throw error
-  return data
+  let fid = familyId
+  if (!fid && task.child_id) {
+    try {
+      const { data: c } = await supabase.from('children').select('family_id').eq('id', task.child_id).single()
+      if (c?.family_id) fid = c.family_id
+    } catch (e) {
+      console.warn('Lookup family_id failed:', e)
+    }
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('completions')
+      .insert({
+        family_id: fid || '00000000-0000-0000-0000-000000000000',
+        task_id: task.id,
+        child_id: task.child_id,
+        stars: task.stars,
+        proof_image: proofImage,
+        child_note: childNote,
+        status: status,
+      })
+      .select()
+      .single()
+    if (error) console.warn('Cảnh báo submitCompletion Supabase:', error.message)
+    return data
+  } catch (err) {
+    console.warn('Cảnh báo submitCompletion catch:', err.message)
+    return null
+  }
 }
 
 // Bố mẹ duyệt -> cộng sao vào sổ
@@ -234,11 +249,21 @@ export async function reviewRedemption(familyId, redemption, fulfill) {
 // ---------- Sổ sao ----------
 export async function addStars(familyId, childId, amount, reason) {
   if (!childId) return
+  let fid = familyId
+  if (!fid) {
+    try {
+      const { data: c } = await supabase.from('children').select('family_id').eq('id', childId).single()
+      if (c?.family_id) fid = c.family_id
+    } catch (e) {
+      console.warn('Lookup family_id failed in addStars:', e)
+    }
+  }
+
   try {
     const { error } = await supabase
       .from('star_transactions')
       .insert({ 
-        family_id: familyId || '00000000-0000-0000-0000-000000000000', 
+        family_id: fid || '00000000-0000-0000-0000-000000000000', 
         child_id: childId, 
         amount: amount, 
         reason: reason || '' 
@@ -250,12 +275,21 @@ export async function addStars(familyId, childId, amount, reason) {
 }
 
 export async function fetchBalance(childId) {
-  const { data, error } = await supabase
-    .from('star_transactions')
-    .select('amount')
-    .eq('child_id', childId)
-  if (error) throw error
-  return data.reduce((sum, t) => sum + t.amount, 0)
+  if (!childId) return 0
+  try {
+    const { data, error } = await supabase
+      .from('star_transactions')
+      .select('amount')
+      .eq('child_id', childId)
+    if (error) {
+      console.warn('fetchBalance Supabase warning:', error.message)
+      return 0
+    }
+    return (data || []).reduce((sum, t) => sum + t.amount, 0)
+  } catch (err) {
+    console.warn('fetchBalance catch:', err.message)
+    return 0
+  }
 }
 
 export async function fetchTransactions(childId) {
