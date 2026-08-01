@@ -57,3 +57,52 @@ File tài liệu này tổng hợp toàn bộ các ý tưởng **giải quyết 
 ## 8. Sổ Tay Kỷ Niệm Lớn Khôn (Family Growth Memory Timeline)
 - **Rào cản thực tế**: Bố mẹ muốn lưu lại hành trình lớn lên từng ngày của con.
 - **Giải pháp**: Tự động lưu ảnh minh chứng việc nhà, bức tranh bé vẽ, điểm 10 trắc nghiệm thành một Album Kỷ Niệm. Đến sinh nhật bé, app xuất clip tổng kết 1 năm trưởng thành của con.
+
+---
+
+## 9. Thú Cưng Tự Giác (Virtual Pet Companion - Nuôi Thú Cưng Bằng Việc Tốt)
+- **Mô tả**: Bé được chọn 1 chú Thú Cưng ảo (Ví dụ: Chú Cáo 🦊, Panda 🐼, Rồng Nhỏ 🐲).
+- **Cơ chế**: Thú cưng không ăn thức ăn thường mà **ăn bằng "Sao Việc Tốt"** của bé!
+  - Bé đọc xong 1 bài SGK / làm việc nhà $\rightarrow$ Thú cưng vui vẻ, lớn lên và tiến hóa cấp độ mới.
+  - Nếu bé bỏ học 2-3 ngày $\rightarrow$ Thú cưng sẽ buồn xỉu và nằm ngủ.
+- **Tác động**: Tạo tình cảm gắn bó tâm lý (Emotional bond), bé muốn chăm sóc thú cưng nên tự giác học bài và làm việc nhà mỗi ngày.
+
+---
+
+## 10. Ngân Hàng Sao Từ Thiện Nhí (Kids Charity & Kindness Bank)
+- **Mô tả**: Bên cạnh đổi quà cho bản thân, bé có thêm lựa chọn **"Đóng góp Sao Từ Thiện"**.
+- **Cơ chế**: 50 Sao của bé $\rightarrow$ Bố Mẹ quy đổi thành 10.000đ đóng góp vào Quỹ Trồng Cây / Quỹ Sách Cho Trẻ Em Vùng Cao. App hiện chứng nhận nhí: *"Bé Tùng Anh đã góp 5 cây xanh cho rừng Việt Nam 🌱"*.
+- **Tác động**: Giáo dục tinh thần nhân ái, biết chia sẻ và yêu thương cộng đồng ngay từ nhỏ.
+
+---
+
+## 11. Góc Podcast & Radio Đêm Của Bé (Kids Audio Bedtime Podcast)
+- **Mô tả**: Tích hợp kênh Radio/Podcast giọng đọc truyền cảm dành riêng cho trẻ em.
+- **Nội dung**:
+  - *Mỗi đêm 1 câu hỏi Vì sao*: "Tại sao bầu trời màu xanh?", "Tại sao loài cá lại biết bơi?".
+  - Truyện cổ tích thế giới & Hạt giống tâm hồn Việt Nam giọng đọc ấm áp.
+- **Tác động**: Phát triển trí tuệ ngôn ngữ, trí tưởng tượng và vốn từ vựng phong phú cho bé mà không tốn mắt nhìn màn hình.
+
+---
+
+## 12. Thử Thách Gia Đình Cuối Tuần (Weekend Family Bonding Challenge)
+- **Mô tả**: Mỗi sáng Thứ 7, app phát động 1 **Thử thách Đồng Đội** dành cho cả nhà:
+  - 🍳 *"Cả nhà cùng vào bếp làm món bánh mì nướng ốp la"* (Chụp ảnh kỷ niệm $\rightarrow$ Cả nhà nhận 50 ⭐).
+  - 🚲 *"Cả nhà cùng đạp xe / đi dạo công viên 30 phút"*.
+  - 🧹 *"Chiến dịch Dọn dẹp nhà cửa tổng lực 45 phút"*.
+- **Tác động**: Giúp cả gia đình tương tác trực tiếp ngoài đời thực, thoát khỏi màn hình điện thoại, tạo kỷ niệm tuổi thơ ấm áp cho con.
+
+---
+
+## 13. Sổ Tay Bố Mẹ Thông Thái (Parent Coaching & Tips)
+- **Mô tả**: Góc tham vấn ngắn cho Bố Mẹ xử lý các tình huống tâm lý trẻ em hàng ngày.
+- **Nội dung**: *"Xử lý thế nào khi con ăn vạ?"*, *"Cách khen con đúng cách để không làm con kiêu ngạo"*, *"Cách giúp con vượt qua cảm xúc tức giận"*.
+- **Tác động**: Biến app thành người trợ lý đắc lực hỗ trợ phương pháp nuôi dạy con khoa học cho Bố Mẹ.
+
+---
+
+## 14. Bản Đồ Hành Trình Khám Phá Thế Giới (Interactive Knowledge World Map)
+- **Mô tả**: Mỗi bài học SGK/Sách/Toán bé hoàn thành sẽ mở khóa 1 địa danh trên **Bản Đồ Khám Phá**.
+- **Cơ chế**: Hoàn thành 5 bài $\rightarrow$ Khám phá Đảo Khủng Long 🦕. Hoàn thành 10 bài $\rightarrow$ Mở khóa Trạm Vũ Trụ Sao Hỏa 🚀. Hoàn thành 20 bài $\rightarrow$ Khám phá Ai Cập Cổ Đại 🗿.
+- **Tác động**: Biến toàn bộ chương trình học thành một **Chuyến phiêu lưu nhập vai (RPG Adventure)** đầy lôi cuốn.
+
