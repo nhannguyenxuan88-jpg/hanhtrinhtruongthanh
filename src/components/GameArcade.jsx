@@ -162,6 +162,13 @@ export default function GameArcade({ childBalance, onDeductStars, showToast }) {
             >
               🏎️ Đua Xe
             </button>
+            <button
+              type="button"
+              className={`game-tab-btn ${activeGame === 'wheel' ? 'active' : ''}`}
+              onClick={() => setActiveGame('wheel')}
+            >
+              🎡 Vòng Quay
+            </button>
           </div>
 
           {/* Màn hình hiển thị Mini-game tương ứng */}
@@ -174,6 +181,9 @@ export default function GameArcade({ childBalance, onDeductStars, showToast }) {
             )}
             {activeGame === 'racer' && (
               <MathRacerGame onAddScore={(pts) => setScore(s => s + pts)} />
+            )}
+            {activeGame === 'wheel' && (
+              <LuckyWheelGame onAddScore={(pts) => setScore(s => s + pts)} />
             )}
           </div>
         </div>
@@ -501,3 +511,88 @@ function MathRacerGame({ onAddScore }) {
     </div>
   )
 }
+
+/* ======================================================
+   MINI GAME 4: 🎡 VÒNG QUAY MAY MẮN (LUCKY WHEEL)
+   ====================================================== */
+function LuckyWheelGame({ onAddScore }) {
+  const [spinning, setSpinning] = useState(false)
+  const [rotation, setRotation] = useState(0)
+  const [resultMsg, setResultMsg] = useState('')
+
+  const WHEEL_SLICES = [
+    { label: '+10 Điểm 🌟', score: 10, color: '#ec4899', emoji: '⭐' },
+    { label: '+30 Hộp Quà 🎁', score: 30, color: '#8b5cf6', emoji: '🎁' },
+    { label: '+50 Siêu Điểm 🏆', score: 50, color: '#f59e0b', emoji: '🏆' },
+    { label: '+15 Cáo Đốm 🦊', score: 15, color: '#10b981', emoji: '🦊' },
+    { label: '+100 Kim Cương 💎', score: 100, color: '#38bdf8', emoji: '💎' },
+    { label: '+20 Trái Cây 🍎', score: 20, color: '#ef4444', emoji: '🍎' },
+  ]
+
+  const handleSpin = () => {
+    if (spinning) return
+    setSpinning(true)
+    setResultMsg('')
+
+    const sliceCount = WHEEL_SLICES.length
+    const randomIndex = Math.floor(Math.random() * sliceCount)
+    const degreesPerSlice = 360 / sliceCount
+
+    // Quay ít nhất 5 vòng (1800 độ) + góc dốc slice
+    const newRotation = rotation + 1800 + (sliceCount - randomIndex) * degreesPerSlice - (degreesPerSlice / 2)
+    setRotation(newRotation)
+
+    setTimeout(() => {
+      setSpinning(false)
+      const prize = WHEEL_SLICES[randomIndex]
+      onAddScore(prize.score)
+      setResultMsg(`🎉 CHÚC MỪNG BÉ TRÚNG: ${prize.label}!`)
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } })
+    }, 3500)
+  }
+
+  return (
+    <div className="wheel-game-container">
+      <p className="game-instruction">🎡 Bấm Quay để thử vận may trúng Kim Cương & Điểm thưởng lớn nhé!</p>
+      
+      {resultMsg && <div className="wheel-result-banner">{resultMsg}</div>}
+
+      <div className="wheel-wrapper">
+        <div className="wheel-pointer">▼</div>
+        <div 
+          className="lucky-wheel-circle"
+          style={{
+            transform: `rotate(${rotation}deg)`,
+            transition: spinning ? 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)' : 'none'
+          }}
+        >
+          {WHEEL_SLICES.map((slice, idx) => {
+            const angle = (360 / WHEEL_SLICES.length) * idx
+            return (
+              <div 
+                key={idx} 
+                className="wheel-slice"
+                style={{
+                  transform: `rotate(${angle}deg)`,
+                  background: slice.color
+                }}
+              >
+                <span className="slice-text">{slice.emoji}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <button 
+        type="button" 
+        className="btn-spin-wheel" 
+        disabled={spinning}
+        onClick={handleSpin}
+      >
+        {spinning ? '🌀 Đang quay...' : '🎡 QUAY NGAY (MIỄN PHÍ)'}
+      </button>
+    </div>
+  )
+}
+
