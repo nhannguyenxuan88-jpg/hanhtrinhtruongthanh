@@ -32,12 +32,15 @@ export default function GameArcade({ childBalance, onDeductStars, showToast }) {
   }, [isPlaying, timeRemaining, showToast])
 
   // Xử lý đổi vé chơi
-  const handleBuyTicket = () => {
+  // Chỉ mở game khi sao đã thực sự được trừ trong sổ sao, nếu không bé sẽ
+  // chơi miễn phí mỗi khi mất mạng.
+  const handleBuyTicket = async () => {
     if (childBalance < TICKET_PRICE) {
       showToast(`🔒 Bé còn thiếu ${TICKET_PRICE - childBalance} ⭐ nữa để đổi vé chơi game! Hãy hoàn thành bài học nhé 💪`)
       return
     }
-    onDeductStars(TICKET_PRICE)
+    const paid = await onDeductStars(TICKET_PRICE)
+    if (!paid) return
     setTimeRemaining(GAME_DURATION)
     setIsPlaying(true)
     setScore(0)

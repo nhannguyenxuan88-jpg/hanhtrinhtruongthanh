@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/useAuth'
 import confetti from 'canvas-confetti'
@@ -30,7 +30,9 @@ import {
   fetchTransactions,
   addStars,
   fetchWeeklyPlans,
-  upsertWeeklyPlan
+  upsertWeeklyPlan,
+  fetchLearningSessions,
+  logLearningSession
 } from './lib/api'
 import { supabase } from './lib/supabase'
 import { booksData } from './lib/booksData'
@@ -38,10 +40,46 @@ import { mathData } from './lib/mathData'
 import { textbookData } from './lib/textbookData'
 import { textbookData8 } from './lib/textbookData8'
 import GameArcade from './components/GameArcade'
+import ReadingGateButton from './components/ReadingGateButton'
 import { getLevelInfo, calculateStreak, calculateBadges } from './lib/gamification'
+import {
+  gradeQuizResult,
+  computeReviewQueue,
+  buildWeeklyDigest,
+  digestToText
+} from './lib/learning'
+import { getTone, REWARD_SUGGESTIONS, isTeenGrade } from './lib/tone'
 import './App.css'
 
 const ANIMAL_EMOJIS = ['🦊', '🐨', '🦁', '🐯', '🐼', '🐰', '🐸', '🦄', '🐷', '🐱', '🐶', '🐵']
+
+// ---- Bộ nhớ đệm ngoại tuyến ----
+// CHỈ dùng để hiển thị tạm khi mất kết nối. Supabase luôn là nguồn sự thật;
+// dữ liệu đệm không bao giờ được phép ghi đè hay cộng dồn vào số liệu của DB.
+const childCacheKey = (childId) => 'child_snapshot_' + childId
+
+function cacheChildSnapshot(childId, completions, balance) {
+  try {
+    localStorage.setItem(childCacheKey(childId), JSON.stringify({
+      completions: completions || [],
+      balance: balance || 0,
+      savedAt: new Date().toISOString(),
+    }))
+  } catch {
+    // Trình duyệt chặn localStorage hoặc hết dung lượng — bỏ qua an toàn.
+  }
+}
+
+function readChildSnapshot(childId) {
+  try {
+    const raw = localStorage.getItem(childCacheKey(childId))
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return { completions: parsed.completions || [], balance: parsed.balance || 0 }
+  } catch {
+    return null
+  }
+}
 
 // ---- Kế hoạch tuần: hằng số + tiện ích ----
 const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
@@ -196,6 +234,51 @@ function AppContent() {
   const [sgkBestStreak, setSgkBestStreak] = useState(0)                // chuỗi đúng dài nhất
   const [sgkQuizDone, setSgkQuizDone] = useState(false)                // đã làm xong tất cả câu hỏi
 
+  // ---------- Lịch sử học tập ----------
+  // Bé phải trả lời đúng mới được sang câu tiếp theo, nên "số câu đúng" luôn
+  // bằng điểm tuyệt đối và không nói lên điều gì. Tín hiệu học tập thật nằm ở
+  // SỐ LẦN CHỌN SAI và các câu bị sai — đó là thứ được ghi lại dưới đây.
+  const [learningSessions, setLearningSessions] = useState([])
+  const [historyChildId, setHistoryChildId] = useState('all')  // bộ lọc màn hình bố mẹ
+
+  const [sgkWrongAttempts, setSgkWrongAttempts] = useState(0)
+  const [sgkWrongAnswers, setSgkWrongAnswers] = useState([])
+  const [sgkFirstTryCount, setSgkFirstTryCount] = useState(0)   // số câu đúng ngay lần đầu
+  const [sgkQuestionMissed, setSgkQuestionMissed] = useState(false)  // câu hiện tại đã sai lần nào chưa
+  const [sgkStartedAt, setSgkStartedAt] = useState(null)
+
+  const [bookWrongAttempts, setBookWrongAttempts] = useState(0)
+  const [bookWrongAnswers, setBookWrongAnswers] = useState([])
+  const [bookStartedAt, setBookStartedAt] = useState(null)
+
+  const [mathWrongAttempts, setMathWrongAttempts] = useState(0)
+  const [mathWrongAnswers, setMathWrongAnswers] = useState([])
+  const [mathFirstTryCount, setMathFirstTryCount] = useState(0)
+  const [mathQuestionMissed, setMathQuestionMissed] = useState(false)
+  const [mathStartedAt, setMathStartedAt] = useState(null)
+
+  const elapsedSeconds = (startedAt) =>
+    startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0
+
+  // ---------- Giọng điệu theo độ tuổi ----------
+  // Con lớp 6+ dùng giọng điềm đạm, không mascot, không pháo hoa.
+  const tone = getTone(profile?.child?.grade)
+
+  // Pháo hoa chỉ nổ cho các bé tiểu học; tuổi teen thấy phiền hơn là vui.
+  const celebrate = useCallback((opts) => {
+    if (tone.celebrate) confetti(opts)
+  }, [tone.celebrate])
+
+  // ---------- Ôn tập lặp lại ----------
+  // Suy ra từ lịch sử học nên không cần bảng riêng và không bao giờ lệch thực tế.
+  const reviewQueue = useMemo(() => computeReviewQueue(learningSessions), [learningSessions])
+  const dueReviews = useMemo(() => {
+    const mine = profile?.type === 'child'
+      ? reviewQueue.filter(r => r.childId === profile.child.id)
+      : reviewQueue
+    return mine.filter(r => r.isDue)
+  }, [reviewQueue, profile])
+
   // Helpers cho SGK
   const isSgkLessonDone = (lesson) =>
     !!sgkCompletedLessons[lesson.id] ||
@@ -213,6 +296,11 @@ function AppContent() {
     setSgkStreak(0)
     setSgkBestStreak(0)
     setSgkQuizDone(false)
+    setSgkWrongAttempts(0)
+    setSgkWrongAnswers([])
+    setSgkFirstTryCount(0)
+    setSgkQuestionMissed(false)
+    setSgkStartedAt(Date.now())
   }
 
   // ---------- Kế hoạch tuần ----------
@@ -347,13 +435,14 @@ function AppContent() {
     setLoadingData(true)
     try {
       if (profile?.type === 'parent') {
-        const [kids, tks, comps, rws, red, plns] = await Promise.all([
+        const [kids, tks, comps, rws, red, plns, sessions] = await Promise.all([
           fetchChildren(),
           fetchTasks(),
           fetchCompletions(),
           fetchRewards(),
           fetchRedemptions(),
-          fetchWeeklyPlans()
+          fetchWeeklyPlans(),
+          fetchLearningSessions()
         ])
         setChildren(kids)
         setTasks(tks)
@@ -361,54 +450,43 @@ function AppContent() {
         setRewards(rws)
         setRedemptions(red)
         setWeeklyPlans(plns)
+        setLearningSessions(sessions)
         if (kids.length > 0 && !newTaskChildId) {
           setNewTaskChildId(kids[0].id)
         }
       } else if (profile?.type === 'child') {
         const childId = profile.child.id
-        const [tks, dbComps, rws, dbBal, txs, plns] = await Promise.all([
+        const [tks, comps, rws, bal, txs, plns, sessions] = await Promise.all([
           fetchTasks(),
           fetchCompletions(),
           fetchRewards(),
           fetchBalance(childId),
           fetchTransactions(childId),
-          fetchWeeklyPlans()
+          fetchWeeklyPlans(),
+          fetchLearningSessions(childId)
         ])
 
-        // Nạp và hợp nhất dữ liệu từ localStorage dự phòng
-        let localComps = []
-        try {
-          const saved = localStorage.getItem('child_completions_' + childId)
-          if (saved) localComps = JSON.parse(saved)
-        } catch (e) {}
-
-        const compsMap = new Map()
-        ;(dbComps || []).forEach(c => compsMap.set(c.task_id || c.id, c))
-        localComps.forEach(c => {
-          if (!compsMap.has(c.task_id || c.id)) compsMap.set(c.task_id || c.id, c)
-        })
-        const comps = Array.from(compsMap.values())
-
-        const localBal = Number(localStorage.getItem('child_balance_' + childId) || 0)
-        const bal = Math.max(dbBal || 0, localBal)
-
-        try {
-          localStorage.setItem('child_completions_' + childId, JSON.stringify(comps))
-          localStorage.setItem('child_balance_' + childId, bal)
-        } catch (e) {}
+        // Supabase là nguồn sự thật duy nhất. localStorage chỉ còn là bộ nhớ
+        // đệm dùng khi mất mạng — không bao giờ được ghi đè số liệu của DB.
+        // (Trước đây Math.max(dbBal, localBal) đã che giấu việc DB ghi hỏng
+        //  suốt một thời gian dài mà không ai phát hiện ra.)
+        cacheChildSnapshot(childId, comps, bal)
 
         setTasks(tks || [])
-        setCompletions(comps)
+        setCompletions(comps || [])
         setRewards(rws || [])
         setChildBalance(bal)
         setChildTransactions(txs || [])
         setWeeklyPlans(plns || [])
+        setLearningSessions(sessions || [])
 
-        // Đồng bộ trạng thái hoàn thành SGK/Sách/Toán từ DB & localStorage
+        // Đồng bộ trạng thái hoàn thành SGK từ DB
         const doneMap = {}
-        comps.filter(c => c.child_id === childId && c.status === 'approved').forEach(c => {
-          if (c.task_id?.startsWith('sgk-')) doneMap[c.task_id.replace('sgk-', '')] = true
-        })
+        ;(comps || [])
+          .filter(c => c.child_id === childId && c.status === 'approved')
+          .forEach(c => {
+            if (c.task_id?.startsWith('sgk-')) doneMap[c.task_id.replace('sgk-', '')] = true
+          })
         setSgkCompletedLessons(prev => ({ ...prev, ...doneMap }))
       } else {
         // Chỉ ở màn hình chọn hồ sơ
@@ -416,7 +494,16 @@ function AppContent() {
         setChildren(kids)
       }
     } catch (err) {
-      showToast('Có lỗi xảy ra khi tải dữ liệu: ' + err.message)
+      // Mất mạng / lỗi máy chủ: hiển thị tạm dữ liệu đã lưu đệm và nói rõ
+      // với người dùng rằng đây là dữ liệu ngoại tuyến.
+      const cached = profile?.type === 'child' ? readChildSnapshot(profile.child.id) : null
+      if (cached) {
+        setCompletions(cached.completions)
+        setChildBalance(cached.balance)
+        showToast('⚠️ Không kết nối được máy chủ. Đang hiển thị dữ liệu lưu tạm trên máy này.')
+      } else {
+        showToast('Có lỗi xảy ra khi tải dữ liệu: ' + err.message)
+      }
     } finally {
       setLoadingData(false)
     }
@@ -747,121 +834,96 @@ function AppContent() {
     }
   }
 
-  // Helper lưu nhanh hoàn thành + sao vào localStorage dự phòng
-  const saveChildCompletionLocal = (childId, compItem, addStarsCount = 0) => {
-    if (!childId) return
-    try {
-      const key = 'child_completions_' + childId
-      let saved = JSON.parse(localStorage.getItem(key) || '[]')
-      const exists = saved.some(c => (c.task_id || c.id) === (compItem.task_id || compItem.id))
-      if (!exists) {
-        saved.unshift(compItem)
-        localStorage.setItem(key, JSON.stringify(saved))
-      }
-      if (addStarsCount !== 0) {
-        const balKey = 'child_balance_' + childId
-        const curBal = Number(localStorage.getItem(balKey) || 0)
-        const nextBal = Math.max(0, curBal + addStarsCount)
-        localStorage.setItem(balKey, nextBal)
-      }
-    } catch (e) {
-      console.warn('saveChildCompletionLocal error:', e)
-    }
-  }
-
   // Bé hoàn thành đọc sách và trả lời đúng câu hỏi trắc nghiệm
   const handleBookFinished = async (book) => {
-    // Chống nhận sao trùng: kiểm tra xem đã hoàn thành chưa
+    const childId = profile.child.id
+    // Sao chỉ được cộng ở lần đầu, NHƯNG lượt học vẫn luôn được ghi vào lịch sử.
     const alreadyDone = completions.some(
-      c => c.child_id === profile.child.id && c.task_id === 'book-' + book.id && c.status === 'approved'
+      c => c.child_id === childId && c.task_id === 'book-' + book.id && c.status === 'approved'
     )
-    if (alreadyDone) {
-      showToast('📚 Bé đã nhận sao cho quyển sách này rồi! Hãy đọc quyển khác nhé!')
-      setReadingBook(null)
-      return
-    }
+    const starsToEarn = alreadyDone ? 0 : (book.stars || 8)
+
     try {
-      const mockTask = {
-        id: 'book-' + book.id,
-        title: `Đọc sách: ${book.title}`,
-        stars: book.stars || 8,
-        child_id: profile.child.id
-      }
-      setChildBalance(prev => prev + mockTask.stars)
-      saveChildCompletionLocal(profile.child.id, {
-        id: 'book-' + book.id,
-        task_id: 'book-' + book.id,
-        child_id: profile.child.id,
-        stars: mockTask.stars,
-        status: 'approved',
-        created_at: new Date().toISOString()
-      }, mockTask.stars)
-      await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành đọc sách: ${book.title}`)
-      await submitCompletion(
-        familyId, 
-        mockTask, 
-        null, 
-        `Bé đã đọc xong truyện "${book.title}" và trả lời đúng câu đố! Bài học: ${book.quiz?.moral || ''}`,
-        'approved'
-      )
-      showToast(`🎉 Rực rỡ! Bé được nhận +${mockTask.stars} ⭐ khi đọc xong "${book.title}"!`)
-      confetti({
-        particleCount: 120,
-        spread: 70,
-        origin: { y: 0.6 }
+      // 1) Ghi lịch sử học tập — kể cả khi bé đọc lại quyển cũ
+      await logLearningSession(familyId, childId, {
+        kind: 'book',
+        refId: String(book.id),
+        title: book.title,
+        subject: 'Đọc sách',
+        quizTotal: book.quiz ? 1 : 0,
+        quizFirstTry: book.quiz && bookWrongAttempts === 0 ? 1 : 0,
+        wrongAttempts: bookWrongAttempts,
+        wrongAnswers: bookWrongAnswers,
+        durationSeconds: elapsedSeconds(bookStartedAt),
+        starsEarned: starsToEarn,
       })
+
+      // 2) Cộng sao (chỉ lần đầu)
+      if (alreadyDone) {
+        showToast(`📚 Bé đã đọc lại "${book.title}" — đã ghi vào lịch sử học tập. Sao chỉ được nhận ở lần đầu nhé!`)
+      } else {
+        await addStars(familyId, childId, starsToEarn, `Hoàn thành đọc sách: ${book.title}`)
+        await submitCompletion(
+          familyId,
+          { id: 'book-' + book.id, title: `Đọc sách: ${book.title}`, stars: starsToEarn, child_id: childId },
+          null,
+          `Bé đã đọc xong truyện "${book.title}" và trả lời đúng câu đố! Bài học: ${book.quiz?.moral || ''}`,
+          'approved'
+        )
+        setChildBalance(prev => prev + starsToEarn)
+        showToast(`🎉 Rực rỡ! Bé được nhận +${starsToEarn} ⭐ khi đọc xong "${book.title}"!`)
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
+      }
       setReadingBook(null)
       loadAppData()
     } catch (err) {
-      showToast('Lỗi nhận sao đọc sách: ' + err.message)
+      showToast('❌ Chưa lưu được kết quả: ' + err.message + '. Bé hãy thử lại nhé!')
     }
   }
 
   // Bé hoàn thành học toán và trả lời đúng toàn bộ câu hỏi trắc nghiệm
   const handleMathTopicFinished = async (topic) => {
-    // Chống nhận sao trùng: kiểm tra xem đã hoàn thành chưa
+    const childId = profile.child.id
     const alreadyDone = completions.some(
-      c => c.child_id === profile.child.id && c.task_id === 'math-' + topic.id && c.status === 'approved'
+      c => c.child_id === childId && c.task_id === 'math-' + topic.id && c.status === 'approved'
     )
-    if (alreadyDone) {
-      showToast('🧮 Bé đã nhận sao cho chủ đề Toán này rồi! Hãy thử chủ đề khác nhé!')
-      setSelectedMathTopic(null)
-      return
-    }
+    const starsToEarn = alreadyDone ? 0 : (topic.stars || 8)
+
     try {
-      const mockTask = {
-        id: 'math-' + topic.id,
-        title: `Toán tư duy: ${topic.title}`,
-        stars: topic.stars || 8,
-        child_id: profile.child.id
-      }
-      setChildBalance(prev => prev + mockTask.stars)
-      saveChildCompletionLocal(profile.child.id, {
-        id: 'math-' + topic.id,
-        task_id: 'math-' + topic.id,
-        child_id: profile.child.id,
-        stars: mockTask.stars,
-        status: 'approved',
-        created_at: new Date().toISOString()
-      }, mockTask.stars)
-      await addStars(familyId, profile.child.id, mockTask.stars, `Hoàn thành Toán tư duy: ${topic.title}`)
-      await submitCompletion(
-        familyId, 
-        mockTask, 
-        null, 
-        `Bé đã hoàn thành học toán tư duy và trả lời đúng các thử thách của chủ đề: ${topic.title}`,
-        'approved'
-      )
-      showToast(`🎉 Tuyệt vời! Bé được nhận +${mockTask.stars} ⭐ khi làm xong Toán tư duy!`)
-      confetti({
-        particleCount: 120,
-        spread: 70,
-        origin: { y: 0.6 }
+      // 1) Ghi lịch sử học tập — kể cả khi bé ôn lại chủ đề cũ
+      await logLearningSession(familyId, childId, {
+        kind: 'math',
+        refId: String(topic.id),
+        title: topic.title,
+        subject: 'Toán tư duy',
+        quizTotal: topic.quizzes?.length || 0,
+        quizFirstTry: mathFirstTryCount,
+        wrongAttempts: mathWrongAttempts,
+        wrongAnswers: mathWrongAnswers,
+        durationSeconds: elapsedSeconds(mathStartedAt),
+        starsEarned: starsToEarn,
       })
+
+      // 2) Cộng sao (chỉ lần đầu)
+      if (alreadyDone) {
+        showToast(`🧮 Bé đã ôn lại "${topic.title}" — đã ghi vào lịch sử học tập. Sao chỉ được nhận ở lần đầu nhé!`)
+      } else {
+        await addStars(familyId, childId, starsToEarn, `Hoàn thành Toán tư duy: ${topic.title}`)
+        await submitCompletion(
+          familyId,
+          { id: 'math-' + topic.id, title: `Toán tư duy: ${topic.title}`, stars: starsToEarn, child_id: childId },
+          null,
+          `Bé đã hoàn thành học toán tư duy và trả lời đúng các thử thách của chủ đề: ${topic.title}`,
+          'approved'
+        )
+        setChildBalance(prev => prev + starsToEarn)
+        showToast(`🎉 Tuyệt vời! Bé được nhận +${starsToEarn} ⭐ khi làm xong Toán tư duy!`)
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
+      }
       setSelectedMathTopic(null)
       loadAppData()
     } catch (err) {
-      showToast('Lỗi nhận sao học toán: ' + err.message)
+      showToast('❌ Chưa lưu được kết quả: ' + err.message + '. Bé hãy thử lại nhé!')
     }
   }
 
@@ -888,13 +950,16 @@ function AppContent() {
   }
 
   // Bé đổi vé chơi game trong Khu Game (trừ sao, ghi sổ sao để không bị khôi phục khi tải lại)
+  // Trả về true/false để Khu Game chỉ bắt đầu khi đã trừ sao thành công.
   const handleDeductStarsForGame = async (cost) => {
     try {
       await addStars(familyId, profile.child.id, -cost, 'Đổi vé chơi Game Arcade')
       setChildBalance(prev => Math.max(0, prev - cost))
       showToast(`🎟️ Đã trừ ${cost} Sao để đổi 1 vé chơi Game 5 phút!`)
+      return true
     } catch (err) {
       showToast('Lỗi trừ sao đổi vé game: ' + err.message)
+      return false
     }
   }
 
@@ -1300,7 +1365,14 @@ function AppContent() {
           >
             🎁 Cửa hàng quà tặng
           </button>
-          <button 
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'learning' ? 'active' : ''}`}
+            onClick={() => setActiveTab('learning')}
+          >
+            📖 Lịch sử học tập
+          </button>
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'stats' ? 'active' : ''}`}
             onClick={() => setActiveTab('stats')}
@@ -1954,6 +2026,193 @@ function AppContent() {
           )}
           
           {/* Tab 6: Thống Kê Tiến Độ */}
+          {/* Tab: Lịch sử học tập chi tiết của các con */}
+          {activeTab === 'learning' && (
+            <div className="tab-pane">
+              <h3 className="section-title">📖 Lịch Sử Học Tập Của Các Con</h3>
+              <p className="subtitle">
+                Mỗi lượt bé làm bài đều được ghi lại, kể cả những lần ôn lại bài cũ không còn nhận sao.
+              </p>
+
+              {/* Bộ lọc theo bé */}
+              <div className="learning-filter-bar">
+                <button
+                  type="button"
+                  className={`learning-filter-btn ${historyChildId === 'all' ? 'active' : ''}`}
+                  onClick={() => setHistoryChildId('all')}
+                >
+                  👨‍👩‍👧‍👦 Tất cả
+                </button>
+                {children.map(kid => (
+                  <button
+                    key={kid.id}
+                    type="button"
+                    className={`learning-filter-btn ${historyChildId === kid.id ? 'active' : ''}`}
+                    onClick={() => setHistoryChildId(kid.id)}
+                  >
+                    {kid.avatar} {kid.name}
+                  </button>
+                ))}
+              </div>
+
+              {(() => {
+                const rows = historyChildId === 'all'
+                  ? learningSessions
+                  : learningSessions.filter(s => s.child_id === historyChildId)
+
+                if (rows.length === 0) {
+                  return (
+                    <p className="empty-message">
+                      Chưa có lượt học nào được ghi lại. Khi bé làm xong phần trắc nghiệm của một bài,
+                      lượt học sẽ xuất hiện tại đây.
+                    </p>
+                  )
+                }
+
+                const kindMeta = {
+                  sgk:  { icon: '📗', label: 'SGK' },
+                  book: { icon: '📚', label: 'Đọc sách' },
+                  math: { icon: '🧮', label: 'Toán tư duy' },
+                }
+                const childName = (id) => children.find(c => c.id === id)?.name || 'Bé'
+                const totalMinutes = Math.round(rows.reduce((s, r) => s + (r.duration_seconds || 0), 0) / 60)
+                const totalWrong = rows.reduce((s, r) => s + (r.wrong_attempts || 0), 0)
+                const distinctLessons = new Set(rows.map(r => r.kind + '-' + r.ref_id)).size
+
+                // Những câu bé hay sai nhất — nền tảng cho ôn tập lặp lại
+                const missTally = new Map()
+                rows.forEach(r => {
+                  (r.wrong_answers || []).forEach(w => {
+                    if (!w?.q) return
+                    const key = w.q
+                    const cur = missTally.get(key) || { q: w.q, correct: w.correct, count: 0, title: r.title }
+                    cur.count += 1
+                    missTally.set(key, cur)
+                  })
+                })
+                const topMisses = Array.from(missTally.values())
+                  .sort((a, b) => b.count - a.count)
+                  .slice(0, 5)
+
+                return (
+                  <>
+                    <div className="stats-overview-grid">
+                      <div className="stat-kpi-card">
+                        <span className="stat-kpi-icon">📝</span>
+                        <div>
+                          <div className="stat-kpi-val">{rows.length}</div>
+                          <div className="stat-kpi-label">Lượt học đã ghi</div>
+                        </div>
+                      </div>
+                      <div className="stat-kpi-card">
+                        <span className="stat-kpi-icon">📘</span>
+                        <div>
+                          <div className="stat-kpi-val">{distinctLessons}</div>
+                          <div className="stat-kpi-label">Bài học khác nhau</div>
+                        </div>
+                      </div>
+                      <div className="stat-kpi-card">
+                        <span className="stat-kpi-icon">⏱️</span>
+                        <div>
+                          <div className="stat-kpi-val">{totalMinutes}</div>
+                          <div className="stat-kpi-label">Tổng số phút học</div>
+                        </div>
+                      </div>
+                      <div className="stat-kpi-card">
+                        <span className="stat-kpi-icon">🤔</span>
+                        <div>
+                          <div className="stat-kpi-val">{totalWrong}</div>
+                          <div className="stat-kpi-label">Lần trả lời sai</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {topMisses.length > 0 && (
+                      <section className="dashboard-section card glass review-section">
+                        <h4 className="review-title">🎯 Những câu bé hay sai — nên ôn lại cùng con</h4>
+                        <ul className="review-list">
+                          {topMisses.map((m, i) => (
+                            <li key={i} className="review-item">
+                              <span className="review-count">{m.count}×</span>
+                              <div>
+                                <p className="review-q">{m.q}</p>
+                                <p className="review-a">Đáp án đúng: <strong>{m.correct}</strong></p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    )}
+
+                    <section className="dashboard-section card glass">
+                      <h4 className="review-title">🕒 Dòng thời gian học tập</h4>
+                      <div className="learning-log">
+                        {rows.map(r => {
+                          const meta = kindMeta[r.kind] || { icon: '📄', label: r.kind }
+                          const mins = Math.round((r.duration_seconds || 0) / 60)
+                          const hasDetail = (r.wrong_answers || []).length > 0
+                          return (
+                            <div key={r.id} className="learning-log-item">
+                              <span className="learning-log-icon">{meta.icon}</span>
+                              <div className="learning-log-body">
+                                <div className="learning-log-head">
+                                  <strong className="learning-log-title">{r.title}</strong>
+                                  {r.attempt_no > 1 && (
+                                    <span className="learning-badge badge-repeat">Lần {r.attempt_no}</span>
+                                  )}
+                                  {r.stars_earned > 0 && (
+                                    <span className="learning-badge badge-star">+{r.stars_earned} ⭐</span>
+                                  )}
+                                </div>
+                                <div className="learning-log-meta">
+                                  {historyChildId === 'all' && <span>👦 {childName(r.child_id)}</span>}
+                                  <span>{meta.label}{r.subject && r.subject !== meta.label ? ` · ${r.subject}` : ''}</span>
+                                  {r.week ? <span>Tuần {r.week}</span> : null}
+                                  <span>{formatTime(r.studied_at)}</span>
+                                  {mins > 0 && <span>⏱️ {mins} phút</span>}
+                                </div>
+                                <div className="learning-log-result">
+                                  {r.quiz_total > 0 ? (
+                                    <>
+                                      <span className="result-chip chip-good">
+                                        Đúng ngay lần đầu: {r.quiz_first_try}/{r.quiz_total}
+                                      </span>
+                                      <span className={`result-chip ${r.wrong_attempts > 0 ? 'chip-warn' : 'chip-good'}`}>
+                                        {r.wrong_attempts > 0 ? `${r.wrong_attempts} lần chọn sai` : 'Không sai câu nào 🎉'}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="result-chip chip-muted">
+                                      Lượt học cũ — chưa có dữ liệu trắc nghiệm chi tiết
+                                    </span>
+                                  )}
+                                </div>
+                                {hasDetail && (
+                                  <details className="learning-detail">
+                                    <summary>Xem {r.wrong_answers.length} câu bé chọn sai</summary>
+                                    <ul>
+                                      {r.wrong_answers.map((w, wi) => (
+                                        <li key={wi}>
+                                          <p className="detail-q">{w.q}</p>
+                                          <p className="detail-wrong">Bé chọn: {w.chose}</p>
+                                          <p className="detail-right">Đáp án đúng: {w.correct}</p>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </details>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </section>
+                  </>
+                )
+              })()}
+            </div>
+          )}
+
           {activeTab === 'stats' && (
             <div className="tab-pane">
               <h3 className="section-title">📊 Thống Kê Tiến Độ Rèn Luyện & Học Tập</h3>
@@ -2357,6 +2616,33 @@ function AppContent() {
           {/* Tab con 3: Nhật ký Sao */}
           {activeTab === 'history' && (
             <div className="tab-pane max-width-md">
+              {learningSessions.length > 0 && (
+                <>
+                  <h3 className="section-title text-center">📚 Những bài con đã học</h3>
+                  <div className="child-learning-list card glass">
+                    {learningSessions.slice(0, 10).map(s => {
+                      const icon = { sgk: '📗', book: '📚', math: '🧮' }[s.kind] || '📄'
+                      return (
+                        <div key={s.id} className="child-learning-item">
+                          <span className="child-learning-icon">{icon}</span>
+                          <div className="child-learning-body">
+                            <strong>{s.title}</strong>
+                            <span className="child-learning-meta">
+                              {formatTime(s.studied_at)}
+                              {s.attempt_no > 1 && ` · ôn lại lần ${s.attempt_no}`}
+                              {s.quiz_total > 0 && s.wrong_attempts === 0 && ' · không sai câu nào 🎉'}
+                            </span>
+                          </div>
+                          {s.stars_earned > 0 && (
+                            <span className="child-learning-stars">+{s.stars_earned} ⭐</span>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+
               <h3 className="section-title text-center">📖 Nhật ký tích lũy sao của bé</h3>
               {childTransactions.length === 0 ? (
                 <p className="empty-message">Con chưa có giao dịch sao nào. Hãy bắt đầu làm nhiệm vụ để có sao nhé!</p>
@@ -2455,6 +2741,9 @@ function AppContent() {
                                 setQuizSelectedOption(null)
                                 setQuizAnsweredCorrectly(false)
                                 setQuizShowFeedback(false)
+                                setBookWrongAttempts(0)
+                                setBookWrongAnswers([])
+                                setBookStartedAt(Date.now())
                               }}
                             >
                               Đọc sách ➜
@@ -2555,6 +2844,12 @@ function AppContent() {
                                   setQuizAnsweredCorrectly(true)
                                 } else {
                                   setQuizShowFeedback(true)
+                                  setBookWrongAttempts(prev => prev + 1)
+                                  setBookWrongAnswers(prev => [...prev, {
+                                    q: readingBook.quiz.question,
+                                    chose: readingBook.quiz.options[quizSelectedOption],
+                                    correct: readingBook.quiz.options[readingBook.quiz.correctAnswer],
+                                  }])
                                 }
                               }}
                             >
@@ -2640,6 +2935,11 @@ function AppContent() {
                                 setMathQuizSelectedOption(null)
                                 setMathQuizAnsweredCorrectly(false)
                                 setMathQuizShowFeedback(false)
+                                setMathWrongAttempts(0)
+                                setMathWrongAnswers([])
+                                setMathFirstTryCount(0)
+                                setMathQuestionMissed(false)
+                                setMathStartedAt(Date.now())
                               }}
                             >
                               Vào học ngay ➜
@@ -2754,8 +3054,16 @@ function AppContent() {
                                   onClick={() => {
                                     if (mathQuizSelectedOption === currentQuiz.correctAnswer) {
                                       setMathQuizAnsweredCorrectly(true)
+                                      if (!mathQuestionMissed) setMathFirstTryCount(prev => prev + 1)
                                     } else {
                                       setMathQuizShowFeedback(true)
+                                      setMathQuestionMissed(true)
+                                      setMathWrongAttempts(prev => prev + 1)
+                                      setMathWrongAnswers(prev => [...prev, {
+                                        q: currentQuiz.question,
+                                        chose: currentQuiz.options[mathQuizSelectedOption],
+                                        correct: currentQuiz.options[currentQuiz.correctAnswer],
+                                      }])
                                     }
                                   }}
                                 >
@@ -2771,6 +3079,7 @@ function AppContent() {
                                       setMathQuizSelectedOption(null)
                                       setMathQuizAnsweredCorrectly(false)
                                       setMathQuizShowFeedback(false)
+                                      setMathQuestionMissed(false)
                                     }}
                                   >
                                     Câu hỏi tiếp theo ➜
@@ -3094,48 +3403,57 @@ function AppContent() {
                       const quiz = selectedLesson.quizzes[sgkQuizIndex]
                       const isLast = sgkQuizIndex === selectedLesson.quizzes.length - 1
                       const totalQuiz = selectedLesson.quizzes.length
-                      const passRate = sgkQuizScore / totalQuiz
-                      const earnedStars = passRate >= 0.5 ? Math.round(passRate * (selectedTextbook?.stars || 5)) : 0
+                      // Sao tính theo số câu ĐÚNG NGAY LẦN ĐẦU, không phải số câu đúng.
+                      // Bé buộc phải đúng mới đi tiếp nên "số câu đúng" luôn tuyệt đối;
+                      // nếu tính theo nó thì đoán bừa vẫn được trọn sao.
+                      const grade = gradeQuizResult(selectedTextbook?.stars || 5, sgkFirstTryCount, totalQuiz)
+                      const earnedStars = grade.stars
                       const mascotPraise = ['Tuyệt vời! Bé giỏi quá! 🌟', 'Rực rỡ! Cứ thế này nhé! 🚀', 'Siêu đỉnh luôn nè! 💫', 'Wow! Bé học giỏi thật! 🎯']
                       const mascot = sgkQuizCorrect
                         ? { emoji: '🤩', msg: mascotPraise[sgkQuizIndex % mascotPraise.length] }
                         : sgkQuizFeedback
-                          ? { emoji: '🤔', msg: 'Không sao! Bé đọc lại câu hỏi rồi thử lần nữa nhé! 💪' }
-                          : { emoji: '🦉', msg: 'Bé chọn đáp án rồi bấm Kiểm tra nhé! ✨' }
+                          ? { emoji: '🤔', msg: tone.quizWrong }
+                          : { emoji: '🦉', msg: tone.quizIntro }
 
                       /* ===== MÀN TỔNG KẾT SAU KHI LÀM XONG ===== */
                       if (sgkQuizDone) {
                         const sgkAlreadyDone = completions.some(
                           c => c.child_id === profile.child.id && c.task_id === 'sgk-' + selectedLesson.id && c.status === 'approved'
                         )
-                        const rankMsg = sgkQuizScore === totalQuiz
-                          ? { title: 'XUẤT SẮC! 🏆', msg: 'Bé trả lời đúng tất cả câu hỏi! Thần đồng của bố mẹ đây rồi!' }
-                          : sgkQuizScore >= totalQuiz * 0.7
-                            ? { title: 'RẤT GIỎI! 🌟', msg: 'Kết quả tuyệt vời! Chỉ còn một chút nữa là hoàn hảo!' }
-                            : sgkQuizScore >= totalQuiz * 0.5
-                              ? { title: 'HOÀN THÀNH! 🎉', msg: 'Bé đã vượt qua! Làm lại để đạt điểm cao hơn nhé!' }
-                              : { title: 'CẦN ÔN LẠI! 📖', msg: 'Bé cần đọc lại bài và thử lại nhé! Đúng từ 50% câu hỏi mới nhận được sao.' }
+                        const rankMsg = {
+                          title: `${grade.rank.title}${tone.isTeen ? '' : ' ' + grade.rank.emoji}`,
+                          msg: tone.isTeen ? grade.rank.teenMsg : grade.rank.msg,
+                        }
                         return (
                           <div className="sgk-summary-card">
-                            <div className="sgk-summary-confetti">🎉 ✨ 🎊 ✨ 🎉</div>
-                            <div className="sgk-summary-trophy bounce-anim">🏆</div>
+                            {!tone.isTeen && <div className="sgk-summary-confetti">🎉 ✨ 🎊 ✨ 🎉</div>}
+                            {!tone.isTeen && <div className="sgk-summary-trophy bounce-anim">🏆</div>}
                             <h3 className="sgk-summary-title">{rankMsg.title}</h3>
                             <p className="sgk-summary-msg">{rankMsg.msg}</p>
 
                             <div className="sgk-summary-stats">
                               <div className="sgk-summary-stat">
-                                <span className="sgk-summary-stat-num">{sgkQuizScore}/{totalQuiz}</span>
-                                <span className="sgk-summary-stat-label">🎯 Câu đúng</span>
+                                <span className="sgk-summary-stat-num">{sgkFirstTryCount}/{totalQuiz}</span>
+                                <span className="sgk-summary-stat-label">🎯 Đúng ngay lần đầu</span>
                               </div>
                               <div className="sgk-summary-stat">
-                                <span className="sgk-summary-stat-num">🔥 {sgkBestStreak}</span>
-                                <span className="sgk-summary-stat-label">Chuỗi dài nhất</span>
+                                <span className="sgk-summary-stat-num">{sgkWrongAttempts}</span>
+                                <span className="sgk-summary-stat-label">Lần chọn sai</span>
                               </div>
                               <div className="sgk-summary-stat">
                                 <span className="sgk-summary-stat-num">⭐ {earnedStars}</span>
                                 <span className="sgk-summary-stat-label">Sao nhận được</span>
                               </div>
                             </div>
+
+                            {/* Nói thẳng vì sao nhận được từng ấy sao — để bé hiểu
+                                phần thưởng gắn với việc hiểu bài, không phải số lần bấm. */}
+                            {grade.ratio < 1 && (
+                              <p className="sgk-summary-note">
+                                Đúng ngay lần đầu toàn bộ câu hỏi sẽ nhận trọn{' '}
+                                <strong>{selectedTextbook?.stars || 5} ⭐</strong>. Đọc lại bài rồi thử lại nhé!
+                              </p>
+                            )}
 
                             <div className="sgk-summary-stars">
                               {Array.from({ length: Math.min(5, earnedStars) }).map((_, si) => (
@@ -3156,17 +3474,7 @@ function AppContent() {
                                   type="button"
                                   className="sgk-btn-finish"
                                   onClick={async () => {
-                                    setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
                                     try {
-                                      setChildBalance(prev => prev + earnedStars)
-                                      saveChildCompletionLocal(profile.child.id, {
-                                        id: 'sgk-' + selectedLesson.id,
-                                        task_id: 'sgk-' + selectedLesson.id,
-                                        child_id: profile.child.id,
-                                        stars: earnedStars,
-                                        status: 'approved',
-                                        created_at: new Date().toISOString()
-                                      }, earnedStars)
                                       await addStars(familyId, profile.child.id, earnedStars, `Hoàn thành bài học SGK: ${selectedLesson.title}`)
                                       await submitCompletion(
                                         familyId,
@@ -3180,11 +3488,15 @@ function AppContent() {
                                         `Bé đã hoàn thành bài học SGK: ${selectedLesson.title}`,
                                         'approved'
                                       )
+                                      setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
+                                      setChildBalance(prev => prev + earnedStars)
                                       showToast(`🎉 Rực rỡ! Bé được cộng +${earnedStars} ⭐ vào Ví Sao!`)
                                       confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
                                     } catch (err) {
-                                      showToast('Lỗi nhận sao SGK: ' + err.message)
-                                      console.warn('Lỗi ghi nhận hoàn thành SGK:', err)
+                                      // Không đánh dấu đã xong khi chưa lưu được: thà bé làm lại
+                                      // còn hơn tưởng đã nhận sao mà thực tế không có gì được lưu.
+                                      showToast('❌ Chưa lưu được sao: ' + err.message + '. Bé hãy thử lại nhé!')
+                                      return
                                     }
                                     setSelectedLesson(null)
                                     setSgkLessonView('content')
@@ -3317,6 +3629,8 @@ function AppContent() {
                                     if (sgkQuizSelected === quiz.correctAnswer) {
                                       setSgkQuizCorrect(true)
                                       setSgkQuizScore(prev => prev + 1)
+                                      // Đúng ngay lần đầu mới thực sự là "nắm được bài"
+                                      if (!sgkQuestionMissed) setSgkFirstTryCount(prev => prev + 1)
                                       setSgkStreak(prev => {
                                         const next = prev + 1
                                         setSgkBestStreak(best => Math.max(best, next))
@@ -3326,6 +3640,13 @@ function AppContent() {
                                     } else {
                                       setSgkQuizFeedback(true)
                                       setSgkStreak(0)
+                                      setSgkQuestionMissed(true)
+                                      setSgkWrongAttempts(prev => prev + 1)
+                                      setSgkWrongAnswers(prev => [...prev, {
+                                        q: quiz.question,
+                                        chose: quiz.options[sgkQuizSelected],
+                                        correct: quiz.options[quiz.correctAnswer],
+                                      }])
                                     }
                                   }}
                                 >
@@ -3340,6 +3661,7 @@ function AppContent() {
                                     setSgkQuizSelected(null)
                                     setSgkQuizCorrect(false)
                                     setSgkQuizFeedback(false)
+                                    setSgkQuestionMissed(false)
                                   }}
                                 >
                                   Câu tiếp theo →
@@ -3348,9 +3670,35 @@ function AppContent() {
                                 <button
                                   type="button"
                                   className="sgk-btn-finish"
-                                  onClick={() => {
+                                  onClick={async () => {
                                     confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } })
                                     setSgkQuizDone(true)
+                                    // Ghi lịch sử NGAY tại đây, không đợi bé bấm "Nhận sao":
+                                    // lượt ôn lại bài cũ (không còn sao) vẫn phải được lưu.
+                                    const doneBefore = completions.some(
+                                      c => c.child_id === profile.child.id &&
+                                           c.task_id === 'sgk-' + selectedLesson.id &&
+                                           c.status === 'approved'
+                                    )
+                                    try {
+                                      await logLearningSession(familyId, profile.child.id, {
+                                        kind: 'sgk',
+                                        refId: String(selectedLesson.id),
+                                        title: selectedLesson.title,
+                                        subject: selectedTextbook?.subject || 'SGK',
+                                        grade: sgkGrade,
+                                        week: selectedLesson.week ?? null,
+                                        quizTotal: totalQuiz,
+                                        quizFirstTry: sgkFirstTryCount,
+                                        wrongAttempts: sgkWrongAttempts,
+                                        wrongAnswers: sgkWrongAnswers,
+                                        durationSeconds: elapsedSeconds(sgkStartedAt),
+                                        starsEarned: doneBefore ? 0 : earnedStars,
+                                      })
+                                      loadAppData()
+                                    } catch (err) {
+                                      showToast('⚠️ Chưa lưu được lịch sử học tập: ' + err.message)
+                                    }
                                   }}
                                 >
                                   🏆 Xem kết quả!

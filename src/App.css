@@ -4458,3 +4458,331 @@ body {
 }
 
 
+
+/* =====================================================
+   LỊCH SỬ HỌC TẬP (màn hình bố mẹ)
+   Dùng chung tông nền tối với khu Thống Kê.
+   ===================================================== */
+
+.learning-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 22px;
+}
+
+.learning-filter-btn {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 41, 59, 0.7);
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.learning-filter-btn:hover {
+  border-color: rgba(129, 140, 248, 0.6);
+  color: #e2e8f0;
+}
+
+.learning-filter-btn.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+}
+
+.review-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #e2e8f0;
+  margin-bottom: 16px;
+}
+
+/* ---- Khối "Những câu bé hay sai" ---- */
+.review-section {
+  border-left: 4px solid var(--warning);
+}
+
+.review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.review-count {
+  flex-shrink: 0;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-q {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  line-height: 1.5;
+}
+
+.review-a {
+  color: #6ee7b7;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ---- Dòng thời gian học tập ---- */
+.learning-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-log-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(30, 41, 59, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: var(--transition-fast);
+}
+
+.learning-log-item:hover {
+  border-color: rgba(129, 140, 248, 0.4);
+}
+
+.learning-log-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.learning-log-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.learning-log-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.learning-log-title {
+  color: #f1f5f9;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.learning-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge-repeat {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.badge-star {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fde047;
+  border: 1px solid rgba(250, 204, 21, 0.32);
+}
+
+.learning-log-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.learning-log-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.result-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 8px;
+}
+
+.chip-good {
+  background: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
+}
+
+.chip-warn {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fcd34d;
+}
+
+.chip-muted {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ---- Chi tiết câu sai (thẻ <details>) ---- */
+.learning-detail {
+  margin-top: 10px;
+}
+
+.learning-detail summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a5b4fc;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.learning-detail summary:hover {
+  color: #c7d2fe;
+}
+
+.learning-detail ul {
+  list-style: none;
+  padding: 10px 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-detail li {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.6);
+  border-left: 3px solid rgba(239, 68, 68, 0.5);
+}
+
+.detail-q {
+  color: #e2e8f0;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  line-height: 1.5;
+}
+
+.detail-wrong {
+  color: #fca5a5;
+  font-size: 13px;
+  margin: 0 0 2px;
+}
+
+.detail-right {
+  color: #6ee7b7;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* =====================================================
+   "Những bài con đã học" — màn hình của bé
+   ===================================================== */
+
+.child-learning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  margin-bottom: 28px;
+}
+
+.child-learning-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.child-learning-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.child-learning-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.child-learning-body strong {
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.child-learning-meta {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.child-learning-stars {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f59e0b;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .learning-log-item {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .learning-log-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .learning-log-meta {
+    font-size: 12px;
+    gap: 3px 10px;
+  }
+}

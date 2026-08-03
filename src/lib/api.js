@@ -1,5 +1,18 @@
 import { supabase } from './supabase'
 
+// family_id LUÔN bằng auth.uid() (xem RLS policy trong schema.sql), nên khi
+// thiếu familyId ta lấy thẳng từ phiên đăng nhập thay vì đoán mò.
+// Tuyệt đối không dùng UUID rỗng làm giá trị dự phòng: nó vi phạm khoá ngoại
+// auth.users lẫn RLS, khiến mọi lượt ghi thất bại trong im lặng.
+async function resolveFamilyId(familyId) {
+  if (familyId) return familyId
+  const { data, error } = await supabase.auth.getUser()
+  if (error) throw error
+  const uid = data?.user?.id
+  if (!uid) throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.')
+  return uid
+}
+
 // ---------- Hồ sơ ----------
 export async function fetchChildren() {
   const { data, error } = await supabase
@@ -120,36 +133,22 @@ export async function fetchCompletions() {
 
 // Con bấm "Hoàn thành" -> tạo bản ghi (mặc định pending, với bài học app tự duyệt thì approved)
 export async function submitCompletion(familyId, task, proofImage = null, childNote = '', status = 'pending') {
-  let fid = familyId
-  if (!fid && task.child_id) {
-    try {
-      const { data: c } = await supabase.from('children').select('family_id').eq('id', task.child_id).single()
-      if (c?.family_id) fid = c.family_id
-    } catch (e) {
-      console.warn('Lookup family_id failed:', e)
-    }
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('completions')
-      .insert({
-        family_id: fid || '00000000-0000-0000-0000-000000000000',
-        task_id: task.id,
-        child_id: task.child_id,
-        stars: task.stars,
-        proof_image: proofImage,
-        child_note: childNote,
-        status: status,
-      })
-      .select()
-      .single()
-    if (error) console.warn('Cảnh báo submitCompletion Supabase:', error.message)
-    return data
-  } catch (err) {
-    console.warn('Cảnh báo submitCompletion catch:', err.message)
-    return null
-  }
+  const fid = await resolveFamilyId(familyId)
+  const { data, error } = await supabase
+    .from('completions')
+    .insert({
+      family_id: fid,
+      task_id: task.id,
+      child_id: task.child_id,
+      stars: task.stars,
+      proof_image: proofImage,
+      child_note: childNote,
+      status: status,
+    })
+    .select()
+    .single()
+  if (error) throw error
+  return data
 }
 
 // Bố mẹ duyệt -> cộng sao vào sổ
@@ -248,48 +247,27 @@ export async function reviewRedemption(familyId, redemption, fulfill) {
 
 // ---------- Sổ sao ----------
 export async function addStars(familyId, childId, amount, reason) {
-  if (!childId) return
-  let fid = familyId
-  if (!fid) {
-    try {
-      const { data: c } = await supabase.from('children').select('family_id').eq('id', childId).single()
-      if (c?.family_id) fid = c.family_id
-    } catch (e) {
-      console.warn('Lookup family_id failed in addStars:', e)
-    }
-  }
-
-  try {
-    const { error } = await supabase
-      .from('star_transactions')
-      .insert({ 
-        family_id: fid || '00000000-0000-0000-0000-000000000000', 
-        child_id: childId, 
-        amount: amount, 
-        reason: reason || '' 
-      })
-    if (error) console.warn('Cảnh báo addStars Supabase:', error.message)
-  } catch (err) {
-    console.warn('Cảnh báo addStars catch:', err.message)
-  }
+  if (!childId) throw new Error('Thiếu hồ sơ bé khi ghi sổ sao.')
+  const fid = await resolveFamilyId(familyId)
+  const { error } = await supabase
+    .from('star_transactions')
+    .insert({
+      family_id: fid,
+      child_id: childId,
+      amount: amount,
+      reason: reason || '',
+    })
+  if (error) throw error
 }
 
 export async function fetchBalance(childId) {
   if (!childId) return 0
-  try {
-    const { data, error } = await supabase
-      .from('star_transactions')
-      .select('amount')
-      .eq('child_id', childId)
-    if (error) {
-      console.warn('fetchBalance Supabase warning:', error.message)
-      return 0
-    }
-    return (data || []).reduce((sum, t) => sum + t.amount, 0)
-  } catch (err) {
-    console.warn('fetchBalance catch:', err.message)
-    return 0
-  }
+  const { data, error } = await supabase
+    .from('star_transactions')
+    .select('amount')
+    .eq('child_id', childId)
+  if (error) throw error
+  return (data || []).reduce((sum, t) => sum + t.amount, 0)
 }
 
 export async function fetchTransactions(childId) {
@@ -299,6 +277,77 @@ export async function fetchTransactions(childId) {
     .eq('child_id', childId)
     .order('created_at', { ascending: false })
     .limit(30)
+  if (error) throw error
+  return data
+}
+
+// ---------- Lịch sử học tập ----------
+// Khác với completions ("bài này đã xong hay chưa", mỗi bài đúng 1 dòng),
+// learning_sessions ghi lại MỌI lượt học kể cả khi bé học lại bài cũ.
+// Đây là dữ liệu nền cho ôn tập lặp lại (spaced repetition) và báo cáo tiến độ.
+
+export async function fetchLearningSessions(childId = null, limit = 300) {
+  let query = supabase
+    .from('learning_sessions')
+    .select('*')
+    .order('studied_at', { ascending: false })
+    .limit(limit)
+  if (childId) query = query.eq('child_id', childId)
+  const { data, error } = await query
+  if (error) throw error
+  return data
+}
+
+/**
+ * Ghi lại một lượt học. Gọi mỗi khi bé làm xong phần trắc nghiệm của bài,
+ * bất kể có nhận sao hay không (lần học lại vẫn phải được lưu).
+ *
+ * @param {object} s
+ *   kind          'sgk' | 'book' | 'math'
+ *   refId         mã bài học gốc (không kèm tiền tố)
+ *   title         tên bài hiển thị cho bố mẹ
+ *   subject/grade/week   thông tin phân loại, có thể bỏ trống
+ *   quizTotal     tổng số câu hỏi
+ *   quizFirstTry  số câu bé trả lời đúng ngay lần đầu
+ *   wrongAttempts tổng số lần bé chọn sai
+ *   wrongAnswers  [{ q, chose, correct }] — dùng cho ôn tập lặp lại
+ *   durationSeconds  thời gian làm bài
+ *   starsEarned   số sao nhận được ở lượt này (0 nếu học lại)
+ */
+export async function logLearningSession(familyId, childId, s) {
+  if (!childId) throw new Error('Thiếu hồ sơ bé khi ghi lịch sử học tập.')
+  const fid = await resolveFamilyId(familyId)
+
+  // Đây là lượt học thứ mấy của bài này?
+  const { count, error: countErr } = await supabase
+    .from('learning_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('child_id', childId)
+    .eq('kind', s.kind)
+    .eq('ref_id', s.refId)
+  if (countErr) throw countErr
+
+  const { data, error } = await supabase
+    .from('learning_sessions')
+    .insert({
+      family_id: fid,
+      child_id: childId,
+      kind: s.kind,
+      ref_id: s.refId,
+      title: s.title,
+      subject: s.subject ?? null,
+      grade: s.grade ?? null,
+      week: s.week ?? null,
+      quiz_total: s.quizTotal ?? 0,
+      quiz_first_try: s.quizFirstTry ?? 0,
+      wrong_attempts: s.wrongAttempts ?? 0,
+      wrong_answers: s.wrongAnswers ?? [],
+      duration_seconds: s.durationSeconds ?? 0,
+      attempt_no: (count ?? 0) + 1,
+      stars_earned: s.starsEarned ?? 0,
+    })
+    .select()
+    .single()
   if (error) throw error
   return data
 }

@@ -140,15 +140,86 @@ CREATE POLICY "family_all" ON subscriptions FOR ALL USING (family_id = auth.uid(
 
 ---
 
-## 2. Cơ Chế Dual-Sync Persistence (Hợp Nhất LocalStorage + Supabase)
+## 2. Bảng `learning_sessions` — Lịch Sử Học Tập Chi Tiết
 
-### Nguyên lý hoạt động
-1. Khi bé thực hiện bài học / trắc nghiệm / việc nhà:
-   - Ghi ngầm xuống Supabase DB (`completions` & `star_transactions`).
-   - Đồng thời nạp trực tiếp bản ghi vào `localStorage.getItem('child_completions_' + childId)`.
-   - Cập nhật số sao vào `localStorage.getItem('child_balance_' + childId)`.
-2. Khi `loadAppData()` chạy (lúc mở app hoặc chuyển hồ sơ):
-   - Query `dbComps` từ Supabase.
-   - Query `localComps` từ `localStorage`.
-   - Dùng `Map` theo `task_id` để hợp nhất 2 nguồn dữ liệu.
-   - Đảm bảo **100% dữ liệu không bao giờ bị mất hoặc bị reset về 0**.
+Phân biệt rõ hai khái niệm trước đây bị gộp làm một:
+
+| Bảng | Ý nghĩa | Số dòng mỗi bài |
+|---|---|---|
+| `completions` | "Bài này đã xong hay chưa" — dùng để chặn nhận sao trùng | Đúng 1 |
+| `learning_sessions` | "Lịch sử học" — mọi lượt học, kể cả ôn lại bài cũ | Không giới hạn |
+
+```sql
+CREATE TABLE IF NOT EXISTS learning_sessions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  family_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  child_id  uuid NOT NULL REFERENCES children(id)  ON DELETE CASCADE,
+  kind    TEXT NOT NULL CHECK (kind IN ('sgk','book','math')),
+  ref_id  TEXT NOT NULL,
+  title   TEXT NOT NULL,
+  subject TEXT, grade INT, week INT,
+  quiz_total     INT NOT NULL DEFAULT 0,
+  quiz_first_try INT NOT NULL DEFAULT 0,
+  wrong_attempts INT NOT NULL DEFAULT 0,
+  wrong_answers  JSONB NOT NULL DEFAULT '[]',
+  duration_seconds INT NOT NULL DEFAULT 0,
+  attempt_no       INT NOT NULL DEFAULT 1,
+  stars_earned     INT NOT NULL DEFAULT 0,
+  studied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+### Vì sao đo `wrong_attempts` chứ không phải "số câu đúng"
+
+Trong cả 3 loại bài (SGK, Đọc sách, Toán tư duy), bé **bắt buộc trả lời đúng mới
+được sang câu tiếp theo**. Do đó "số câu đúng" cuối bài luôn bằng điểm tuyệt đối
+và không mang thông tin gì. Tín hiệu học tập thật nằm ở:
+
+- `wrong_attempts` — tổng số lần bé chọn sai
+- `quiz_first_try` — số câu bé đúng **ngay lần đầu** (mới thực sự là "nắm bài")
+- `wrong_answers` — chi tiết từng câu sai, là đầu vào cho **Spaced Repetition**
+
+### API tương ứng (`src/lib/api.js`)
+
+- `logLearningSession(familyId, childId, session)` — ghi 1 lượt học, tự tính `attempt_no`
+- `fetchLearningSessions(childId?, limit?)` — đọc lịch sử, mới nhất trước
+
+Lượt học được ghi **ngay khi bé làm xong phần trắc nghiệm**, không đợi bé bấm
+"Nhận sao" — nếu không, các lần ôn lại bài cũ (không còn sao) sẽ không được lưu.
+
+---
+
+## 3. Nguồn Sự Thật Dữ Liệu (thay thế cơ chế Dual-Sync cũ)
+
+> ⚠️ **Cơ chế "Dual-Sync LocalStorage" trước đây đã bị loại bỏ.**
+> Nó hợp nhất dữ liệu DB với localStorage và lấy `Math.max(dbBalance, localBalance)`
+> làm số sao hiển thị. Hệ quả: khi bảng `star_transactions` bị RLS chặn ghi (do
+> thiếu policy), app vẫn hiển thị số sao "đúng" lấy từ localStorage, che giấu hoàn
+> toàn sự cố trong thời gian dài. Toàn bộ ví sao khi đó chỉ tồn tại trên trình
+> duyệt và sẽ mất sạch nếu đổi máy hoặc xoá cache.
+
+### Nguyên tắc hiện tại
+
+1. **Supabase là nguồn sự thật duy nhất.** Mọi số liệu hiển thị đều đọc từ DB.
+2. **Không nuốt lỗi.** `addStars`, `submitCompletion`, `logLearningSession`,
+   `fetchBalance` đều `throw` khi thất bại. Giao diện báo lỗi rõ ràng và **không**
+   bắn hiệu ứng ăn mừng khi chưa lưu được.
+3. **Không dùng UUID rỗng làm giá trị dự phòng.** `family_id` luôn lấy từ phiên
+   đăng nhập qua `resolveFamilyId()`, vì `family_id = auth.uid()` là điều kiện của
+   mọi RLS policy. UUID rỗng vi phạm cả khoá ngoại lẫn RLS.
+4. **localStorage chỉ là bộ nhớ đệm ngoại tuyến.** Khi mất mạng, app hiển thị bản
+   lưu tạm kèm cảnh báo rõ ràng — và không bao giờ ghi đè số liệu của DB.
+
+### Bài học rút ra
+
+RLS bật mà thiếu policy sẽ chặn 100% thao tác, nhưng `select` bị chặn trả về
+**mảng rỗng KHÔNG kèm lỗi** — cực kỳ khó phát hiện. Vì vậy sau mỗi migration phải
+kiểm tra bằng:
+
+```sql
+select tablename, policyname from pg_policies
+where schemaname = 'public' order by tablename;
+```
+
+Mọi bảng có `enable row level security` đều phải xuất hiện trong kết quả này.
+Xem `supabase/migration_fix_stars.sql` để biết cách vá và khôi phục dữ liệu.
