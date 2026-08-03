@@ -2963,10 +2963,12 @@ function AppContent() {
 
                   <div className="books-grid">
                     {booksData[kidAgeGroup].map((book, idx) => {
+                      const isDone = completions.some(c => c.child_id === profile.child.id && c.task_id === 'book-' + book.id)
+                      const isAssigned = tasks.some(t => t.child_id === profile.child.id && (t.title.toLowerCase().includes(book.title.toLowerCase()) || t.task_type === 'book')) || idx === 0 || isDone
                       const prevBook = idx > 0 ? booksData[kidAgeGroup][idx - 1] : null
-                      const isUnlocked = idx === 0 || completions.some(
+                      const isUnlocked = isAssigned && (idx === 0 || completions.some(
                         c => c.child_id === profile.child.id && c.task_id === 'book-' + prevBook.id
-                      )
+                      ))
 
                       return (
                         <div key={book.id} className={`book-card glass ${!isUnlocked ? 'locked' : ''}`}>
@@ -2996,8 +2998,12 @@ function AppContent() {
                               Đọc sách ➜
                             </button>
                           ) : (
-                            <button type="button" className="btn btn-block btn-locked" disabled>
-                              🔒 Đọc xong quyển trước để mở
+                            <button 
+                              type="button" 
+                              className="btn btn-block btn-locked"
+                              onClick={() => showToast('🔒 Truyện này chưa được Bố Mẹ giao! Bé nhờ Bố Mẹ thêm vào Kế Hoạch / Nhiệm Vụ nhé! 😊')}
+                            >
+                              🔒 Chờ Bố Mẹ giao bài này
                             </button>
                           )}
                         </div>
@@ -3169,10 +3175,12 @@ function AppContent() {
 
                   <div className="books-grid">
                     {mathData.map((topic, idx) => {
+                      const isDone = completions.some(c => c.child_id === profile.child.id && c.task_id === 'math-' + topic.id)
+                      const isAssigned = tasks.some(t => t.child_id === profile.child.id && (t.title.toLowerCase().includes(topic.title.toLowerCase()) || t.task_type === 'math')) || idx === 0 || isDone
                       const prevTopic = idx > 0 ? mathData[idx - 1] : null
-                      const isUnlocked = idx === 0 || completions.some(
+                      const isUnlocked = isAssigned && (idx === 0 || completions.some(
                         c => c.child_id === profile.child.id && c.task_id === 'math-' + prevTopic.id
-                      )
+                      ))
 
                       return (
                         <div key={topic.id} className={`book-card glass ${!isUnlocked ? 'locked' : ''}`}>
@@ -3204,8 +3212,12 @@ function AppContent() {
                               Vào học ngay ➜
                             </button>
                           ) : (
-                            <button type="button" className="btn btn-block btn-locked" disabled>
-                              🔒 Hoàn thành chủ đề trước để mở
+                            <button 
+                              type="button" 
+                              className="btn btn-block btn-locked"
+                              onClick={() => showToast('🔒 Chủ đề Toán này chưa được Bố Mẹ giao! Bé nhờ Bố Mẹ thêm vào Kế Hoạch / Nhiệm Vụ nhé! 😊')}
+                            >
+                              🔒 Chờ Bố Mẹ giao bài này
                             </button>
                           )}
                         </div>
