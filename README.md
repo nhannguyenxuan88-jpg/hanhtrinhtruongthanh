@@ -10,6 +10,7 @@
   - **Lớp 2**: 70 bài (Tiếng Việt + Toán, 2 học kỳ) — 249 câu hỏi
   - **Lớp 8**: 49 bài (Ngữ văn + Toán 8 theo chương trình hiện hành) — 206 câu hỏi
   - Điểm số → Sao thưởng, thanh tiến độ từng quyển sách.
+  - **Xem sách gốc PDF**: mỗi quyển sách có nút 📕 mở bản in PDF đầy đủ tranh minh hoạ.
 - **📚 Góc đọc sách**: truyện thiếu nhi kèm câu hỏi tương tác + rút bài học đạo đức.
 - **🧮 Toán tư duy**: các chủ đề toán tương tác cho bé.
 - **🎮 Khu game**: trò chơi nhỏ giải trí (arcade).
@@ -47,8 +48,26 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 |---|---|
 | `src/App.jsx` | Toàn bộ giao diện + luồng logic ứng dụng |
 | `src/lib/textbookData.js` | Dữ liệu SGK Lớp 2 (70 bài, 249 câu) |
-| `src/lib/textbookData8.js` | Dữ liệu SGK Lớp 8 (49 bài, 206 câu) |
+| `src/lib/textbookData8.js` | Dữ liệu SGK Lớp 8 (49 bài, 206 câu) + Tiếng Anh 8 (24 bài, 108 câu) |
+| `src/lib/textbookPdfs.js` | Ánh xạ sách → file PDF bản gốc |
+| `public/textbooks/` | Các file PDF SGK (đồng bộ bằng script bên dưới) |
+| `scripts/copy-textbooks.cjs` | Chép PDF SGK từ Downloads/G:\ vào `public/textbooks/` |
 | `src/lib/api.js` | Lớp truy cập Supabase |
 | `src/lib/booksData.js` | Thư viện truyện đọc |
 | `src/lib/mathData.js` | Chủ đề Toán tư duy |
 | `supabase/schema.sql` | Schema + migration đầy đủ |
+
+## 📕 Đồng bộ sách giáo khoa PDF
+
+Tải 10 quyển SGK Lớp 2 & Lớp 8 (chương trình mới 2026) về máy, để trong thư mục
+Downloads hoặc `G:\Sách giáo khoa` (tên có `SGK-Tieng-Viet-2...`, `SGK-Toan-2...`,
+`SGK-Ngu-van-8...`, `SGK-Toan-8...`, `SGK...tieng anh 8...` hoặc
+`...bai tap tieng anh 8...`), rồi chạy:
+
+```bash
+node scripts/copy-textbooks.cjs
+```
+
+Script sẽ tự tìm và chép vào `public/textbooks/` với tên chuẩn. **Lưu ý**: 10 file
+PDF tổng ~204MB, nên commit kèm để khi deploy lên Vercel/Netlify các con xem được.
+Nút "📕 Xem sách gốc" chỉ hiện khi file PDF tương ứng đã được đồng bộ.

@@ -1673,5 +1673,867 @@ export const textbookData8 = [
         ]
       }
     ]
+  },
+  {
+    "id": "anh8_sgk",
+    "subject": "Tiếng Anh",
+    "grade": 8,
+    "volume": "SGK Global Success",
+    "emoji": "🇬🇧",
+    "color": "#8b5cf6",
+    "stars": 10,
+    "lessons": [
+      {
+        "id": "anh8_sgk_unit1",
+        "week": 2,
+        "title": "Unit 1: Leisure Time",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 1: LEISURE TIME – THỜI GIAN RẢNH RỖI”\n\nUnit 1 giúp em nói về những hoạt động giải trí em yêu thích và lợi ích của chúng.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• leisure (n.): thời gian rảnh, sự thư giãn\n\n• hang out (v.): đi chơi, tụ tập cùng bạn bè\n\n• DIY / do-it-yourself (n.): tự tay làm đồ thủ công\n\n• knitting (n.): đan len\n\n• chatting (v.): tán gẫu, trò chuyện\n\n• origami (n.): nghệ thuật xếp giấy\n\n• board game (n.): trò chơi bàn cờ\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• Danh động từ (Gerund – V-ing) sau các động từ chỉ sở thích: enjoy, like, love, hate, fancy + V-ing.\n\n• Ví dụ: I enjoy reading books in my free time. (Tớ thích đọc sách lúc rảnh.)\n\n• Mẫu câu hỏi sở thích: What do you like doing in your free time?",
+        "quizzes": [
+          {
+            "question": "\"leisure\" có nghĩa là gì?",
+            "options": ["Thời gian rảnh, sự thư giãn", "Bài tập về nhà", "Giờ ăn trưa", "Kỳ nghỉ hè"],
+            "correctAnswer": 0,
+            "explanation": "✅ leisure = thời gian rảnh; leisure time = thời gian rảnh rỗi."
+          },
+          {
+            "question": "Chọn động từ đúng: I enjoy ___ books in my free time.",
+            "options": ["read", "to read", "reading", "reads"],
+            "correctAnswer": 2,
+            "explanation": "✅ Sau enjoy dùng danh động từ: enjoy + V-ing → enjoy reading."
+          },
+          {
+            "question": "\"DIY\" là viết tắt của cụm từ nào?",
+            "options": ["Do It Yourself", "Do I Yell", "Dance In Yard", "Draw In Yellow"],
+            "correctAnswer": 0,
+            "explanation": "✅ DIY = Do It Yourself: tự tay làm lấy đồ thủ công, đồ dùng."
+          },
+          {
+            "question": "Hoạt động nào sau đây là \"chatting\"?",
+            "options": ["Trò chuyện với bạn bè", "Đi bơi", "Xếp giấy", "Đan len"],
+            "correctAnswer": 0,
+            "explanation": "✅ chatting = tán gẫu, trò chuyện cùng bạn bè."
+          },
+          {
+            "question": "Hỏi sở thích của bạn đúng cách:",
+            "options": ["What do you like doing in your free time?", "How old are you?", "Where is your house?", "What time is it?"],
+            "correctAnswer": 0,
+            "explanation": "✅ Câu hỏi sở thích dùng What + like + doing: What do you like doing in your free time?"
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit2",
+        "week": 4,
+        "title": "Unit 2: Life in the Countryside",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 2: LIFE IN THE COUNTRYSIDE – CUỘC SỐNG Ở NÔNG THÔN”\n\nUnit 2 mô tả cuộc sống thanh bình, gần gũi thiên nhiên ở vùng quê.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• countryside (n.): vùng nông thôn, miền quê\n\n• paddy field (n.): đồng lúa, ruộng lúa\n\n• harvest (n./v.): vụ mùa, thu hoạch\n\n• cattle (n.): gia súc, đàn bò\n\n• buffalo (n.): con trâu\n\n• meadow (n.): đồng cỏ\n\n• well (n.): cái giếng\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• So sánh hơn của trạng từ (comparative adverbs): more + trạng từ dài, trạng từ ngắn + -er.\n\n• Ví dụ: The buffalo ploughs more slowly than the tractor. (Trâu cày chậm hơn máy kéo.)\n\n• Mẹo: dùng so sánh hơn để so sánh cách thức hành động giữa hai sự vật.",
+        "quizzes": [
+          {
+            "question": "\"paddy field\" là gì?",
+            "options": ["Đồng lúa, ruộng lúa", "Sân bóng", "Vườn rau", "Công viên"],
+            "correctAnswer": 0,
+            "explanation": "✅ paddy field = ruộng lúa, nơi trồng lúa nước."
+          },
+          {
+            "question": "Chọn dạng đúng: The tractor works ___ than the buffalo.",
+            "options": ["fast", "faster", "fastest", "more fast"],
+            "correctAnswer": 1,
+            "explanation": "✅ Trạng từ ngắn fast → so sánh hơn: faster."
+          },
+          {
+            "question": "\"harvest\" có nghĩa là:",
+            "options": ["Thu hoạch, vụ mùa", "Gieo hạt", "Cày đất", "Tưới nước"],
+            "correctAnswer": 0,
+            "explanation": "✅ harvest = mùa gặt, thu hoạch nông sản."
+          },
+          {
+            "question": "Con vật gắn bó với đồng ruộng Việt Nam là:",
+            "options": ["buffalo (trâu)", "panda (gấu trúc)", "penguin (chim cánh cụt)", "kangaroo"],
+            "correctAnswer": 0,
+            "explanation": "✅ Buffalo = con trâu — người bạn thân thiết của nhà nông."
+          },
+          {
+            "question": "Chọn dạng đúng: The farmers work ___ in the paddy fields.",
+            "options": ["hard", "harder", "hardest", "hardly"],
+            "correctAnswer": 1,
+            "explanation": "✅ Trạng từ ngắn hard → so sánh hơn: harder."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit3",
+        "week": 6,
+        "title": "Unit 3: Teenagers",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 3: TEENAGERS – TUỔI VỊ THÀNH NIÊN”\n\nUnit 3 nói về cuộc sống của lứa tuổi teen: học tập, bạn bè và áp lực tuổi mới lớn.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• teenager (n.): thiếu niên, tuổi teen\n\n• pressure (n.): áp lực\n\n• volunteer (v./n.): tình nguyện, tình nguyện viên\n\n• social media (n.): mạng xã hội\n\n• self-study (n.): tự học\n\n• screen time (n.): thời gian dùng màn hình\n\n• peer (n.): bạn cùng trang lứa\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• “Used to + động từ nguyên thể” diễn tả thói quen trong quá khứ, nay không còn nữa.\n\n• Ví dụ: I used to spend hours playing video games. (Hồi trước tớ từng dành hàng giờ chơi game.)\n\n• Phủ định: didn't use to; câu hỏi: Did you use to...?",
+        "quizzes": [
+          {
+            "question": "\"pressure\" trong tiếng Việt nghĩa là:",
+            "options": ["Áp lực", "Niềm vui", "Tình bạn", "Ước mơ"],
+            "correctAnswer": 0,
+            "explanation": "✅ pressure = áp lực (áp lực học tập, áp lực từ bạn bè...)."
+          },
+          {
+            "question": "Chọn đáp án đúng: I ___ get up late when I was a child.",
+            "options": ["use to", "used to", "am used to", "get used to"],
+            "correctAnswer": 1,
+            "explanation": "✅ used to + V chỉ thói quen quá khứ: I used to get up late."
+          },
+          {
+            "question": "\"peer\" là gì?",
+            "options": ["Bạn cùng trang lứa", "Bố mẹ", "Thầy cô", "Người lạ"],
+            "correctAnswer": 0,
+            "explanation": "✅ peer = người ngang hàng, bạn cùng trang lứa."
+          },
+          {
+            "question": "\"screen time\" nghĩa là:",
+            "options": ["Thời gian dùng điện thoại/máy tính", "Giờ chiếu phim", "Buổi học tin học", "Thời gian ngủ"],
+            "correctAnswer": 0,
+            "explanation": "✅ screen time = thời gian nhìn màn hình (điện thoại, tivi, máy tính)."
+          },
+          {
+            "question": "Câu phủ định đúng với \"used to\":",
+            "options": ["I didn't use to eat breakfast.", "I didn't used to eat breakfast.", "I not use to eat breakfast.", "I don't used to eat breakfast."],
+            "correctAnswer": 0,
+            "explanation": "✅ Phủ định của used to là didn't use to + V."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit4",
+        "week": 8,
+        "title": "Unit 4: Ethnic Groups of Viet Nam",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 4: ETHNIC GROUPS OF VIET NAM – CÁC DÂN TỘC VIỆT NAM”\n\nUnit 4 giới thiệu sự đa dạng của 54 dân tộc anh em trên đất nước ta.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• ethnic group (n.): dân tộc, nhóm dân tộc\n\n• ethnic minority (n.): dân tộc thiểu số\n\n• costume (n.): trang phục, bộ quần áo\n\n• ritual (n.): nghi lễ\n\n• stilt house (n.): nhà sàn\n\n• weave (v.): dệt vải\n\n• festival (n.): lễ hội\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• Từ để hỏi + to-infinitive: how to, what to, where to...\n\n• Ví dụ: Do you know how to weave a basket? (Bạn có biết cách đan rổ không?)\n\n• Dùng khi hỏi/trình bày về cách làm, địa điểm, thời gian của một hành động.",
+        "quizzes": [
+          {
+            "question": "\"ethnic minority\" nghĩa là:",
+            "options": ["Dân tộc thiểu số", "Người nước ngoài", "Khách du lịch", "Cư dân thành phố"],
+            "correctAnswer": 0,
+            "explanation": "✅ ethnic minority = dân tộc thiểu số (như Mường, Thái, Ê-đê...)."
+          },
+          {
+            "question": "Chọn đáp án đúng: I don't know ___ cook this traditional dish.",
+            "options": ["how to", "how for", "what", "which to"],
+            "correctAnswer": 0,
+            "explanation": "✅ Cấu trúc từ để hỏi + to-infinitive: how to cook."
+          },
+          {
+            "question": "\"stilt house\" là:",
+            "options": ["Nhà sàn", "Nhà cao tầng", "Chuồng trâu", "Cổng làng"],
+            "correctAnswer": 0,
+            "explanation": "✅ stilt house = nhà sàn, nhà dựng trên cọc — nét đặc trưng của nhiều dân tộc miền núi."
+          },
+          {
+            "question": "\"weave\" có nghĩa là:",
+            "options": ["Dệt vải", "Đan rổ", "Trồng lúa", "Chăn trâu"],
+            "correctAnswer": 0,
+            "explanation": "✅ weave = dệt (vải, thổ cẩm)."
+          },
+          {
+            "question": "\"costume\" là:",
+            "options": ["Trang phục, bộ quần áo", "Món ăn", "Điệu nhảy", "Nhạc cụ"],
+            "correctAnswer": 0,
+            "explanation": "✅ costume = trang phục, đặc biệt là trang phục truyền thống."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit5",
+        "week": 10,
+        "title": "Unit 5: Our Customs and Traditions",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 5: OUR CUSTOMS AND TRADITIONS – PHONG TỤC VÀ TRUYỀN THỐNG”\n\nUnit 5 về những phong tục tập quán và truyền thống tốt đẹp của gia đình, quê hương.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• custom (n.): phong tục, tập quán\n\n• tradition (n.): truyền thống\n\n• taboo (n.): điều kiêng kỵ\n\n• ceremony (n.): nghi thức, buổi lễ\n\n• ancestor (n.): tổ tiên, ông bà\n\n• worship (v.): thờ cúng, tôn thờ\n\n• manners (n.): phép lịch sự, cách ứng xử\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• Mệnh đề nhượng bộ với although / though / even though + mệnh đề.\n\n• Ví dụ: Although it is raining, we still go to the festival. (Dù trời mưa, chúng tôi vẫn đi lễ hội.)\n\n• Không dùng “but” kèm although trong cùng một câu.",
+        "quizzes": [
+          {
+            "question": "\"tradition\" nghĩa là:",
+            "options": ["Truyền thống", "Món ăn", "Bài hát", "Làng xóm"],
+            "correctAnswer": 0,
+            "explanation": "✅ tradition = truyền thống, được truyền từ đời này sang đời khác."
+          },
+          {
+            "question": "Chọn đáp án đúng: ___ it rained, we went to the ceremony.",
+            "options": ["Although", "Because", "So", "And"],
+            "correctAnswer": 0,
+            "explanation": "✅ Although + mệnh đề chỉ sự nhượng bộ: dù trời mưa, chúng tôi vẫn đi dự lễ."
+          },
+          {
+            "question": "\"taboo\" là gì?",
+            "options": ["Điều kiêng kỵ", "Trò chơi", "Món quà", "Lời chúc"],
+            "correctAnswer": 0,
+            "explanation": "✅ taboo = điều cấm kỵ, kiêng kỵ trong văn hóa."
+          },
+          {
+            "question": "Truyền thống thờ cúng tổ tiên — \"ancestor worship\" thể hiện:",
+            "options": ["Lòng biết ơn với ông bà tổ tiên", "Sự sợ hãi ma quỷ", "Mê tín dị đoan", "Tập quán nước ngoài"],
+            "correctAnswer": 0,
+            "explanation": "✅ Thờ cúng tổ tiên là truyền thống đạo lý “uống nước nhớ nguồn” của dân tộc."
+          },
+          {
+            "question": "Câu nào dùng although SAI?",
+            "options": ["Although it was late, but he kept studying.", "Although it was late, he kept studying.", "Though it was late, he kept studying.", "Even though it was late, he kept studying."],
+            "correctAnswer": 0,
+            "explanation": "✅ Không dùng “but” trong câu có although: although + mệnh đề, + mệnh đề."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit6",
+        "week": 12,
+        "title": "Unit 6: Folk Tales",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 6: FOLK TALES – TRUYỆN CỔ TÍCH VÀ DÂN GIAN”\n\nUnit 6 đưa em vào thế giới cổ tích với những nhân vật kỳ diệu và bài học nhân văn.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• folk tale (n.): truyện dân gian, truyện cổ tích\n\n• fairy (n.): nàng tiên\n\n• giant (n.): người khổng lồ\n\n• witch (n.): mụ phù thủy\n\n• moral (n.): bài học đạo đức\n\n• once upon a time: ngày xửa ngày xưa\n\n• heroic (adj.): anh hùng, anh dũng\n\n---\n\n📝 CỤM TỪ KỂ CHUYỆN\n\n• Mở đầu: Once upon a time, there was a beautiful princess...\n\n• Diễn biến: Suddenly... / At last... / After that...\n\n• Kết thúc: The moral of the story is... (Bài học rút ra là...)\n\n• Dùng thì quá khứ đơn để kể chuỗi sự việc trong truyện.",
+        "quizzes": [
+          {
+            "question": "\"folk tale\" là gì?",
+            "options": ["Truyện dân gian, cổ tích", "Truyện trinh thám", "Truyện khoa học viễn tưởng", "Truyện tranh Nhật Bản"],
+            "correctAnswer": 0,
+            "explanation": "✅ folk tale = truyện dân gian, truyện cổ tích."
+          },
+          {
+            "question": "Cụm từ mở đầu truyện cổ tích là:",
+            "options": ["Once upon a time", "See you later", "Long story short", "Happy birthday"],
+            "correctAnswer": 0,
+            "explanation": "✅ Once upon a time = ngày xửa ngày xưa, mở đầu truyện cổ tích."
+          },
+          {
+            "question": "\"moral of the story\" nghĩa là:",
+            "options": ["Bài học rút ra từ câu chuyện", "Phần kết buồn", "Nhân vật chính", "Bối cảnh câu chuyện"],
+            "correctAnswer": 0,
+            "explanation": "✅ moral = bài học đạo đức; moral of the story = bài học của câu chuyện."
+          },
+          {
+            "question": "Trong truyện Tấm Cám, “fairy” giúp đỡ Tấm là:",
+            "options": ["Nàng tiên (fairy)", "Bà lão (old woman)", "Phù thủy (witch)", "Cô giáo (teacher)"],
+            "correctAnswer": 0,
+            "explanation": "✅ fairy = nàng tiên, nhân vật kỳ diệu trong truyện cổ tích."
+          },
+          {
+            "question": "\"giant\" là nhân vật:",
+            "options": ["Người khổng lồ", "Chú lùn", "Hoàng tử", "Thần rừng"],
+            "correctAnswer": 0,
+            "explanation": "✅ giant = người khổng lồ, thường xuất hiện trong truyện dân gian."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit7",
+        "week": 14,
+        "title": "Unit 7: Pollution",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 7: POLLUTION – Ô NHIỄM MÔI TRƯỜNG”\n\nUnit 7 nói về các loại ô nhiễm, tác hại và cách bảo vệ môi trường.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• pollution (n.): sự ô nhiễm\n\n• waste (n.): rác thải\n\n• exhaust fume (n.): khí thải\n\n• chemical (n.): hóa chất\n\n• deforestation (n.): nạn phá rừng\n\n• aquatic (adj.): dưới nước, thủy sinh\n\n• environment (n.): môi trường\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• Câu điều kiện loại 1: If + hiện tại đơn, will + động từ.\n\n• Ví dụ: If we recycle paper, we will save many trees. (Nếu chúng ta tái chế giấy, chúng ta sẽ cứu được nhiều cây.)\n\n• Dùng cho điều kiện có thật, có thể xảy ra ở hiện tại/tương lai.",
+        "quizzes": [
+          {
+            "question": "\"pollution\" nghĩa là:",
+            "options": ["Sự ô nhiễm", "Sự bảo vệ", "Sự trồng cây", "Sự khám phá"],
+            "correctAnswer": 0,
+            "explanation": "✅ pollution = sự ô nhiễm (không khí, nước, đất...)."
+          },
+          {
+            "question": "Chọn đáp án đúng: If we ___ trees, we ___ clean air.",
+            "options": ["plant / will have", "plant / have", "planted / have", "plant / had"],
+            "correctAnswer": 0,
+            "explanation": "✅ Câu điều kiện loại 1: If + hiện tại đơn, will + V → If we plant trees, we will have clean air."
+          },
+          {
+            "question": "\"deforestation\" là:",
+            "options": ["Nạn phá rừng", "Trồng cây gây rừng", "Bảo tồn động vật", "Ô nhiễm nước"],
+            "correctAnswer": 0,
+            "explanation": "✅ deforestation = nạn chặt phá rừng, nguyên nhân gây biến đổi khí hậu."
+          },
+          {
+            "question": "\"exhaust fume\" là:",
+            "options": ["Khí thải từ xe cộ, nhà máy", "Khói bếp", "Hương thơm", "Mây trời"],
+            "correctAnswer": 0,
+            "explanation": "✅ exhaust fume = khí thải, khói xả từ động cơ."
+          },
+          {
+            "question": "Hành động nào giúp giảm ô nhiễm?",
+            "options": ["Recycling (tái chế)", "Burning (đốt rác)", "Deforestation (phá rừng)", "Littering (xả rác)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Tái chế rác thải giúp giảm ô nhiễm môi trường."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit8",
+        "week": 16,
+        "title": "Unit 8: Shopping",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 8: SHOPPING – MUA SẮM”\n\nUnit 8 giúp em giao tiếp khi mua sắm: hỏi giá, mặc cả, thanh toán.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• bargain (n./v.): món hời; mặc cả\n\n• discount (n.): sự giảm giá\n\n• cashier (n.): nhân viên thu ngân\n\n• receipt (n.): hóa đơn, biên lai\n\n• refund (n./v.): hoàn tiền\n\n• affordable (adj.): giá phải chăng\n\n• shopping mall (n.): trung tâm thương mại\n\n---\n\n📝 MẪU CÂU MUA SẮM\n\n• How much is this T-shirt? (Cái áo này bao nhiêu tiền?)\n\n• Could I try it on? (Cho tôi thử nó được không?)\n\n• It's too expensive. Is there any discount? (Đắt quá. Có giảm giá không?)\n\n• I'd like to pay at the cashier. (Tôi muốn thanh toán tại quầy thu ngân.)",
+        "quizzes": [
+          {
+            "question": "\"discount\" nghĩa là:",
+            "options": ["Sự giảm giá", "Sự tăng giá", "Món quà", "Phiếu mua hàng"],
+            "correctAnswer": 0,
+            "explanation": "✅ discount = sự giảm giá, chiết khấu."
+          },
+          {
+            "question": "Câu hỏi giá đúng là:",
+            "options": ["How much is this T-shirt?", "How many is this T-shirt?", "How much are this T-shirt?", "What price is this T-shirt?"],
+            "correctAnswer": 0,
+            "explanation": "✅ Hỏi giá dùng How much + is/are + danh từ."
+          },
+          {
+            "question": "Muốn thử quần áo, em nói:",
+            "options": ["Could I try it on?", "Can I eat it?", "Where is the toilet?", "I'm so hungry."],
+            "correctAnswer": 0,
+            "explanation": "✅ try on = thử (quần áo); Could I try it on? = Cho tôi thử được không?"
+          },
+          {
+            "question": "\"receipt\" là:",
+            "options": ["Hóa đơn, biên lai", "Túi nilon", "Tờ tiền", "Thẻ thành viên"],
+            "correctAnswer": 0,
+            "explanation": "✅ receipt = hóa đơn, biên lai thanh toán."
+          },
+          {
+            "question": "\"affordable\" nghĩa là:",
+            "options": ["Giá phải chăng, mua được", "Đắt đỏ", "Miễn phí", "Sang trọng"],
+            "correctAnswer": 0,
+            "explanation": "✅ affordable = với mức giá hợp lý, không quá đắt."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit9",
+        "week": 18,
+        "title": "Unit 9: Natural Disasters",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 9: NATURAL DISASTERS – THIÊN TAI”\n\nUnit 9 nói về các hiện tượng thiên tai và cách ứng phó an toàn.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• earthquake (n.): động đất\n\n• typhoon (n.): bão\n\n• flood (n.): lũ lụt\n\n• landslide (n.): sạt lở đất\n\n• evacuate (v.): sơ tán\n\n• shelter (n.): nơi trú ẩn\n\n• drought (n.): hạn hán\n\n---\n\n📝 NGỮ PHÁP TRỌNG TÂM\n\n• Câu bị động (passive voice): be + past participle (V3).\n\n• Ví dụ: Many houses were destroyed by the storm. (Nhiều ngôi nhà đã bị cơn bão phá hủy.)\n\n• Dùng khi trọng tâm là hành động, không phải người thực hiện.",
+        "quizzes": [
+          {
+            "question": "\"typhoon\" là:",
+            "options": ["Bão", "Động đất", "Sóng thần", "Hạn hán"],
+            "correctAnswer": 0,
+            "explanation": "✅ typhoon = bão (thường gặp ở Việt Nam)."
+          },
+          {
+            "question": "Chọn đáp án đúng: The houses ___ by the flood last year.",
+            "options": ["were destroyed", "destroyed", "are destroy", "destroy"],
+            "correctAnswer": 0,
+            "explanation": "✅ Câu bị động quá khứ: were + V3 → were destroyed."
+          },
+          {
+            "question": "\"evacuate\" nghĩa là:",
+            "options": ["Sơ tán", "Xây dựng", "Cứu chữa", "Lắng nghe"],
+            "correctAnswer": 0,
+            "explanation": "✅ evacuate = sơ tán người dân khỏi vùng nguy hiểm."
+          },
+          {
+            "question": "\"shelter\" là:",
+            "options": ["Nơi trú ẩn", "Cầu đường", "Bệnh viện", "Chợ búa"],
+            "correctAnswer": 0,
+            "explanation": "✅ shelter = nơi trú ẩn an toàn khi có thiên tai."
+          },
+          {
+            "question": "Hiện tượng nào là \"landslide\"?",
+            "options": ["Sạt lở đất", "Sóng biển", "Mưa đá", "Cầu vồng"],
+            "correctAnswer": 0,
+            "explanation": "✅ landslide = sạt lở đất, đá."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit10",
+        "week": 20,
+        "title": "Unit 10: Communication in the Future",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 10: COMMUNICATION IN THE FUTURE – GIAO TIẾP TRONG TƯƠNG LAI”\n\nUnit 10 khám phá các cách giao tiếp mới trong tương lai: hologram, thiết bị đeo...\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• communication (n.): sự giao tiếp\n\n• hologram (n.): hình ảnh ba chiều\n\n• telepathy (n.): thần giao cách cảm\n\n• wearable device (n.): thiết bị đeo thông minh\n\n• video call (n.): cuộc gọi video\n\n• translate (v.): dịch, phiên dịch\n\n• gesture (n.): cử chỉ, điệu bộ\n\n---\n\n📝 MẪU CÂU & NGỮ PHÁP\n\n• Diễn tả dự đoán tương lai: may / might / will + động từ.\n\n• Ví dụ: We may communicate by holograms in the future. (Tương lai chúng ta có thể giao tiếp bằng hình ảnh 3D.)\n\n• might = có thể (ít chắc chắn hơn will).",
+        "quizzes": [
+          {
+            "question": "\"hologram\" là:",
+            "options": ["Hình ảnh ba chiều", "Loa điện thoại", "Bàn phím", "Màn hình cảm ứng"],
+            "correctAnswer": 0,
+            "explanation": "✅ hologram = hình ảnh 3D lơ lửng trong không gian."
+          },
+          {
+            "question": "Chọn đáp án đúng: In the future, we ___ communicate by holograms.",
+            "options": ["may", "is", "was", "did"],
+            "correctAnswer": 0,
+            "explanation": "✅ may + V diễn tả khả năng trong tương lai."
+          },
+          {
+            "question": "\"telepathy\" nghĩa là:",
+            "options": ["Thần giao cách cảm", "Cuộc gọi video", "Tin nhắn thoại", "Mạng xã hội"],
+            "correctAnswer": 0,
+            "explanation": "✅ telepathy = khả năng truyền suy nghĩ trực tiếp giữa người với người."
+          },
+          {
+            "question": "\"wearable device\" là:",
+            "options": ["Thiết bị đeo thông minh", "Máy giặt", "Xe điện", "Lò vi sóng"],
+            "correctAnswer": 0,
+            "explanation": "✅ wearable device = thiết bị công nghệ đeo trên người như đồng hồ thông minh."
+          },
+          {
+            "question": "Từ nào chỉ cử chỉ, điệu bộ?",
+            "options": ["Gesture", "Garden", "Garage", "Guitar"],
+            "correctAnswer": 0,
+            "explanation": "✅ gesture = cử chỉ, điệu bộ (một hình thức giao tiếp không lời)."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit11",
+        "week": 22,
+        "title": "Unit 11: Science and Technology",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 11: SCIENCE AND TECHNOLOGY – KHOA HỌC VÀ CÔNG NGHỆ”\n\nUnit 11 nói về vai trò của khoa học công nghệ trong cuộc sống.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• science (n.): khoa học\n\n• technology (n.): công nghệ\n\n• invention (n.): phát minh\n\n• robot (n.): người máy\n\n• artificial intelligence (n.): trí tuệ nhân tạo\n\n• solar energy (n.): năng lượng mặt trời\n\n• device (n.): thiết bị\n\n---\n\n📝 MẪU CÂU & NGỮ PHÁP\n\n• Nói về khả năng: can / be able to.\n\n• Ví dụ: Robots can do dangerous jobs. (Robot có thể làm những công việc nguy hiểm.)\n\n• So sánh hơn của tính từ: This phone is more advanced than that one.",
+        "quizzes": [
+          {
+            "question": "\"invention\" nghĩa là:",
+            "options": ["Phát minh", "Thí nghiệm", "Bài báo", "Nhà máy"],
+            "correctAnswer": 0,
+            "explanation": "✅ invention = phát minh, sáng chế."
+          },
+          {
+            "question": "Chọn đáp án đúng: Robots ___ do dangerous jobs.",
+            "options": ["can", "is", "was", "does"],
+            "correctAnswer": 0,
+            "explanation": "✅ can + V chỉ khả năng: Robots can do dangerous jobs."
+          },
+          {
+            "question": "\"artificial intelligence\" (viết tắt AI) là:",
+            "options": ["Trí tuệ nhân tạo", "Trí nhớ tự nhiên", "Bài kiểm tra", "Sách điện tử"],
+            "correctAnswer": 0,
+            "explanation": "✅ artificial intelligence = trí tuệ nhân tạo."
+          },
+          {
+            "question": "\"solar energy\" là:",
+            "options": ["Năng lượng mặt trời", "Năng lượng gió", "Điện hạt nhân", "Nhiên liệu hóa thạch"],
+            "correctAnswer": 0,
+            "explanation": "✅ solar energy = năng lượng mặt trời, nguồn năng lượng sạch."
+          },
+          {
+            "question": "\"device\" là:",
+            "options": ["Thiết bị", "Cửa hàng", "Nhà ga", "Sân bay"],
+            "correctAnswer": 0,
+            "explanation": "✅ device = thiết bị, dụng cụ điện tử."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sgk_unit12",
+        "week": 24,
+        "title": "Unit 12: Life on Other Planets",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 12: LIFE ON OTHER PLANETS – SỰ SỐNG TRÊN CÁC HÀNH TINH KHÁC”\n\nUnit 12 đưa em khám phá vũ trụ và câu hỏi liệu có sự sống ngoài Trái Đất.\n\n---\n\n📚 TỪ VỰNG TRỌNG TÂM\n\n• planet (n.): hành tinh\n\n• gravity (n.): trọng lực\n\n• atmosphere (n.): bầu khí quyển\n\n• astronaut (n.): phi hành gia\n\n• alien (n.): người ngoài hành tinh\n\n• telescope (n.): kính viễn vọng\n\n• universe (n.): vũ trụ\n\n---\n\n📝 MẪU CÂU & NGỮ PHÁP\n\n• Diễn tả khả năng không chắc chắn: may / might.\n\n• Ví dụ: There might be life on other planets. (Có thể có sự sống trên các hành tinh khác.)\n\n• Dùng might để giả định mức độ chắc chắn thấp.",
+        "quizzes": [
+          {
+            "question": "\"astronaut\" là:",
+            "options": ["Phi hành gia", "Bác sĩ", "Giáo viên", "Kiến trúc sư"],
+            "correctAnswer": 0,
+            "explanation": "✅ astronaut = phi hành gia, người bay vào vũ trụ."
+          },
+          {
+            "question": "Chọn đáp án đúng: There ___ be life on other planets.",
+            "options": ["might", "is", "was", "does"],
+            "correctAnswer": 0,
+            "explanation": "✅ might + V diễn tả khả năng không chắc chắn: có thể có sự sống."
+          },
+          {
+            "question": "\"gravity\" nghĩa là:",
+            "options": ["Trọng lực", "Nhiệt độ", "Ánh sáng", "Tiếng vang"],
+            "correctAnswer": 0,
+            "explanation": "✅ gravity = trọng lực, lực hút của hành tinh."
+          },
+          {
+            "question": "\"telescope\" dùng để:",
+            "options": ["Quan sát các vì sao", "Chụp ảnh dưới nước", "Nghe nhạc", "Đo nhiệt độ"],
+            "correctAnswer": 0,
+            "explanation": "✅ telescope = kính viễn vọng, dụng cụ quan sát thiên thể."
+          },
+          {
+            "question": "\"alien\" trong tiếng Việt là:",
+            "options": ["Người ngoài hành tinh", "Người máy", "Siêu anh hùng", "Nhà khoa học"],
+            "correctAnswer": 0,
+            "explanation": "✅ alien = sinh vật, người ngoài hành tinh."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "anh8_sbt",
+    "subject": "Tiếng Anh – Bài tập",
+    "grade": 8,
+    "volume": "Sách bài tập Global Success",
+    "emoji": "📝",
+    "color": "#ec4899",
+    "stars": 8,
+    "lessons": [
+      {
+        "id": "anh8_sbt_unit1",
+        "week": 2,
+        "title": "Unit 1 – Bài tập: Leisure Time",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 1 – BÀI TẬP: LEISURE TIME”\n\nÔn luyện từ vựng và ngữ pháp Unit 1 qua các dạng bài tập điển hình.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Nối từ với nghĩa: leisure, hang out, DIY, knitting...\n\n• Chọn từ khác loại trong nhóm hoạt động giải trí.\n\n• Chia động từ: enjoy + V-ing.\n\n• Hoàn thành câu về sở thích cá nhân.",
+        "quizzes": [
+          {
+            "question": "Từ nào khác loại trong nhóm hoạt động giải trí?",
+            "options": ["Homework", "Chatting", "Knitting", "Origami"],
+            "correctAnswer": 0,
+            "explanation": "✅ homework = bài tập về nhà, không phải hoạt động giải trí."
+          },
+          {
+            "question": "Chọn đáp án đúng: She loves ___ photos at weekends.",
+            "options": ["taking", "take", "takes", "to taking"],
+            "correctAnswer": 0,
+            "explanation": "✅ love + V-ing: She loves taking photos."
+          },
+          {
+            "question": "\"free time\" đồng nghĩa với:",
+            "options": ["leisure time", "homework time", "school time", "meal time"],
+            "correctAnswer": 0,
+            "explanation": "✅ free time = leisure time = thời gian rảnh."
+          },
+          {
+            "question": "Hoàn thành câu: We often ___ out with friends on Sundays.",
+            "options": ["hang", "hang over", "hang on", "hanging"],
+            "correctAnswer": 0,
+            "explanation": "✅ hang out = đi chơi; chủ ngữ số nhiều dùng hang (nguyên thể)."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit2",
+        "week": 4,
+        "title": "Unit 2 – Bài tập: Life in the Countryside",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 2 – BÀI TẬP: LIFE IN THE COUNTRYSIDE”\n\nLuyện tập mô tả cảnh vật và nhịp sống nông thôn.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Điền từ vựng vào chỗ trống: paddy field, harvest, cattle...\n\n• Chuyển trạng từ sang so sánh hơn: fast → faster.\n\n• Viết câu so sánh giữa nông thôn và thành phố.",
+        "quizzes": [
+          {
+            "question": "So sánh hơn của \"slowly\" là:",
+            "options": ["more slowly", "slower", "slowlier", "most slowly"],
+            "correctAnswer": 0,
+            "explanation": "✅ Trạng từ dài dùng more + trạng từ: more slowly."
+          },
+          {
+            "question": "Chọn từ đúng: Farmers harvest rice in the ___.",
+            "options": ["paddy field", "park", "market", "library"],
+            "correctAnswer": 0,
+            "explanation": "✅ paddy field = đồng lúa — nơi nông dân thu hoạch lúa."
+          },
+          {
+            "question": "\"cattle\" chỉ:",
+            "options": ["Gia súc (bò...)", "Gia cầm (gà...)", "Cá", "Ong"],
+            "correctAnswer": 0,
+            "explanation": "✅ cattle = gia súc lớn như bò, trâu."
+          },
+          {
+            "question": "Câu nào đúng:",
+            "options": ["The countryside is quieter than the city.", "The countryside is quietest than the city.", "The countryside is quiet than the city.", "The countryside is more quiet than the city."],
+            "correctAnswer": 0,
+            "explanation": "✅ Tính từ ngắn quiet → quieter than."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit3",
+        "week": 6,
+        "title": "Unit 3 – Bài tập: Teenagers",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 3 – BÀI TẬP: TEENAGERS”\n\nLuyện tập về chủ đề tuổi teen và thói quen trong quá khứ.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Chọn từ đúng về áp lực, bạn bè, mạng xã hội.\n\n• Chia động từ với used to / didn't use to.\n\n• Viết câu về thói quen ngày xưa của bản thân.",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: When I was young, I ___ watch cartoons every day.",
+            "options": ["used to", "use to", "am used to", "did use to"],
+            "correctAnswer": 0,
+            "explanation": "✅ used to + V: thói quen trong quá khứ."
+          },
+          {
+            "question": "\"social media\" là:",
+            "options": ["Mạng xã hội", "Truyền hình", "Báo giấy", "Đài phát thanh"],
+            "correctAnswer": 0,
+            "explanation": "✅ social media = các nền tảng mạng xã hội như Facebook, TikTok."
+          },
+          {
+            "question": "Phủ định đúng của used to:",
+            "options": ["didn't use to", "didn't used to", "not used to", "don't used to"],
+            "correctAnswer": 0,
+            "explanation": "✅ didn't use to + V là dạng phủ định đúng."
+          },
+          {
+            "question": "\"volunteer\" nghĩa là:",
+            "options": ["Tình nguyện", "Kiếm tiền", "Đi học", "Nghỉ ngơi"],
+            "correctAnswer": 0,
+            "explanation": "✅ volunteer = hoạt động tình nguyện, giúp đỡ cộng đồng."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit4",
+        "week": 8,
+        "title": "Unit 4 – Bài tập: Ethnic Groups of Viet Nam",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 4 – BÀI TẬP: ETHNIC GROUPS OF VIET NAM”\n\nLuyện tập từ vựng về các dân tộc Việt Nam.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Nối từ với nghĩa: ethnic minority, stilt house, costume...\n\n• Hoàn thành câu với how to / what to / where to.\n\n• Đọc hiểu đoạn văn về dân tộc Mông, Ê-đê...",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: Can you tell me ___ get to the stilt house?",
+            "options": ["how to", "what to", "when to", "who to"],
+            "correctAnswer": 0,
+            "explanation": "✅ how to + V: hỏi đường — how to get to...?"
+          },
+          {
+            "question": "Người dân tộc thiểu số thường sống ở:",
+            "options": ["stilt house (nhà sàn)", "skyscraper (nhà chọc trời)", "castle (lâu đài)", "igloo (lều băng)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Nhà sàn là nét kiến trúc đặc trưng của nhiều dân tộc miền núi."
+          },
+          {
+            "question": "\"costume\" trong câu \"the traditional costume\" nghĩa là:",
+            "options": ["Trang phục truyền thống", "Món ăn truyền thống", "Điệu múa truyền thống", "Lễ hội truyền thống"],
+            "correctAnswer": 0,
+            "explanation": "✅ costume = trang phục; traditional costume = trang phục truyền thống."
+          },
+          {
+            "question": "Từ nào chỉ nghi lễ?",
+            "options": ["Ritual", "River", "Rocket", "Reason"],
+            "correctAnswer": 0,
+            "explanation": "✅ ritual = nghi lễ, nghi thức."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit5",
+        "week": 10,
+        "title": "Unit 5 – Bài tập: Our Customs and Traditions",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 5 – BÀI TẬP: OUR CUSTOMS AND TRADITIONS”\n\nLuyện tập về phong tục, truyền thống và mệnh đề although.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Nối từ: custom, tradition, taboo, ancestor...\n\n• Nối hai câu bằng although / though.\n\n• Đọc hiểu về phong tục Tết Việt.",
+        "quizzes": [
+          {
+            "question": "Nối hai câu đúng với \"although\":",
+            "options": ["Although it was cold, we went swimming.", "Although it was cold, but we went swimming.", "Although it was cold, because we went swimming.", "Although it was cold, so we went swimming."],
+            "correctAnswer": 0,
+            "explanation": "✅ although + mệnh đề, mệnh đề; không dùng but/because/so kèm."
+          },
+          {
+            "question": "Phong tục gói bánh chưng ngày Tết là:",
+            "options": ["custom (phong tục)", "habit (thói quen)", "hobby (sở thích)", "job (công việc)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Gói bánh chưng ngày Tết là phong tục truyền thống của người Việt."
+          },
+          {
+            "question": "\"ancestor\" là:",
+            "options": ["Tổ tiên, ông bà", "Hàng xóm", "Bạn bè", "Đồng nghiệp"],
+            "correctAnswer": 0,
+            "explanation": "✅ ancestor = tổ tiên, người đã khuất trong dòng họ."
+          },
+          {
+            "question": "Điều nào nên làm trong gia đình Việt?",
+            "options": ["Chào hỏi ông bà, bố mẹ", "Nói trống không", "Bỏ mũ khi vào nhà người khác", "Xả rác bừa bãi"],
+            "correctAnswer": 0,
+            "explanation": "✅ Lễ phép chào hỏi người lớn là phép lịch sự truyền thống."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit6",
+        "week": 12,
+        "title": "Unit 6 – Bài tập: Folk Tales",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 6 – BÀI TẬP: FOLK TALES”\n\nLuyện tập kể chuyện cổ tích bằng tiếng Anh.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Điền từ kể chuyện: once upon a time, suddenly, at last...\n\n• Sắp xếp câu thành đoạn truyện hoàn chỉnh.\n\n• Trả lời câu hỏi về truyện Tấm Cám, Thạch Sanh.",
+        "quizzes": [
+          {
+            "question": "Từ nối diễn tả sự bất ngờ trong truyện:",
+            "options": ["Suddenly", "Finally", "Usually", "However"],
+            "correctAnswer": 0,
+            "explanation": "✅ suddenly = đột nhiên, diễn tả sự việc xảy ra bất ngờ."
+          },
+          {
+            "question": "Mở đầu truyện cổ tích bằng:",
+            "options": ["Once upon a time", "See you later", "Good night", "Nice to meet you"],
+            "correctAnswer": 0,
+            "explanation": "✅ Once upon a time = ngày xửa ngày xưa."
+          },
+          {
+            "question": "\"witch\" trong truyện cổ tích là nhân vật:",
+            "options": ["Mụ phù thủy", "Nàng tiên", "Công chúa", "Hoàng tử"],
+            "correctAnswer": 0,
+            "explanation": "✅ witch = phù thủy, thường là nhân vật phản diện."
+          },
+          {
+            "question": "The moral of the story =",
+            "options": ["Bài học rút ra từ câu chuyện", "Phần đầu truyện", "Tên tác giả", "Năm xuất bản"],
+            "correctAnswer": 0,
+            "explanation": "✅ moral of the story = bài học đạo đức của câu chuyện."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit7",
+        "week": 14,
+        "title": "Unit 7 – Bài tập: Pollution",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 7 – BÀI TẬP: POLLUTION”\n\nLuyện tập về môi trường và câu điều kiện loại 1.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Chọn từ vựng: pollution, waste, exhaust fume...\n\n• Viết câu điều kiện loại 1.\n\n• Đọc hiểu về ô nhiễm không khí.",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: If you ___ litter, the streets ___ clean.",
+            "options": ["don't / will be", "doesn't / will be", "don't / is", "not / are"],
+            "correctAnswer": 0,
+            "explanation": "✅ Câu điều kiện loại 1: If + hiện tại đơn, will + V."
+          },
+          {
+            "question": "\"waste\" nghĩa là:",
+            "options": ["Rác thải, chất thải", "Cây xanh", "Không khí", "Nguồn nước"],
+            "correctAnswer": 0,
+            "explanation": "✅ waste = rác thải, chất thải."
+          },
+          {
+            "question": "Hành động nào bảo vệ môi trường?",
+            "options": ["Planting trees (trồng cây)", "Burning waste (đốt rác)", "Cutting forests (chặt rừng)", "Dumping chemicals (đổ hóa chất)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Trồng cây giúp giảm ô nhiễm và làm sạch không khí."
+          },
+          {
+            "question": "\"aquatic\" dùng để chỉ:",
+            "options": ["Sinh vật dưới nước", "Sinh vật trên cạn", "Loài chim", "Côn trùng"],
+            "correctAnswer": 0,
+            "explanation": "✅ aquatic = thuộc về nước, sống dưới nước."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit8",
+        "week": 16,
+        "title": "Unit 8 – Bài tập: Shopping",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 8 – BÀI TẬP: SHOPPING”\n\nLuyện tập các tình huống mua sắm thực tế.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Sắp xếp hội thoại giữa khách hàng và người bán.\n\n• Điền từ: discount, receipt, cashier, refund...\n\n• Viết câu hỏi giá bằng How much.",
+        "quizzes": [
+          {
+            "question": "Hỏi giá đúng:",
+            "options": ["How much is this bag?", "How many is this bag?", "How much are this bag?", "What much is this bag?"],
+            "correctAnswer": 0,
+            "explanation": "✅ How much + is/are + danh từ để hỏi giá."
+          },
+          {
+            "question": "\"refund\" nghĩa là:",
+            "options": ["Hoàn tiền", "Tăng giá", "Đóng cửa", "Giảm nửa giá"],
+            "correctAnswer": 0,
+            "explanation": "✅ refund = trả lại tiền khi đổi/trả hàng."
+          },
+          {
+            "question": "Người nhận tiền tại cửa hàng gọi là:",
+            "options": ["Cashier", "Baker", "Farmer", "Waiter"],
+            "correctAnswer": 0,
+            "explanation": "✅ cashier = nhân viên thu ngân."
+          },
+          {
+            "question": "Câu nào phù hợp khi món đồ đắt?",
+            "options": ["It's too expensive. Is there any discount?", "It's so cheap. Give me double.", "I don't like it at all.", "Where is the exit?"],
+            "correctAnswer": 0,
+            "explanation": "✅ Đắt quá → hỏi có giảm giá không là tự nhiên nhất."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit9",
+        "week": 18,
+        "title": "Unit 9 – Bài tập: Natural Disasters",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 9 – BÀI TẬP: NATURAL DISASTERS”\n\nLuyện tập từ vựng thiên tai và câu bị động.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Nối hiện tượng với tên: earthquake, typhoon, flood...\n\n• Chuyển câu chủ động sang bị động.\n\n• Đọc hiểu cách phòng tránh thiên tai.",
+        "quizzes": [
+          {
+            "question": "Chuyển bị động: \"The storm destroyed the village.\" →",
+            "options": ["The village was destroyed by the storm.", "The village destroyed the storm.", "The village is destroy by the storm.", "The storm was destroyed by the village."],
+            "correctAnswer": 0,
+            "explanation": "✅ Bị động quá khứ: S + was/were + V3 + by + O."
+          },
+          {
+            "question": "Khi có bão, người dân cần:",
+            "options": ["Evacuate (sơ tán)", "Ra biển (go to the sea)", "Trèo cây (climb trees)", "Đứng dưới cột điện (stand under poles)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Khi có bão cần sơ tán đến nơi an toàn."
+          },
+          {
+            "question": "\"flood\" là:",
+            "options": ["Lũ lụt", "Hạn hán", "Sóng thần", "Mưa đá"],
+            "correctAnswer": 0,
+            "explanation": "✅ flood = lũ lụt; drought = hạn hán."
+          },
+          {
+            "question": "Nơi trú ẩn an toàn gọi là:",
+            "options": ["Shelter", "Garden", "Market", "Beach"],
+            "correctAnswer": 0,
+            "explanation": "✅ shelter = nơi trú ẩn, nơi trú bão."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit10",
+        "week": 20,
+        "title": "Unit 10 – Bài tập: Communication in the Future",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 10 – BÀI TẬP: COMMUNICATION IN THE FUTURE”\n\nLuyện tập về giao tiếp công nghệ trong tương lai.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Điền từ: hologram, telepathy, wearable device...\n\n• Chọn may / might / will phù hợp.\n\n• Đọc hiểu về giao tiếp tương lai.",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: We ___ use telepathy in 2050.",
+            "options": ["may", "is", "was", "were"],
+            "correctAnswer": 0,
+            "explanation": "✅ may + V: dự đoán khả năng trong tương lai."
+          },
+          {
+            "question": "\"video call\" là:",
+            "options": ["Cuộc gọi có hình ảnh", "Tin nhắn chữ", "Cuộc gọi thoại", "Thư điện tử"],
+            "correctAnswer": 0,
+            "explanation": "✅ video call = cuộc gọi video, nhìn thấy nhau qua màn hình."
+          },
+          {
+            "question": "Truyền suy nghĩ trực tiếp gọi là:",
+            "options": ["telepathy", "karaoke", "carrot", "banana"],
+            "correctAnswer": 0,
+            "explanation": "✅ telepathy = thần giao cách cảm."
+          },
+          {
+            "question": "\"translate\" nghĩa là:",
+            "options": ["Dịch ngôn ngữ", "Vẽ tranh", "Hát múa", "Chạy bộ"],
+            "correctAnswer": 0,
+            "explanation": "✅ translate = dịch (giữa các ngôn ngữ)."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit11",
+        "week": 22,
+        "title": "Unit 11 – Bài tập: Science and Technology",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 11 – BÀI TẬP: SCIENCE AND TECHNOLOGY”\n\nLuyện tập về phát minh và công nghệ.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Nối phát minh với công dụng.\n\n• Hoàn thành câu với can / be able to.\n\n• Đọc hiểu về robot trong đời sống.",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: Robots ___ help with housework.",
+            "options": ["can", "is", "was", "does"],
+            "correctAnswer": 0,
+            "explanation": "✅ can + V chỉ khả năng."
+          },
+          {
+            "question": "\"solar energy\" dùng để:",
+            "options": ["Chạy pin mặt trời", "Nấu ăn bằng ga", "Đốt than", "Bơm xăng"],
+            "correctAnswer": 0,
+            "explanation": "✅ solar energy = năng lượng mặt trời, dùng cho tấm pin mặt trời."
+          },
+          {
+            "question": "Ai phát minh ra bóng đèn điện?",
+            "options": ["Thomas Edison", "Albert Einstein", "Isaac Newton", "Marie Curie"],
+            "correctAnswer": 0,
+            "explanation": "✅ Thomas Edison nổi tiếng với phát minh bóng đèn điện."
+          },
+          {
+            "question": "\"invention\" là:",
+            "options": ["Phát minh", "Vẽ vời", "Dọn dẹp", "Nấu ăn"],
+            "correctAnswer": 0,
+            "explanation": "✅ invention = phát minh, sáng chế mới."
+          }
+        ]
+      },
+      {
+        "id": "anh8_sbt_unit12",
+        "week": 24,
+        "title": "Unit 12 – Bài tập: Life on Other Planets",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 12 – BÀI TẬP: LIFE ON OTHER PLANETS”\n\nLuyện tập về vũ trụ và sự sống ngoài hành tinh.\n\n---\n\n📚 CÁC DẠNG BÀI TẬP\n\n• Điền từ vựng vũ trụ: planet, gravity, astronaut...\n\n• Chọn may / might thể hiện sự không chắc chắn.\n\n• Đọc hiểu về Sao Hỏa.",
+        "quizzes": [
+          {
+            "question": "Chọn đáp án đúng: There ___ be aliens somewhere in the universe.",
+            "options": ["might", "is", "are", "was"],
+            "correctAnswer": 0,
+            "explanation": "✅ might + V: khả năng không chắc chắn."
+          },
+          {
+            "question": "Người lái tàu vũ trụ gọi là:",
+            "options": ["Astronaut", "Pilot of bus", "Captain of ship", "Driver of car"],
+            "correctAnswer": 0,
+            "explanation": "✅ astronaut = phi hành gia."
+          },
+          {
+            "question": "\"atmosphere\" là:",
+            "options": ["Bầu khí quyển", "Mặt đất", "Đại dương", "Dãy núi"],
+            "correctAnswer": 0,
+            "explanation": "✅ atmosphere = bầu khí quyển bao quanh hành tinh."
+          },
+          {
+            "question": "Hành tinh được mệnh danh “Hành tinh đỏ” là:",
+            "options": ["Mars (Sao Hỏa)", "Venus (Sao Kim)", "Jupiter (Sao Mộc)", "Mercury (Sao Thủy)"],
+            "correctAnswer": 0,
+            "explanation": "✅ Mars = Sao Hỏa, có màu đỏ do bụi sắt oxit."
+          }
+        ]
+      }
+    ]
   }
 ]

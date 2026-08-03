@@ -41,14 +41,17 @@ import { textbookData } from './lib/textbookData'
 import { textbookData8 } from './lib/textbookData8'
 import GameArcade from './components/GameArcade'
 import ReadingGateButton from './components/ReadingGateButton'
+import ReviewCard from './components/ReviewCard'
+import WeeklyDigestPanel from './components/WeeklyDigestPanel'
+import PdfViewerModal from './components/PdfViewerModal'
 import { getLevelInfo, calculateStreak, calculateBadges } from './lib/gamification'
 import {
   gradeQuizResult,
   computeReviewQueue,
-  buildWeeklyDigest,
-  digestToText
+  splitSgkPages,
 } from './lib/learning'
 import { getTone, REWARD_SUGGESTIONS, isTeenGrade } from './lib/tone'
+import SgkPdfButton from './components/SgkPdfButton'
 import './App.css'
 
 const ANIMAL_EMOJIS = ['🦊', '🐨', '🦁', '🐯', '🐼', '🐰', '🐸', '🦄', '🐷', '🐱', '🐶', '🐵']
@@ -216,8 +219,10 @@ function AppContent() {
   const [sgkQuizCorrect, setSgkQuizCorrect] = useState(false)       // đã trả lời đúng?
   const [sgkQuizFeedback, setSgkQuizFeedback] = useState(false)     // hiển thị phản hồi sai
   const [sgkLessonView, setSgkLessonView] = useState('content')     // 'content' | 'quiz'
+  const [sgkPageIndex, setSgkPageIndex] = useState(0)               // trang đọc hiện tại (0-based)
   const [sgkCompletedLessons, setSgkCompletedLessons] = useState({})
   const [sgkGrade, setSgkGrade] = useState(2)                          // khối lớp đang xem: 2 | 8
+  const [sgkPdfOpen, setSgkPdfOpen] = useState(null)                   // { url, label } | null: modal xem sách gốc PDF
   const sgkBooks = sgkGrade === 8 ? textbookData8 : textbookData
 
   // Trạng thái Kế hoạch tuần
@@ -240,6 +245,8 @@ function AppContent() {
   // SỐ LẦN CHỌN SAI và các câu bị sai — đó là thứ được ghi lại dưới đây.
   const [learningSessions, setLearningSessions] = useState([])
   const [historyChildId, setHistoryChildId] = useState('all')  // bộ lọc màn hình bố mẹ
+  // Khi trình duyệt chặn clipboard (không phải HTTPS), hiện bản tin ra để bố mẹ tự bôi đen copy
+  const [digestFallbackText, setDigestFallbackText] = useState(null)
 
   const [sgkWrongAttempts, setSgkWrongAttempts] = useState(0)
   const [sgkWrongAnswers, setSgkWrongAnswers] = useState([])
@@ -271,13 +278,19 @@ function AppContent() {
 
   // ---------- Ôn tập lặp lại ----------
   // Suy ra từ lịch sử học nên không cần bảng riêng và không bao giờ lệch thực tế.
+  // Nhà có con lớp 6+ thì mặc định hiện gợi ý quà kiểu tuổi teen trước
+  // null = chưa chọn tay -> tự suy theo độ tuổi các con trong nhà
+  const [rewardSuggAge, setRewardSuggAge] = useState(null)
+  const suggAge = rewardSuggAge ?? (children.some(c => isTeenGrade(c.grade)) ? 'teen' : 'kid')
+
   const reviewQueue = useMemo(() => computeReviewQueue(learningSessions), [learningSessions])
-  const dueReviews = useMemo(() => {
-    const mine = profile?.type === 'child'
+  const myReviewQueue = useMemo(() => (
+    profile?.type === 'child'
       ? reviewQueue.filter(r => r.childId === profile.child.id)
       : reviewQueue
-    return mine.filter(r => r.isDue)
-  }, [reviewQueue, profile])
+  ), [reviewQueue, profile])
+  const dueReviews = useMemo(() => myReviewQueue.filter(r => r.isDue), [myReviewQueue])
+  const upcomingReviews = useMemo(() => myReviewQueue.filter(r => !r.isDue), [myReviewQueue])
 
   // Helpers cho SGK
   const isSgkLessonDone = (lesson) =>
@@ -301,6 +314,55 @@ function AppContent() {
     setSgkFirstTryCount(0)
     setSgkQuestionMissed(false)
     setSgkStartedAt(Date.now())
+    setSgkPageIndex(0)
+  }
+
+  // Mở lại đúng bài cần ôn từ hàng đợi ôn tập.
+  // Luôn mở ở phần NỘI DUNG chứ không nhảy thẳng vào trắc nghiệm: mục đích của
+  // ôn tập là đọc lại, không phải làm lại bài kiểm tra cho xong.
+  const openReviewItem = (item) => {
+    if (item.kind === 'sgk') {
+      const found = findLessonAcrossData(item.refId)
+      if (!found) { showToast('Bài này không còn trong chương trình nữa.'); return }
+      setSelectedTextbook(found.book)
+      setSelectedLesson(found.lesson)
+      setSgkLessonView('content')
+      resetSgkQuiz()
+      setActiveTab('sgk')
+      return
+    }
+    if (item.kind === 'math') {
+      const topic = mathData.find(t => String(t.id) === String(item.refId))
+      if (!topic) { showToast('Chủ đề này không còn nữa.'); return }
+      setSelectedMathTopic(topic)
+      setMathPageIndex(0)
+      setMathQuizSelectedOption(null)
+      setMathQuizAnsweredCorrectly(false)
+      setMathQuizShowFeedback(false)
+      setMathWrongAttempts(0)
+      setMathWrongAnswers([])
+      setMathFirstTryCount(0)
+      setMathQuestionMissed(false)
+      setMathStartedAt(Date.now())
+      setActiveTab('math')
+      return
+    }
+    // book
+    const group = Object.keys(booksData).find(g =>
+      booksData[g].some(b => String(b.id) === String(item.refId))
+    )
+    const book = group && booksData[group].find(b => String(b.id) === String(item.refId))
+    if (!book) { showToast('Quyển sách này không còn nữa.'); return }
+    setKidAgeGroup(group)
+    setReadingBook(book)
+    setReadingPageIndex(0)
+    setQuizSelectedOption(null)
+    setQuizAnsweredCorrectly(false)
+    setQuizShowFeedback(false)
+    setBookWrongAttempts(0)
+    setBookWrongAnswers([])
+    setBookStartedAt(Date.now())
+    setActiveTab('books')
   }
 
   // ---------- Kế hoạch tuần ----------
@@ -820,7 +882,7 @@ function AppContent() {
     try {
       await submitCompletion(familyId, activeProofTask, proofImageBase64, proofChildNote.trim())
       showToast('Đã gửi yêu cầu hoàn thành kèm minh chứng! Chờ bố mẹ duyệt con nhé. 🚀')
-      confetti({
+      celebrate({
         particleCount: 50,
         spread: 55,
         origin: { y: 0.6 }
@@ -841,7 +903,11 @@ function AppContent() {
     const alreadyDone = completions.some(
       c => c.child_id === childId && c.task_id === 'book-' + book.id && c.status === 'approved'
     )
-    const starsToEarn = alreadyDone ? 0 : (book.stars || 8)
+    const quizTotal = book.quiz ? 1 : 0
+    const firstTry = book.quiz && bookWrongAttempts === 0 ? 1 : 0
+    // Đoán bừa tới khi trúng vẫn qua bài, nên sao phải tính theo lần trả lời ĐẦU TIÊN.
+    const bookGrade = gradeQuizResult(book.stars || 8, firstTry, quizTotal)
+    const starsToEarn = alreadyDone ? 0 : bookGrade.stars
 
     try {
       // 1) Ghi lịch sử học tập — kể cả khi bé đọc lại quyển cũ
@@ -850,8 +916,8 @@ function AppContent() {
         refId: String(book.id),
         title: book.title,
         subject: 'Đọc sách',
-        quizTotal: book.quiz ? 1 : 0,
-        quizFirstTry: book.quiz && bookWrongAttempts === 0 ? 1 : 0,
+        quizTotal,
+        quizFirstTry: firstTry,
         wrongAttempts: bookWrongAttempts,
         wrongAnswers: bookWrongAnswers,
         durationSeconds: elapsedSeconds(bookStartedAt),
@@ -871,8 +937,13 @@ function AppContent() {
           'approved'
         )
         setChildBalance(prev => prev + starsToEarn)
-        showToast(`🎉 Rực rỡ! Bé được nhận +${starsToEarn} ⭐ khi đọc xong "${book.title}"!`)
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
+        const bookFull = book.stars || 8
+        showToast(
+          starsToEarn < bookFull
+            ? `${tone.you} nhận +${starsToEarn} ⭐ khi đọc xong "${book.title}". Trả lời đúng ngay lần đầu sẽ được trọn ${bookFull} ⭐ nhé!`
+            : `🎉 Rực rỡ! ${tone.you} được nhận +${starsToEarn} ⭐ khi đọc xong "${book.title}"!`
+        )
+        celebrate({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
       }
       setReadingBook(null)
       loadAppData()
@@ -887,7 +958,9 @@ function AppContent() {
     const alreadyDone = completions.some(
       c => c.child_id === childId && c.task_id === 'math-' + topic.id && c.status === 'approved'
     )
-    const starsToEarn = alreadyDone ? 0 : (topic.stars || 8)
+    const mathTotal = topic.quizzes?.length || 0
+    const mathGrade = gradeQuizResult(topic.stars || 8, mathFirstTryCount, mathTotal)
+    const starsToEarn = alreadyDone ? 0 : mathGrade.stars
 
     try {
       // 1) Ghi lịch sử học tập — kể cả khi bé ôn lại chủ đề cũ
@@ -896,7 +969,7 @@ function AppContent() {
         refId: String(topic.id),
         title: topic.title,
         subject: 'Toán tư duy',
-        quizTotal: topic.quizzes?.length || 0,
+        quizTotal: mathTotal,
         quizFirstTry: mathFirstTryCount,
         wrongAttempts: mathWrongAttempts,
         wrongAnswers: mathWrongAnswers,
@@ -917,8 +990,13 @@ function AppContent() {
           'approved'
         )
         setChildBalance(prev => prev + starsToEarn)
-        showToast(`🎉 Tuyệt vời! Bé được nhận +${starsToEarn} ⭐ khi làm xong Toán tư duy!`)
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
+        const mathFull = topic.stars || 8
+        showToast(
+          starsToEarn < mathFull
+            ? `${tone.you} nhận +${starsToEarn} ⭐ (${mathFirstTryCount}/${mathTotal} câu đúng ngay lần đầu). Đúng hết ngay lần đầu sẽ được trọn ${mathFull} ⭐!`
+            : `🎉 Tuyệt vời! ${tone.you} được nhận +${starsToEarn} ⭐ khi làm xong Toán tư duy!`
+        )
+        celebrate({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
       }
       setSelectedMathTopic(null)
       loadAppData()
@@ -938,7 +1016,7 @@ function AppContent() {
       await redeemReward(familyId, profile.child.id, reward)
       showToast(`Đổi quà thành công! Hãy báo bố mẹ trao món quà "${reward.title}" nhé 🎁`)
       // Hiệu ứng pháo hoa rực rỡ
-      confetti({
+      celebrate({
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 }
@@ -1811,6 +1889,17 @@ function AppContent() {
                         <option value="🎨">🎨 Tô tượng</option>
                         <option value="📚">📚 Truyện tranh</option>
                         <option value="🎮">🎮 Chơi game</option>
+                        <option value="🍚">🍚 Chọn món ăn</option>
+                        <option value="🚲">🚲 Đi công viên</option>
+                        <option value="🌙">🌙 Ngủ trễ</option>
+                        <option value="🎟️">🎟️ Phiếu ưu tiên</option>
+                        <option value="👵">👵 Về quê thăm Ông Bà</option>
+                        <option value="🕐">🕐 Tự quản thời gian</option>
+                        <option value="🛹">🛹 Đi chơi với bạn</option>
+                        <option value="🗺️">🗺️ Tự chọn hoạt động</option>
+                        <option value="💻">💻 Dùng máy tính</option>
+                        <option value="💰">💰 Tiền tiêu vặt</option>
+                        <option value="🤝">🤝 Được tin tưởng</option>
                       </select>
                     </div>
                     <div>
@@ -1828,6 +1917,49 @@ function AppContent() {
 
                   <button type="submit" className="btn btn-primary margin-top">Thêm Quà Vào Shop</button>
                 </form>
+
+                {/* Gợi ý phần thưởng theo độ tuổi.
+                    Trẻ nhỏ thích quà vặt và sự chiều chuộng; tuổi teen coi trọng
+                    QUYỀN TỰ CHỦ và được tin tưởng hơn nhiều — quà kiểu "được bố mẹ
+                    cõng đi dạo" với bạn lớp 8 là phản tác dụng. */}
+                <div className="reward-suggestions">
+                  <div className="reward-sugg-tabs">
+                    <span className="reward-sugg-label">💡 Gợi ý cho:</span>
+                    <button
+                      type="button"
+                      className={`reward-sugg-tab ${suggAge === 'kid' ? 'active' : ''}`}
+                      onClick={() => setRewardSuggAge('kid')}
+                    >
+                      Tiểu học
+                    </button>
+                    <button
+                      type="button"
+                      className={`reward-sugg-tab ${suggAge === 'teen' ? 'active' : ''}`}
+                      onClick={() => setRewardSuggAge('teen')}
+                    >
+                      Lớp 6 trở lên
+                    </button>
+                  </div>
+                  <div className="reward-sugg-list">
+                    {REWARD_SUGGESTIONS[suggAge].map(s => (
+                      <button
+                        key={s.title}
+                        type="button"
+                        className="reward-sugg-pill"
+                        title="Bấm để điền nhanh vào form bên trên"
+                        onClick={() => {
+                          setNewRewardTitle(s.title)
+                          setNewRewardEmoji(s.emoji)
+                          setNewRewardCost(s.cost)
+                        }}
+                      >
+                        <span className="reward-sugg-emoji">{s.emoji}</span>
+                        <span className="reward-sugg-text">{s.title}</span>
+                        <span className="reward-sugg-cost">{s.cost} ⭐</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </section>
 
               {/* Danh sách quà trong Shop */}
@@ -1959,6 +2091,34 @@ function AppContent() {
           )}
 
           {/* Modal Bố Mẹ Duyệt Kèm Lời Phê */}
+          {/* Dự phòng khi trình duyệt không cho ghi clipboard */}
+          {digestFallbackText && (
+            <div className="pin-overlay">
+              <div className="card glass add-child-dialog">
+                <h3>📋 Sao chép bản tin</h3>
+                <p className="subtitle">
+                  Trình duyệt không cho tự động sao chép. Bố mẹ bôi đen nội dung dưới đây rồi
+                  copy thủ công nhé.
+                </p>
+                <textarea
+                  readOnly
+                  className="digest-fallback-textarea"
+                  value={digestFallbackText}
+                  onFocus={(e) => e.target.select()}
+                />
+                <div className="dialog-actions-row">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-block"
+                    onClick={() => setDigestFallbackText(null)}
+                  >
+                    Đóng
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeApprovalCompletion && (
             <div className="pin-overlay">
               <div className="card glass add-child-dialog">
@@ -2024,6 +2184,9 @@ function AppContent() {
               </div>
             </div>
           )}
+
+          {/* Modal xem sách gốc PDF: đúng bản in với đầy đủ tranh minh hoạ */}
+          <PdfViewerModal pdf={sgkPdfOpen} onClose={() => setSgkPdfOpen(null)} />
           
           {/* Tab 6: Thống Kê Tiến Độ */}
           {/* Tab: Lịch sử học tập chi tiết của các con */}
@@ -2054,6 +2217,21 @@ function AppContent() {
                   </button>
                 ))}
               </div>
+
+              {/* Bản tin tuần: bố mẹ nắm tình hình trong 30 giây, không cần mở app mỗi ngày */}
+              <WeeklyDigestPanel
+                sessions={historyChildId === 'all'
+                  ? learningSessions
+                  : learningSessions.filter(s => s.child_id === historyChildId)}
+                childName={historyChildId === 'all'
+                  ? 'các con'
+                  : (children.find(c => c.id === historyChildId)?.name || 'con')}
+                dueReviews={historyChildId === 'all'
+                  ? dueReviews
+                  : dueReviews.filter(r => r.childId === historyChildId)}
+                onCopied={() => showToast('📋 Đã sao chép bản tin. Bố mẹ dán vào Zalo được rồi!')}
+                onCopyFailed={(text) => setDigestFallbackText(text)}
+              />
 
               {(() => {
                 const rows = historyChildId === 'all'
@@ -2301,14 +2479,18 @@ function AppContent() {
     const badgesList = calculateBadges(completions, childTransactions, streakInfo.currentStreak)
 
     return (
-      <div className="dashboard-container kid-theme">
+      <div className={`dashboard-container kid-theme ${tone.bodyClass}`}>
         {/* Header con */}
         <header className="dashboard-header glass kid-header">
           <div className="header-brand">
             <span className="child-avatar-display">{profile.child.avatar}</span>
             <div>
-              <h2>Bé: {profile.child.name} {loadingData && <span className="spinner-sm"></span>} 🌟</h2>
-              <p className="subtitle">Bé đang làm rất tốt! Cố gắng tích lũy thêm sao nhé.</p>
+              <h2>{tone.headerPrefix}{profile.child.name} {loadingData && <span className="spinner-sm"></span>}{tone.headerSuffix}</h2>
+              <p className="subtitle">
+                {tone.isTeen
+                  ? 'Tiến độ học tập và phần thưởng của con.'
+                  : 'Bé đang làm rất tốt! Cố gắng tích lũy thêm sao nhé.'}
+              </p>
             </div>
           </div>
 
@@ -2357,16 +2539,16 @@ function AppContent() {
             className={`nav-tab-btn ${activeTab === 'plan' ? 'active' : ''}`}
             onClick={() => setActiveTab('plan')}
           >
-            📅 Hôm Nay
+            {tone.tabs.plan}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
             onClick={() => setActiveTab('tasks')}
           >
-            📋 Nhiệm Vụ Của Con
+            {tone.tabs.tasks}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'books' ? 'active' : ''}`}
             onClick={() => {
@@ -2374,9 +2556,9 @@ function AppContent() {
               setReadingBook(null)
             }}
           >
-            📚 Góc Đọc Sách
+            {tone.tabs.books}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'math' ? 'active' : ''}`}
             onClick={() => {
@@ -2388,9 +2570,9 @@ function AppContent() {
               setMathQuizShowFeedback(false)
             }}
           >
-            🧮 Toán Tư Duy
+            {tone.tabs.math}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'sgk' ? 'active' : ''}`}
             onClick={() => {
@@ -2399,35 +2581,43 @@ function AppContent() {
               setSelectedLesson(null)
             }}
           >
-            📗 Sách Giáo Khoa
+            {tone.tabs.sgk}
           </button>
-          <button 
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'review' ? 'active' : ''}`}
+            onClick={() => setActiveTab('review')}
+          >
+            {tone.tabs.review}
+            {dueReviews.length > 0 && <span className="nav-tab-dot">{dueReviews.length}</span>}
+          </button>
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'badges' ? 'active' : ''}`}
             onClick={() => setActiveTab('badges')}
           >
-            🏅 Thành Tựu
+            {tone.tabs.badges}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'arcade' ? 'active' : ''}`}
             onClick={() => setActiveTab('arcade')}
           >
-            🎮 Khu Game
+            {tone.tabs.arcade}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'shop' ? 'active' : ''}`}
             onClick={() => setActiveTab('shop')}
           >
-            🎁 Đổi Quà Tặng
+            {tone.tabs.shop}
           </button>
-          <button 
+          <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            📖 Nhật Ký Sao
+            {tone.tabs.history}
           </button>
         </nav>
 
@@ -2575,10 +2765,67 @@ function AppContent() {
             </div>
           )}
 
+          {/* Tab con: Ôn tập lặp lại — bài nào chưa vững sẽ quay lại đúng lúc sắp quên */}
+          {activeTab === 'review' && (
+            <div className="tab-pane max-width-md">
+              <h3 className="section-title text-center">{tone.reviewTitle}</h3>
+              <p className="review-intro">{tone.reviewIntro}</p>
+
+              {myReviewQueue.length === 0 ? (
+                <div className="review-empty glass">
+                  <span className="review-empty-emoji">{tone.isTeen ? '✓' : '🎊'}</span>
+                  <p>
+                    {tone.isTeen
+                      ? 'Chưa có nội dung nào cần ôn lại. Làm thêm bài mới để hệ thống theo dõi tiếp.'
+                      : 'Chưa có bài nào cần ôn lại. Bé học thêm bài mới nhé!'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {dueReviews.length > 0 && (
+                    <div className="review-group">
+                      <h4 className="review-group-title due">
+                        🔔 Nên ôn hôm nay ({dueReviews.length})
+                      </h4>
+                      <div className="review-cards">
+                        {dueReviews.map(item => (
+                          <ReviewCard
+                            key={`${item.kind}-${item.refId}`}
+                            item={item}
+                            tone={tone}
+                            onOpen={() => openReviewItem(item)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {upcomingReviews.length > 0 && (
+                    <div className="review-group">
+                      <h4 className="review-group-title upcoming">
+                        📅 Sắp tới ({upcomingReviews.length})
+                      </h4>
+                      <div className="review-cards">
+                        {upcomingReviews.map(item => (
+                          <ReviewCard
+                            key={`${item.kind}-${item.refId}`}
+                            item={item}
+                            tone={tone}
+                            onOpen={() => openReviewItem(item)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           {/* Tab con 2: Cửa hàng Quà */}
           {activeTab === 'shop' && (
             <div className="tab-pane">
-              <h3 className="section-title text-center">🍦 Hãy đổi những phần thưởng bé thích nhé</h3>
+              <h3 className="section-title text-center">{tone.shopTitle}</h3>
               {rewards.length === 0 ? (
                 <p className="empty-message">Hiện shop quà tặng đang trống, bé hãy nhắc bố mẹ thêm nhé!</p>
               ) : (
@@ -2885,13 +3132,25 @@ function AppContent() {
                         >
                           ⇦ Quay lại
                         </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary btn-sm"
-                          onClick={() => setReadingPageIndex(prev => prev + 1)}
-                        >
-                          {readingPageIndex === readingBook.pages.length - 1 ? 'Trả lời câu hỏi ➜' : 'Lướt tiếp ➜'}
-                        </button>
+                        {readingPageIndex === readingBook.pages.length - 1 ? (
+                          /* Cổng chống đọc lướt: giữ bé ở trang cuối đủ lâu để thực sự đọc */
+                          <ReadingGateButton
+                            className="btn btn-primary btn-sm"
+                            text={readingBook.pages[readingPageIndex]?.text}
+                            tone={tone}
+                            onReady={() => setReadingPageIndex(prev => prev + 1)}
+                          >
+                            Trả lời câu hỏi ➜
+                          </ReadingGateButton>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => setReadingPageIndex(prev => prev + 1)}
+                          >
+                            Lướt tiếp ➜
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -3117,13 +3376,27 @@ function AppContent() {
                         >
                           ⇦ Quay lại
                         </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary btn-sm"
-                          onClick={() => setMathPageIndex(prev => prev + 1)}
-                        >
-                          {mathPageIndex === selectedMathTopic.lesson.steps.length - 1 ? 'Vào làm bài trắc nghiệm ➜' : 'Xem tiếp ➜'}
-                        </button>
+                        {mathPageIndex === selectedMathTopic.lesson.steps.length - 1 ? (
+                          <ReadingGateButton
+                            className="btn btn-primary btn-sm"
+                            text={[
+                              selectedMathTopic.lesson.steps[mathPageIndex]?.desc,
+                              selectedMathTopic.lesson.steps[mathPageIndex]?.tip,
+                            ].filter(Boolean).join(' ')}
+                            tone={tone}
+                            onReady={() => setMathPageIndex(prev => prev + 1)}
+                          >
+                            Vào làm bài trắc nghiệm ➜
+                          </ReadingGateButton>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => setMathPageIndex(prev => prev + 1)}
+                          >
+                            Xem tiếp ➜
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -3172,41 +3445,46 @@ function AppContent() {
 
                   <div className="sgk-subject-grid">
                     {sgkBooks.map((book) => (
-                      <button
+                      <div
                         key={book.id}
-                        type="button"
+                        role="button"
+                        tabIndex={0}
                         className="sgk-subject-card"
                         style={{ '--subject-color': book.color }}
                         onClick={() => setSelectedTextbook(book)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') setSelectedTextbook(book)
+                        }}
                       >
-                        <div className="sgk-subject-top">
-                          <span className="sgk-subject-emoji">{book.emoji}</span>
-                          <div className="sgk-subject-sparkles">✨</div>
-                        </div>
-                        <div className="sgk-subject-name">{book.subject}</div>
-                        <div className="sgk-subject-vol">{book.volume}</div>
-                        <div className="sgk-subject-pills">
-                          <span className="sgk-pill-lesson">📖 {book.lessons.length} bài</span>
-                          <span className="sgk-pill-star">⭐ {book.stars} sao/bài</span>
-                        </div>
-                        {(() => {
-                          const prog = sgkBookProgress(book)
-                          return (
-                            <div className="sgk-book-progress">
-                              <div className="sgk-book-progress-track">
-                                <div
-                                  className="sgk-book-progress-fill"
-                                  style={{ width: `${prog.pct}%` }}
-                                />
+                        <SgkPdfButton book={book} onOpen={setSgkPdfOpen} />
+                          <div className="sgk-subject-top">
+                            <span className="sgk-subject-emoji">{book.emoji}</span>
+                            <div className="sgk-subject-sparkles">✨</div>
+                          </div>
+                          <div className="sgk-subject-name">{book.subject}</div>
+                          <div className="sgk-subject-vol">{book.volume}</div>
+                          <div className="sgk-subject-pills">
+                            <span className="sgk-pill-lesson">📖 {book.lessons.length} bài</span>
+                            <span className="sgk-pill-star">⭐ {book.stars} sao/bài</span>
+                          </div>
+                          {(() => {
+                            const prog = sgkBookProgress(book)
+                            return (
+                              <div className="sgk-book-progress">
+                                <div className="sgk-book-progress-track">
+                                  <div
+                                    className="sgk-book-progress-fill"
+                                    style={{ width: `${prog.pct}%` }}
+                                  />
+                                </div>
+                                <span className="sgk-book-progress-label">
+                                  {prog.pct === 100 ? '🏆 Đã hoàn thành cả quyển!' : `⚡ ${prog.done}/${prog.total} bài đã học`}
+                                </span>
                               </div>
-                              <span className="sgk-book-progress-label">
-                                {prog.pct === 100 ? '🏆 Đã hoàn thành cả quyển!' : `⚡ ${prog.done}/${prog.total} bài đã học`}
-                              </span>
-                            </div>
-                          )
-                        })()}
-                        <div className="sgk-subject-cta">Học ngay →</div>
-                      </button>
+                            )
+                          })()}
+                          <div className="sgk-subject-cta">Học ngay →</div>
+                        </div>
                     ))}
                   </div>
                 </>
@@ -3343,60 +3621,103 @@ function AppContent() {
                   </div>
 
                   {sgkLessonView === 'content' ? (
-                    /* ===== PHẦN ĐỌC BÀI - nền giấy kẻ ô ===== */
-                    <div className="sgk-book-page">
-                      <div className="sgk-float-emoji" style={{ top: '8%', left: '4%', animationDelay: '0s' }}>{selectedTextbook?.emoji}</div>
-                      <div className="sgk-float-emoji" style={{ top: '22%', right: '5%', animationDelay: '1.2s' }}>🎈</div>
-                      <div className="sgk-float-emoji" style={{ bottom: '30%', left: '3%', animationDelay: '2.4s' }}>✨</div>
-                      <div className="sgk-float-emoji" style={{ bottom: '12%', right: '6%', animationDelay: '0.6s' }}>🌟</div>
-                      <div className="sgk-page-lines-bg">
-                        <div className="sgk-page-content">
-                          {selectedLesson.content.split('\n').map((line, i) => {
-                            if (line.startsWith('🌅') || line.startsWith('📚')) {
-                              return <div key={i} className="sgk-label-reading">{line}</div>
-                            }
-                            if (line.startsWith('---')) {
-                              return <div key={i} className="sgk-page-separator"><span>✦ ✦ ✦</span></div>
-                            }
-                            if (line.startsWith('💬') || line.startsWith('📋') || line.startsWith('📐') || line.startsWith('🌟')) {
-                              return <div key={i} className="sgk-label-question-box">{line}</div>
-                            }
-                            if (line.startsWith('•')) {
-                              return <div key={i} className="sgk-reading-bullet">
-                                <span className="bullet-dot">●</span> {line.replace('•', '').trim()}
-                              </div>
-                            }
-                            if (line.startsWith('→')) {
-                              return <div key={i} className="sgk-reading-result">{line}</div>
-                            }
-                            if (line.match(/^[1-9]️⃣/)) {
-                              return <div key={i} className="sgk-reading-step">{line}</div>
-                            }
-                            if (line.trim() === '') return <div key={i} className="sgk-line-gap" />
-                            return <p key={i} className="sgk-reading-text">{line}</p>
-                          })}
-                        </div>
-                      </div>
+                    /* ===== PHẦN ĐỌC BÀI - nền giấy kẻ ô, lật từng trang như sách thật ===== */
+                    (() => {
+                      const pages = splitSgkPages(selectedLesson.content)
+                      const isLastPage = sgkPageIndex >= pages.length - 1
+                      // Lật trang: chuyển trang và kéo lên đầu trang đọc
+                      const goPage = (dir) => {
+                        setSgkPageIndex(prev => Math.max(0, Math.min(pages.length - 1, prev + dir)))
+                        document.querySelector('.sgk-book-page')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                      return (
+                        <div className="sgk-book-page">
+                          <div className="sgk-float-emoji" style={{ top: '8%', left: '4%', animationDelay: '0s' }}>{selectedTextbook?.emoji}</div>
+                          <div className="sgk-float-emoji" style={{ top: '22%', right: '5%', animationDelay: '1.2s' }}>🎈</div>
+                          <div className="sgk-float-emoji" style={{ bottom: '30%', left: '3%', animationDelay: '2.4s' }}>✨</div>
+                          <div className="sgk-float-emoji" style={{ bottom: '12%', right: '6%', animationDelay: '0.6s' }}>🌟</div>
+                          <div className="sgk-page-lines-bg">
+                            <div className="sgk-page-content">
+                              {pages[sgkPageIndex].map((line, i) => {
+                                if (line.startsWith('🌅') || line.startsWith('📚')) {
+                                  return <div key={i} className="sgk-label-reading">{line}</div>
+                                }
+                                if (line.startsWith('---')) {
+                                  return <div key={i} className="sgk-page-separator"><span>✦ ✦ ✦</span></div>
+                                }
+                                if (line.startsWith('💬') || line.startsWith('📋') || line.startsWith('📐') || line.startsWith('🌟')) {
+                                  return <div key={i} className="sgk-label-question-box">{line}</div>
+                                }
+                                if (line.startsWith('•')) {
+                                  return <div key={i} className="sgk-reading-bullet">
+                                    <span className="bullet-dot">●</span> {line.replace('•', '').trim()}
+                                  </div>
+                                }
+                                if (line.startsWith('→')) {
+                                  return <div key={i} className="sgk-reading-result">{line}</div>
+                                }
+                                if (line.match(/^[1-9]️⃣/)) {
+                                  return <div key={i} className="sgk-reading-step">{line}</div>
+                                }
+                                if (line.trim() === '') return <div key={i} className="sgk-line-gap" />
+                                return <p key={i} className="sgk-reading-text">{line}</p>
+                              })}
+                            </div>
+                          </div>
 
-                      {/* Nút bắt đầu trắc nghiệm */}
-                      <div className="sgk-page-footer">
-                        <div className="sgk-footer-mascot bounce-anim">🦉</div>
-                        <div className="sgk-footer-bubble">
-                          <p className="sgk-footer-msg">Bé đã đọc xong chưa? Hãy làm trắc nghiệm để nhận <strong>⭐ {selectedTextbook?.stars} Sao</strong> nhé!</p>
-                          <p className="sgk-footer-sub">Trả lời đúng liên tiếp sẽ được <strong>🔥 Chuỗi Sao</strong> siêu to nhé!</p>
+                          {/* Điều hướng trang: đọc sách là lật từng trang, không cuộn một lèo */}
+                          <div className="sgk-page-nav">
+                            <button
+                              type="button"
+                              className="sgk-page-btn back"
+                              disabled={sgkPageIndex === 0}
+                              onClick={() => goPage(-1)}
+                            >
+                              ⇦ Trang trước
+                            </button>
+                            <span className="sgk-page-counter">
+                              📖 Trang {Math.min(sgkPageIndex + 1, pages.length)}/{pages.length}
+                            </span>
+                            {!isLastPage && (
+                              <button
+                                type="button"
+                                className="sgk-page-btn next"
+                                onClick={() => goPage(1)}
+                              >
+                                Trang sau ➜
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Footer + cổng vào trắc nghiệm chỉ xuất hiện ở TRANG CUỐI */}
+                          {isLastPage && (
+                            <div className="sgk-page-footer">
+                              {tone.mascot && <div className="sgk-footer-mascot bounce-anim">🦉</div>}
+                              <div className="sgk-footer-bubble">
+                                <p className="sgk-footer-msg">
+                                  {tone.isTeen
+                                    ? <>Đọc kỹ bài rồi làm trắc nghiệm để nhận <strong>⭐ {selectedTextbook?.stars} Sao</strong>.</>
+                                    : <>Bé đã đọc xong chưa? Hãy làm trắc nghiệm để nhận <strong>⭐ {selectedTextbook?.stars} Sao</strong> nhé!</>}
+                                </p>
+                                <p className="sgk-footer-sub">
+                                  Chỉ những câu <strong>đúng ngay lần đầu</strong> mới được tính trọn sao nhé!
+                                </p>
+                              </div>
+                              {/* Cổng chống đọc lướt: phải đọc đủ thời lượng cả bài mới vào được trắc nghiệm */}
+                              <ReadingGateButton
+                                className="sgk-start-quiz-btn"
+                                text={selectedLesson.content}
+                                tone={tone}
+                                onReady={() => {
+                                  setSgkLessonView('quiz')
+                                  resetSgkQuiz()
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <button
-                          type="button"
-                          className="sgk-start-quiz-btn"
-                          onClick={() => {
-                            setSgkLessonView('quiz')
-                            resetSgkQuiz()
-                          }}
-                        >
-                          🧩 Bắt đầu trắc nghiệm!
-                        </button>
-                      </div>
-                    </div>
+                      )
+                    })()
                   ) : (
                     /* ===== PHẦN TRẮC NGHIỆM ===== */
                     (() => {
@@ -3491,7 +3812,7 @@ function AppContent() {
                                       setSgkCompletedLessons(prev => ({ ...prev, [selectedLesson.id]: true }))
                                       setChildBalance(prev => prev + earnedStars)
                                       showToast(`🎉 Rực rỡ! Bé được cộng +${earnedStars} ⭐ vào Ví Sao!`)
-                                      confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
+                                      celebrate({ particleCount: 220, spread: 100, origin: { y: 0.5 } })
                                     } catch (err) {
                                       // Không đánh dấu đã xong khi chưa lưu được: thà bé làm lại
                                       // còn hơn tưởng đã nhận sao mà thực tế không có gì được lưu.
@@ -3615,7 +3936,10 @@ function AppContent() {
                               <button
                                 type="button"
                                 className="sgk-btn-read-again"
-                                onClick={() => setSgkLessonView('content')}
+                                onClick={() => {
+                                  setSgkLessonView('content')
+                                  setSgkPageIndex(0)
+                                }}
                               >
                                 ← Đọc lại bài
                               </button>
@@ -3636,7 +3960,7 @@ function AppContent() {
                                         setSgkBestStreak(best => Math.max(best, next))
                                         return next
                                       })
-                                      confetti({ particleCount: 60, spread: 70, origin: { y: 0.75 }, scalar: 0.8 })
+                                      celebrate({ particleCount: 60, spread: 70, origin: { y: 0.75 }, scalar: 0.8 })
                                     } else {
                                       setSgkQuizFeedback(true)
                                       setSgkStreak(0)
@@ -3671,7 +3995,7 @@ function AppContent() {
                                   type="button"
                                   className="sgk-btn-finish"
                                   onClick={async () => {
-                                    confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } })
+                                    celebrate({ particleCount: 120, spread: 90, origin: { y: 0.6 } })
                                     setSgkQuizDone(true)
                                     // Ghi lịch sử NGAY tại đây, không đợi bé bấm "Nhận sao":
                                     // lượt ôn lại bài cũ (không còn sao) vẫn phải được lưu.
@@ -3821,6 +4145,9 @@ function AppContent() {
               </div>
             </div>
           )}
+
+          {/* Modal xem sách gốc PDF (view của bé) */}
+          <PdfViewerModal pdf={sgkPdfOpen} onClose={() => setSgkPdfOpen(null)} />
 
         </main>
       </div>

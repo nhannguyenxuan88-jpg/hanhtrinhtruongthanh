@@ -77,6 +77,29 @@ const RANKS = {
 // ---------- 2. Cổng chống đọc lướt ----------
 
 /**
+ * Chia nội dung bài SGK thành các TRANG như sách thật.
+ *
+ * Dữ liệu bài SGK là một khối văn bản liền mạch, mỗi phần được ngăn bằng dòng
+ * "---". Trước đây toàn bộ bài hiện trên MỘT trang dài phải cuộn, bé thấy như
+ * đang xem tài liệu hơn là đọc sách. Giờ mỗi phần đó trở thành một trang, lật
+ * từng trang như sách giấy.
+ */
+export function splitSgkPages(content) {
+  const pages = []
+  let current = []
+  for (const line of String(content || '').split('\n')) {
+    if (line.trim().startsWith('---')) {
+      if (current.length) pages.push(current)
+      current = [line]
+    } else {
+      current.push(line)
+    }
+  }
+  if (current.some(l => l.trim() !== '')) pages.push(current)
+  return pages.length ? pages : [['']]
+}
+
+/**
  * Thời gian tối thiểu (giây) bé cần ở lại trang đọc trước khi được vào
  * trắc nghiệm. Trẻ tiểu học đọc khoảng 100-120 từ/phút; ở đây lấy mốc rộng
  * rãi 2.5 từ/giây để không làm bé sốt ruột, và chặn trên 180 giây để bài dài

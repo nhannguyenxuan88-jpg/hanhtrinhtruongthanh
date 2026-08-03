@@ -2170,6 +2170,244 @@ body {
   box-shadow: 0 16px 36px rgba(0,0,0,0.15);
 }
 
+/* Nút xem sách gốc PDF, góc trên phải của thẻ sách */
+.sgk-pdf-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--primary);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: all var(--transition-fast);
+}
+
+.sgk-pdf-btn:hover {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+/* Modal xem sách gốc PDF: toàn màn hình, iframe chiếm phần còn lại */
+.sgk-pdf-overlay {
+  padding: 0;
+  z-index: 120;
+}
+
+.sgk-pdf-viewer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f1f5f9;
+}
+
+.sgk-pdf-viewer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.sgk-pdf-viewer-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-h);
+}
+
+.sgk-pdf-viewer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sgk-pdf-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sgk-pdf-viewer {
+    background: #1e293b;
+  }
+  .sgk-pdf-viewer-head {
+    background: #1f2937;
+  }
+}
+
+/* ==========================================================================
+   XEM PDF KIỂU LẬT TRANG (PDF PAGE FLIP VIEWER)
+   Một trang mỗi lần như sách thật: vuốt tay / chạm mép / nút ‹ › để lật,
+   số trang rõ ràng — thích hợp cho màn hình di động và máy tính bảng.
+   ========================================================================== */
+.pdf-flip-root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-flip-stage {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  padding: 12px;
+  touch-action: pan-y;      /* vuốt dọc vẫn cuộn bình thường */
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.pdf-page-wrap {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.25);
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.pdf-page-wrap canvas {
+  display: block;
+  border-radius: 4px;
+}
+
+/* Hiệu ứng lật trang nhẹ nhàng */
+.pdf-page-wrap.flip-next {
+  animation: pdf-flip-next 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pdf-page-wrap.flip-prev {
+  animation: pdf-flip-prev 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pdf-flip-next {
+  from { opacity: 0.35; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pdf-flip-prev {
+  from { opacity: 0.35; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.pdf-page-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.pdf-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 12px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+}
+
+.pdf-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transition: all var(--transition-fast);
+  font-family: var(--sans);
+}
+
+.pdf-nav-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.pdf-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pdf-nav-counter {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-h);
+  min-width: 110px;
+  text-align: center;
+}
+
+.pdf-swipe-hint {
+  margin: 0;
+  padding: 0 12px 10px;
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  background: #fff;
+  border-top: 1px solid var(--border);
+}
+
+.pdf-flip-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+}
+
+.pdf-flip-empty-emoji {
+  font-size: 44px;
+}
+
+.pdf-flip-empty p {
+  color: var(--text);
+  font-size: 14px;
+  max-width: 300px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pdf-nav-bar {
+    background: #1f2937;
+  }
+  .pdf-nav-counter {
+    color: #f1f5f9;
+  }
+  .pdf-swipe-hint {
+    background: #1f2937;
+  }
+  .pdf-page-wrap {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
 .sgk-subject-top {
   position: relative;
   margin-bottom: 12px;
@@ -2598,6 +2836,67 @@ body {
 
 .sgk-start-quiz-btn:hover {
   transform: scale(1.05);
+}
+
+/* Điều hướng lật trang như sách thật */
+.sgk-page-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.sgk-page-btn {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sgk-page-btn.back {
+  background: rgba(107, 99, 117, 0.12);
+  color: var(--text-h);
+}
+
+.sgk-page-btn.back:hover:not(:disabled) {
+  background: rgba(107, 99, 117, 0.22);
+}
+
+.sgk-page-btn.back:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sgk-page-btn.next {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.sgk-page-btn.next:hover {
+  transform: scale(1.04);
+}
+
+.sgk-page-counter {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-h);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sgk-page-counter {
+    background: rgba(30, 41, 59, 0.7);
+  }
 }
 
 /* Phần Trắc nghiệm Màn hình 3 */
@@ -4784,5 +5083,570 @@ body {
   .learning-log-meta {
     font-size: 12px;
     gap: 3px 10px;
+  }
+}
+
+/* ==========================================================================
+   25. CỔNG CHỐNG ĐỌC LƯỚT (READING GATE)
+   Nút vào trắc nghiệm bị khoá cho tới khi bé ở lại trang đọc đủ thời gian
+   tối thiểu tính theo độ dài bài.
+   ========================================================================== */
+.reading-gate-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.reading-gate-btn.locked {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* Thanh đếm giờ mềm dưới nút: bé nhìn thấy mình còn phải chờ bao lâu,
+   thay vì nhìn một nút khoá vô nghĩa */
+.reading-gate-btn.locked::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(99, 102, 241, 0.35);
+  animation: reading-gate-fill 60s linear infinite;
+}
+
+.reading-gate-btn.ready {
+  animation: reading-gate-glow 1.2s ease-in-out infinite;
+}
+
+@keyframes reading-gate-fill {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes reading-gate-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35); }
+  50% { box-shadow: 0 0 12px 2px rgba(16, 185, 129, 0.45); }
+}
+
+/* ==========================================================================
+   26. TAB ÔN TẬP LẶP LẠI (SPACED REPETITION)
+   Hàng đợi bài cần ôn suy ra từ lịch sử học: bài chưa vững (đúng lần đầu
+   < 95%) sẽ quay lại đúng lúc sắp quên.
+   ========================================================================== */
+
+/* Chấm đỏ báo số bài đến hẹn trên tab */
+.nav-tab-dot {
+  display: inline-block;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 10px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  vertical-align: 1px;
+}
+
+.review-intro {
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+  margin-top: -12px;
+}
+
+.review-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 20px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.review-empty-emoji {
+  font-size: 40px;
+}
+
+.review-empty p {
+  color: var(--text);
+  font-size: 14px;
+  max-width: 340px;
+}
+
+.review-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-group-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 4px 0 0;
+}
+
+.review-group-title.due {
+  color: var(--warning);
+}
+
+.review-group-title.upcoming {
+  color: var(--text);
+}
+
+.review-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.review-card.is-due {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.review-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.review-card-emoji {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.review-card-title-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 2px;
+  line-height: 1.35;
+}
+
+.review-card-sub {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.review-card-when {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(107, 99, 117, 0.1);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.review-card-when.due {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.18);
+}
+
+.review-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-accuracy-label {
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.review-accuracy-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(107, 99, 117, 0.15);
+  overflow: hidden;
+}
+
+.review-accuracy-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width var(--transition-normal);
+}
+
+.review-accuracy-fill.low { background: var(--danger); }
+.review-accuracy-fill.mid { background: var(--warning); }
+.review-accuracy-fill.high { background: var(--success); }
+
+.review-accuracy-pct {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-h);
+  min-width: 34px;
+  text-align: right;
+}
+
+.review-card-misses {
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+}
+
+.review-card-misses summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.review-card-misses summary:hover {
+  color: var(--primary);
+}
+
+.review-card-misses ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-card-misses li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.miss-q {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.miss-a {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   27. BẢN TIN TUẦN CHO BỐ MẸ (WEEKLY DIGEST)
+   Tổng kết 7 ngày + gợi ý chỗ cần ngồi ôn cùng con, có nút sao chép
+   văn bản thuần để dán vào Zalo.
+   ========================================================================== */
+.weekly-digest {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.digest-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.digest-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-h);
+}
+
+.digest-empty {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.digest-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.digest-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  background: rgba(107, 99, 117, 0.07);
+  text-align: center;
+}
+
+.digest-metric-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-h);
+  line-height: 1.2;
+}
+
+.digest-metric-val small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.digest-metric-label {
+  font-size: 11px;
+  color: var(--text);
+}
+
+.digest-delta {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.digest-delta.up { color: var(--success); }
+.digest-delta.down { color: var(--danger); }
+
+.digest-due {
+  font-size: 14px;
+  color: var(--text);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+}
+
+.digest-misses {
+  border-left: 4px solid var(--warning);
+  padding-left: 14px;
+}
+
+.digest-sub {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-h);
+}
+
+.digest-misses ol {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.digest-misses li {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.digest-miss-q {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.digest-miss-a {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.digest-miss-count {
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+/* Ô hiện văn bản khi trình duyệt chặn clipboard */
+.digest-fallback-textarea {
+  width: 100%;
+  min-height: 220px;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(107, 99, 117, 0.07);
+  color: var(--text-h);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* ==========================================================================
+   28. GỢI Ý PHẦN THƯỞNG THEO ĐỘ TUỔI (REWARD SUGGESTIONS)
+   Trẻ nhỏ: quà và sự chiều chuộng. Tuổi teen: quyền tự chủ và được tin tưởng.
+   ========================================================================== */
+.reward-suggestions {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+
+.reward-sugg-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.reward-sugg-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-h);
+  margin-right: 4px;
+}
+
+.reward-sugg-tab {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.reward-sugg-tab:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.reward-sugg-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+}
+
+.reward-sugg-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+}
+
+.reward-sugg-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(107, 99, 117, 0.06);
+  font-family: var(--sans);
+  font-size: 13px;
+  text-align: left;
+  color: var(--text-h);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.reward-sugg-pill:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+  transform: translateY(-1px);
+}
+
+.reward-sugg-emoji {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.reward-sugg-text {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.reward-sugg-cost {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #f59e0b;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   29. CHẾ ĐỘ TUỔI TEEN (LỚP 6+)
+   Giữ nguyên nội dung và cơ chế sao, nhưng bớt màu mè: giảm chói mắt,
+   bỏ nét trẻ con. Áp dụng bằng class bodyClass trên dashboard-container.
+   ========================================================================== */
+.teen-mode {
+  filter: saturate(0.88);
+}
+
+.teen-mode .kid-header {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.teen-mode h2,
+.teen-mode h3 {
+  font-family: var(--sans);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Bảng sao vẫn giữ màu vàng cho dễ nhìn, nhưng phần tử trang trí bớt nổi */
+.teen-mode .kid-theme {
+  filter: none;
+}
+
+.teen-mode .nav-tab-btn {
+  font-weight: 600;
+}
+
+.teen-mode .sgk-footer-mascot,
+.teen-mode .bounce-anim {
+  animation: none;
+}
+
+@media (max-width: 600px) {
+  .review-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .digest-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .digest-metric-val {
+    font-size: 18px;
   }
 }
