@@ -63,6 +63,68 @@ export const booksData = {
       }
     },
     {
+      id: 'cay_tre_tram_dot',
+      title: 'Cây Tre Trăm Đốt',
+      subtitle: 'Truyện cổ tích Việt Nam về lòng trung thực & sự siêng năng',
+      emoji: '🎍',
+      stars: 5,
+      pages: [
+        {
+          text: 'Ngày xửa ngày xưa, ở một làng nọ có anh Khoai hiền lành, siêng năng làm thuê cho lão phú ông. Lão hứa nếu anh chăm chỉ làm việc 3 năm thì sẽ gạch con gái cho. Anh Khoai tin lời, không quản ngại nắng mưa, ra sức cày cấy giúp nhà lão phú ông giàu có bậc nhất trong vùng.',
+          image: '/assets/books/cay_tre_1.jpg'
+        },
+        {
+          text: 'Đến hẹn 3 năm, lão phú ông lật lọng, bày mưu bảo anh Khoai: "Con muốn cưới con gái ta thì phải vào rừng tìm cho được một cây tre có đủ 100 đốt!". Anh Khoai thật thà lùng sục khắp rừng sâu nhưng tìm mãi không đâu có cây tre nào dài đến 100 đốt. Anh tủi thân ngồi khóc.',
+          image: '/assets/books/cay_tre_2.jpg'
+        },
+        {
+          text: 'Bụt hiện lên thương anh hiền lành, bảo anh chặt 100 đốt tre rời và hô "Khắc nhập, khắc nhập!". Kỳ diệu thay, 100 đốt tre dính liền thành cây tre cao vút. Khi về làng, anh hô "Khắc xuất, khắc xuất!" để tách ra. Lão phú ông sợ hãi đành phải giữ đúng lời hứa. Anh Khoai hưởng hạnh phúc nhờ sự trung thực và kiên trì.',
+          image: '/assets/books/cay_tre_3.jpg'
+        }
+      ],
+      quiz: {
+        question: 'Vì sao anh Khoai lại được Bụt giúp đỡ tìm thấy Cây Tre Trăm Đốt?',
+        options: [
+          'Vì anh Khoai có nhiều tiền bạc mua chuộc.',
+          'Vì anh Khoai hiền lành, trung thực, siêng năng chịu khó và giữ đúng cam kết.',
+          'Vì anh Khoai là người khôn lanh giỏi nói dối.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Sự trung thực, chăm chỉ và kiên trì sẽ luôn nhận được sự giúp đỡ và gặt hái kết quả tốt đẹp trong cuộc sống!'
+      }
+    },
+    {
+      id: 'rua_va_tho_2',
+      title: 'Rùa Và Thỏ: Bài Học Kỷ Luật',
+      subtitle: 'Truyện ngụ ngôn về sự tự giác & thói quen kiên trì',
+      emoji: '🐢',
+      stars: 4,
+      pages: [
+        {
+          text: 'Sau thất bại ở cuộc đua lần trước, Thỏ rất hối hận vì tính chủ quan và lười biếng. Thỏ quyết định thách Rùa đua lại một lần nữa. Lần này, Thỏ tự hứa sẽ không ngủ gật mid-way nữa.',
+          image: '/assets/books/rua_tho_1.jpg'
+        },
+        {
+          text: 'Trên đường đua mới, Thỏ chạy hết sức mình và vượt xa Rùa. Tuy nhiên, Rùa vẫn không hề nản chí. Rùa cứ từng bước, từng bước kiên trì tiến về phía trước với nhịp độ đều đặn, không hề dừng lại dù trời nắng gắt.',
+          image: '/assets/books/rua_tho_2.jpg'
+        },
+        {
+          text: 'Thỏ về đích trước và thắng cuộc đua, nhưng Thỏ đã chủ động đến bắt tay Rùa và bảo: "Tớ thắng nhờ tốc độ, nhưng tớ học được ở bạn tinh thần kỷ luật kiên trì không bao giờ bỏ cuộc!". Cả hai trở thành bạn tốt cùng nhau rèn luyện thói quen dậy sớm tập thể dục mỗi ngày.',
+          image: '/assets/books/rua_tho_3.jpg'
+        }
+      ],
+      quiz: {
+        question: 'Bài học lớn nhất mà Thỏ học được từ bạn Rùa qua cuộc đua là gì?',
+        options: [
+          'Tốc độ là tất cả, không cần quan tâm đến kỷ luật.',
+          'Tinh thần kỷ luật, kiên trì nhẫn nại bền bỉ mỗi ngày là phẩm chất vô cùng quý giá.',
+          'Nên ngủ gật giữa đường đua cho khỏe.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Kỷ luật và sự kiên trì đều đặn mỗi ngày quan trọng hơn sự bộc phát nhất thời. Hãy là một chú Rùa kiên trì trong học tập!'
+      }
+    },
+    {
       id: 'su_tich_hat_lua',
       title: 'Sự Tích Hạt Lúa',
       subtitle: 'Bài học về lòng hiếu thảo, quý trọng hạt lúa',
