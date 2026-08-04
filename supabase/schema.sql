@@ -23,6 +23,9 @@ create table parent_settings (
 );
 
 -- Nhiệm vụ (định nghĩa, có thể lặp lại)
+-- task_type / content_ref: xem supabase/migration_assign.sql để hiểu đầy đủ.
+--   task_type   null -> việc đời thường; 'book'|'math'|'explore' -> bài trong app
+--   content_ref null -> mở cả khu (con tự học lần lượt); '<id>' -> mở đúng 1 bài
 create table tasks (
   id uuid primary key default gen_random_uuid(),
   family_id uuid not null references auth.users(id) on delete cascade,
@@ -32,8 +35,12 @@ create table tasks (
   stars int not null default 1 check (stars > 0),
   recurrence text not null default 'once' check (recurrence in ('once','daily','weekly')),
   active boolean not null default true,
+  task_type text,
+  content_ref text,
   created_at timestamptz not null default now()
 );
+
+create index if not exists tasks_child_type_idx on tasks (child_id, task_type);
 
 -- Lượt hoàn thành nhiệm vụ (con bấm "xong" -> chờ bố mẹ duyệt)
 -- task_id dạng text: có thể là uuid của bảng tasks hoặc id ảo

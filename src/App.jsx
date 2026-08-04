@@ -32,16 +32,18 @@ import {
   fetchWeeklyPlans,
   upsertWeeklyPlan,
   fetchLearningSessions,
-  logLearningSession
+  safeLogLearningSession
 } from './lib/api'
 import { supabase } from './lib/supabase'
 import { booksData } from './lib/booksData'
 import { mathData } from './lib/mathData'
+import { exploreData } from './lib/exploreData'
 import { textbookData } from './lib/textbookData'
 import { textbookData8 } from './lib/textbookData8'
 import GameArcade from './components/GameArcade'
 import ReadingGateButton from './components/ReadingGateButton'
 import ReviewCard from './components/ReviewCard'
+import TopicReader from './components/TopicReader'
 import WeeklyDigestPanel from './components/WeeklyDigestPanel'
 import PdfViewerModal from './components/PdfViewerModal'
 import { getLevelInfo, calculateStreak, calculateBadges } from './lib/gamification'
@@ -49,7 +51,11 @@ import {
   gradeQuizResult,
   computeReviewQueue,
   splitSgkPages,
+  learningItemState,
+  findAreaTask,
+  findItemTask,
 } from './lib/learning'
+import { LEARNING_AREAS, AREA_ORDER, areaItems, areaBadge } from './lib/assignables'
 import { getTone, REWARD_SUGGESTIONS, isTeenGrade } from './lib/tone'
 import SgkPdfButton from './components/SgkPdfButton'
 import './App.css'
@@ -126,6 +132,11 @@ function autoAssignPlanDays(weekItems) {
   return days
 }
 
+// Gợi ý nhiệm vụ cho bố mẹ bấm một cái là điền sẵn form.
+//
+// Phần tử có thêm `taskType` là nhiệm vụ TRỎ VÀO NỘI DUNG TRONG APP: tạo xong
+// thì cả khu đó được mở khoá cho con học lần lượt. Không có `taskType` là việc
+// đời thường, con làm xong thì nộp minh chứng cho bố mẹ duyệt như cũ.
 const SCIENTIFIC_SUGGESTIONS = [
   {
     category: '🧹 Việc nhà',
@@ -161,6 +172,15 @@ const SCIENTIFIC_SUGGESTIONS = [
       { title: 'Tập thể dục 15 phút', desc: 'Chạy bộ nhẹ nhàng, nhảy dây hoặc tập thể dục theo nhạc buổi sáng.', stars: 3, recurrence: 'daily' },
       { title: 'Uống đủ nước lọc', desc: 'Uống đủ nước lọc hằng ngày (khoảng 3-4 cốc nước to).', stars: 2, recurrence: 'daily' },
       { title: 'Dọn phòng riêng sạch sẽ', desc: 'Lau dọn phòng ngủ cá nhân, sắp xếp bàn học ngăn nắp.', stars: 5, recurrence: 'weekly' },
+    ]
+  },
+  {
+    category: '🌍 Khám phá',
+    tasks: [
+      { title: 'Khám phá 1 chủ đề kiến thức mới', desc: 'Vào tab Khám Phá Thế Giới, đọc hết phần kiến thức và trả lời đúng các câu hỏi.', stars: 6, recurrence: 'weekly', taskType: 'explore' },
+      { title: 'Kể lại điều mới học được', desc: 'Kể cho bố mẹ nghe 3 điều thú vị vừa học được trong ngày.', stars: 4, recurrence: 'daily' },
+      { title: 'Quan sát và ghi chép thiên nhiên', desc: 'Quan sát một cái cây, con vật hoặc bầu trời rồi vẽ/ghi lại điều mình thấy.', stars: 4, recurrence: 'weekly' },
+      { title: 'Đặt 3 câu hỏi "Vì sao?"', desc: 'Tự nghĩ 3 câu hỏi về thế giới xung quanh rồi cùng bố mẹ đi tìm câu trả lời.', stars: 3, recurrence: 'weekly' },
     ]
   }
 ]
@@ -204,12 +224,11 @@ function AppContent() {
   const [quizShowFeedback, setQuizShowFeedback] = useState(false)
   const [kidAgeGroup, setKidAgeGroup] = useState('kids')
 
-  // Trạng thái cho Sân Chơi Toán Tư Duy (Math Playground)
+  // Trạng thái cho Sân Chơi Toán Tư Duy & Khu Khám Phá Thế Giới.
+  // Mọi state trong lúc học (trang, đáp án, số câu đúng lần đầu...) do
+  // component TopicReader tự giữ; ở đây chỉ cần biết đang mở chủ đề nào.
   const [selectedMathTopic, setSelectedMathTopic] = useState(null)
-  const [mathPageIndex, setMathPageIndex] = useState(0)
-  const [mathQuizSelectedOption, setMathQuizSelectedOption] = useState(null)
-  const [mathQuizAnsweredCorrectly, setMathQuizAnsweredCorrectly] = useState(false)
-  const [mathQuizShowFeedback, setMathQuizShowFeedback] = useState(false)
+  const [selectedExploreTopic, setSelectedExploreTopic] = useState(null)
 
   // Trạng thái cho Sách Giáo Khoa (SGK)
   const [selectedTextbook, setSelectedTextbook] = useState(null)   // sách đang chọn
@@ -258,18 +277,22 @@ function AppContent() {
   const [bookWrongAnswers, setBookWrongAnswers] = useState([])
   const [bookStartedAt, setBookStartedAt] = useState(null)
 
-  const [mathWrongAttempts, setMathWrongAttempts] = useState(0)
-  const [mathWrongAnswers, setMathWrongAnswers] = useState([])
-  const [mathFirstTryCount, setMathFirstTryCount] = useState(0)
-  const [mathQuestionMissed, setMathQuestionMissed] = useState(false)
-  const [mathStartedAt, setMathStartedAt] = useState(null)
-
   const elapsedSeconds = (startedAt) =>
     startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : 0
 
   // ---------- Giọng điệu theo độ tuổi ----------
   // Con lớp 6+ dùng giọng điềm đạm, không mascot, không pháo hoa.
   const tone = getTone(profile?.child?.grade)
+
+  // Kho truyện, Toán tư duy và Khám Phá đều chia hai nhánh nội dung theo tuổi.
+  // Mặc định phải khớp khối lớp của con: nếu để cứng 'kids' thì bạn lớp 8 mở
+  // app ra sẽ thấy toàn nội dung lớp 2. Con vẫn tự bấm chuyển sang nhánh kia
+  // được nếu muốn đọc thêm.
+  useEffect(() => {
+    if (profile?.type === 'child') {
+      setKidAgeGroup(isTeenGrade(profile.child?.grade) ? 'teens' : 'kids')
+    }
+  }, [profile])
 
   // Pháo hoa chỉ nổ cho các bé tiểu học; tuổi teen thấy phiền hơn là vui.
   const celebrate = useCallback((opts) => {
@@ -331,20 +354,22 @@ function AppContent() {
       setActiveTab('sgk')
       return
     }
-    if (item.kind === 'math') {
-      const topic = mathData.find(t => String(t.id) === String(item.refId))
+    if (item.kind === 'math' || item.kind === 'explore') {
+      const catalog = item.kind === 'math' ? mathData : exploreData
+      const group = Object.keys(catalog).find(g =>
+        catalog[g].some(t => String(t.id) === String(item.refId))
+      )
+      const topic = group && catalog[group].find(t => String(t.id) === String(item.refId))
       if (!topic) { showToast('Chủ đề này không còn nữa.'); return }
-      setSelectedMathTopic(topic)
-      setMathPageIndex(0)
-      setMathQuizSelectedOption(null)
-      setMathQuizAnsweredCorrectly(false)
-      setMathQuizShowFeedback(false)
-      setMathWrongAttempts(0)
-      setMathWrongAnswers([])
-      setMathFirstTryCount(0)
-      setMathQuestionMissed(false)
-      setMathStartedAt(Date.now())
-      setActiveTab('math')
+      setKidAgeGroup(group)
+      // TopicReader tự khởi tạo lại toàn bộ state khi đổi chủ đề (key={topic.id})
+      if (item.kind === 'math') {
+        setSelectedMathTopic(topic)
+        setActiveTab('math')
+      } else {
+        setSelectedExploreTopic(topic)
+        setActiveTab('explore')
+      }
       return
     }
     // book
@@ -461,6 +486,11 @@ function AppContent() {
   const [newTaskStars, setNewTaskStars] = useState(5)
   const [newTaskRecurrence, setNewTaskRecurrence] = useState('once')
   const [newTaskChildId, setNewTaskChildId] = useState('')
+  // Khu nội dung gắn kèm nhiệm vụ gõ tay ('' = việc đời thường)
+  const [newTaskType, setNewTaskType] = useState('')
+
+  // Khu đang xem trong bảng "Giao bài học trong app"
+  const [assignArea, setAssignArea] = useState('book')
 
   // Trạng thái Thêm quà mới (Parent)
   const [newRewardTitle, setNewRewardTitle] = useState('')
@@ -733,14 +763,82 @@ function AppContent() {
         description: newTaskDesc.trim(),
         stars: Number(newTaskStars),
         recurrence: newTaskRecurrence,
-        child_id: newTaskChildId
+        child_id: newTaskChildId,
+        // Chip gợi ý có thể gắn sẵn khu nội dung để nhiệm vụ mở khoá được bài
+        task_type: newTaskType || null,
+        content_ref: null,
       })
       showToast('Đã thêm nhiệm vụ thành công!')
       setNewTaskTitle('')
       setNewTaskDesc('')
+      setNewTaskType('')
       loadAppData()
     } catch (err) {
       showToast('Lỗi tạo nhiệm vụ: ' + err.message)
+    }
+  }
+
+  // ---------- Bố mẹ giao thẳng bài học trong app ----------
+  //
+  // Đây là lối giao bài chính, thay cho việc bố mẹ phải tự gõ một nhiệm vụ có
+  // tiêu đề trùng khớp tên bài. Nhiệm vụ tạo ra trỏ CỨNG vào nội dung qua
+  // task_type + content_ref nên không bao giờ lệch khi tên bài đổi.
+  //
+  // Nhóm tuổi (kids/teens) LUÔN suy từ khối lớp của bé, không cho bố mẹ chọn
+  // tay: giao nhầm truyện lớp 2 cho bạn lớp 8 là lỗi khó nhận ra mà rất khó chịu.
+  const assignChild = children.find(c => c.id === newTaskChildId) || null
+  const assignAgeGroup = isTeenGrade(assignChild?.grade) ? 'teens' : 'kids'
+  const assignList = areaItems(assignArea, assignAgeGroup)
+
+  // Bố mẹ mở CẢ KHU: con tự học lần lượt, không phải chờ giao từng bài.
+  const handleAssignArea = async (kind) => {
+    if (!newTaskChildId) {
+      showToast('Bố mẹ chọn hồ sơ con trước nhé!')
+      return
+    }
+    const area = LEARNING_AREAS[kind]
+    try {
+      await addTask(familyId, {
+        title: `🔓 ${area.icon} ${area.label} — học lần lượt`,
+        description: `Con vào tab ${area.icon} ${area.label} học lần lượt từ bài đầu. Học xong bài nào là tự nhận sao bài đó.`,
+        stars: 5,
+        recurrence: 'weekly',
+        child_id: newTaskChildId,
+        task_type: kind,
+        content_ref: null,
+      })
+      showToast(`Đã mở cả khu ${area.icon} ${area.label} cho ${assignChild?.name || 'con'}!`)
+      loadAppData()
+    } catch (err) {
+      showToast('Lỗi giao bài: ' + err.message)
+    }
+  }
+
+  // Bố mẹ giao đúng MỘT bài.
+  //
+  // Tiêu đề cố ý chứa nguyên văn tên bài: nếu database chưa chạy
+  // migration_assign.sql thì 2 cột mới bị bỏ qua, nhưng nhánh so tiêu đề trong
+  // isLearningItemAssigned vẫn mở khoá đúng bài này.
+  const handleAssignItem = async (kind, item) => {
+    if (!newTaskChildId) {
+      showToast('Bố mẹ chọn hồ sơ con trước nhé!')
+      return
+    }
+    const area = LEARNING_AREAS[kind]
+    try {
+      await addTask(familyId, {
+        title: `${area.icon} ${area.label}: ${item.title}`,
+        description: `Bài học trong app. Con vào tab ${area.icon} ${area.label} và học xong bài này là tự nhận sao.`,
+        stars: item.stars || 5,
+        recurrence: 'once',
+        child_id: newTaskChildId,
+        task_type: kind,
+        content_ref: String(item.id),
+      })
+      showToast(`Đã giao "${item.title}" cho ${assignChild?.name || 'con'}!`)
+      loadAppData()
+    } catch (err) {
+      showToast('Lỗi giao bài: ' + err.message)
     }
   }
 
@@ -869,8 +967,74 @@ function AppContent() {
     }
   }
 
+  /**
+   * Nhiệm vụ này là một BÀI HỌC TRONG APP hay một việc đời thường?
+   *
+   * ĐÂY LÀ HÀNG RÀO CHỐNG CỘNG SAO HAI LẦN. Bài học trong app tự cộng sao ngay
+   * khi con trả lời đúng hết câu hỏi. Nếu con vẫn thấy nút "Đã làm xong ✔" trên
+   * chính nhiệm vụ đó, con nộp minh chứng, bố mẹ duyệt, và số sao được cộng
+   * thêm lần thứ hai cho cùng một việc — sổ sao sai và phần thưởng mất ý nghĩa.
+   * Nên với nhiệm vụ dạng này, con chỉ có một đường duy nhất: vào học.
+   */
+  const isContentTask = (task) => Boolean(task?.task_type && LEARNING_AREAS[task.task_type])
+
+  /** Tìm một bài trong khu nội dung kèm THỨ TỰ của nó — thứ tự là thứ con phải học. */
+  const findAreaItem = (kind, refId) => {
+    const area = LEARNING_AREAS[kind]
+    if (!area) return null
+    for (const group of Object.keys(area.data)) {
+      const items = area.data[group]
+      const index = items.findIndex(it => String(it.id) === String(refId))
+      if (index >= 0) return { group, items, index, item: items[index] }
+    }
+    return null
+  }
+
+  /** Con bấm "Vào học ngay" trên nhiệm vụ bài học -> mở đúng bài (hoặc đúng khu). */
+  const openTaskContent = (task) => {
+    const area = LEARNING_AREAS[task.task_type]
+    if (!area) return
+    // Nhiệm vụ "mở cả khu" không trỏ vào bài nào: đưa con vào khu để tự chọn
+    // bài tiếp theo đang mở.
+    if (!task.content_ref) {
+      setActiveTab(area.tab)
+      showToast(`Con vào ${area.icon} ${area.label} học lần lượt từ bài đang mở nhé!`)
+      return
+    }
+
+    const found = findAreaItem(task.task_type, task.content_ref)
+    if (!found) {
+      setActiveTab(area.tab)
+      showToast('Bài này không còn trong app nữa, con chọn bài khác nhé!')
+      return
+    }
+
+    // Nút này KHÔNG được là cửa sau vượt khoá: bố mẹ giao bài số 7 thì con vẫn
+    // phải học xong 6 bài trước, đúng như khi bấm từ lưới bài.
+    const state = learningItemState({
+      tasks, completions, childId: profile?.child?.id,
+      kind: task.task_type, prefix: area.prefix,
+      items: found.items, index: found.index,
+    })
+    if (!state.isUnlocked) {
+      setKidAgeGroup(found.group)
+      setActiveTab(area.tab)
+      showToast(`📖 Con học xong "${state.prevItem?.title}" là bài này mở ra ngay!`)
+      return
+    }
+
+    openReviewItem({ kind: task.task_type, refId: task.content_ref })
+  }
+
   // Con bấm "Hoàn thành" -> Hiển thị Modal để nạp minh chứng
   const handleChildSubmitCompletion = (task) => {
+    // Chốt cửa ngay tại gốc: nhiệm vụ bài học trong app đã tự cộng sao, nộp
+    // minh chứng nữa là cộng hai lần. Giao diện đã ẩn nút này, nhưng chặn thêm
+    // ở đây để sau này thêm chỗ hiển thị nhiệm vụ mới cũng không hở.
+    if (isContentTask(task)) {
+      openTaskContent(task)
+      return
+    }
     setActiveProofTask(task)
     setProofImageBase64(null)
     setProofChildNote('')
@@ -896,6 +1060,24 @@ function AppContent() {
     }
   }
 
+  /**
+   * Con học xong bài rồi thì thu lại nhiệm vụ "giao đúng bài này".
+   *
+   * Không có bước này thì danh sách "Việc đang giao" của bố mẹ sẽ chất đống
+   * hàng chục bài đã hoàn thành. CHỈ thu nhiệm vụ đơn bài — nhiệm vụ "mở cả
+   * khu" phải sống tiếp, vì nó còn nhiệm vụ mở những bài phía sau.
+   * Thu không được cũng không sao: con đã nhận sao rồi, không chặn gì cả.
+   */
+  const retireItemTask = async (kind, item) => {
+    const done = findItemTask(tasks, profile?.child?.id, kind, item)
+    if (!done) return
+    try {
+      await deactivateTask(done.id)
+    } catch (err) {
+      console.warn('Không thu được nhiệm vụ đã hoàn thành:', err?.message)
+    }
+  }
+
   // Bé hoàn thành đọc sách và trả lời đúng câu hỏi trắc nghiệm
   const handleBookFinished = async (book) => {
     const childId = profile.child.id
@@ -911,7 +1093,7 @@ function AppContent() {
 
     try {
       // 1) Ghi lịch sử học tập — kể cả khi bé đọc lại quyển cũ
-      await logLearningSession(familyId, childId, {
+      await safeLogLearningSession(familyId, childId, {
         kind: 'book',
         refId: String(book.id),
         title: book.title,
@@ -936,6 +1118,7 @@ function AppContent() {
           `Bé đã đọc xong truyện "${book.title}" và trả lời đúng câu đố! Bài học: ${book.quiz?.moral || ''}`,
           'approved'
         )
+        await retireItemTask('book', book)
         setChildBalance(prev => prev + starsToEarn)
         const bookFull = book.stars || 8
         showToast(
@@ -952,57 +1135,127 @@ function AppContent() {
     }
   }
 
-  // Bé hoàn thành học toán và trả lời đúng toàn bộ câu hỏi trắc nghiệm
-  const handleMathTopicFinished = async (topic) => {
+  // Con học xong một chủ đề dạng "lý thuyết ➜ trắc nghiệm".
+  //
+  // Dùng chung cho Toán tư duy và Khám Phá Thế Giới: hai khu chỉ khác nhau ở
+  // nhãn hiển thị và loại hoạt động ghi vào lịch sử, còn cách chấm sao thì phải
+  // giống hệt nhau. `result` do TopicReader gửi lên sau khi con làm hết câu hỏi.
+  // Mô tả từng khu nội dung (tiền tố id ảo, nhãn, tên môn...) nằm ở
+  // src/lib/assignables.js để giao diện giao bài của bố mẹ và luật khoá bài
+  // phía con luôn đọc cùng một bộ dữ liệu.
+  const handleTopicFinished = async (topic, catalogKey, result) => {
+    const cat = LEARNING_AREAS[catalogKey]
     const childId = profile.child.id
+    const taskId = cat.prefix + topic.id
     const alreadyDone = completions.some(
-      c => c.child_id === childId && c.task_id === 'math-' + topic.id && c.status === 'approved'
+      c => c.child_id === childId && c.task_id === taskId && c.status === 'approved'
     )
-    const mathTotal = topic.quizzes?.length || 0
-    const mathGrade = gradeQuizResult(topic.stars || 8, mathFirstTryCount, mathTotal)
-    const starsToEarn = alreadyDone ? 0 : mathGrade.stars
+    const total = result.total || 0
+    const { stars } = gradeQuizResult(topic.stars || 8, result.firstTryCount, total)
+    const starsToEarn = alreadyDone ? 0 : stars
 
     try {
-      // 1) Ghi lịch sử học tập — kể cả khi bé ôn lại chủ đề cũ
-      await logLearningSession(familyId, childId, {
-        kind: 'math',
+      // 1) Ghi lịch sử học tập — kể cả khi con ôn lại chủ đề cũ
+      await safeLogLearningSession(familyId, childId, {
+        kind: cat.kind,
         refId: String(topic.id),
         title: topic.title,
-        subject: 'Toán tư duy',
-        quizTotal: mathTotal,
-        quizFirstTry: mathFirstTryCount,
-        wrongAttempts: mathWrongAttempts,
-        wrongAnswers: mathWrongAnswers,
-        durationSeconds: elapsedSeconds(mathStartedAt),
+        subject: topic.subject || cat.subject,
+        quizTotal: total,
+        quizFirstTry: result.firstTryCount,
+        wrongAttempts: result.wrongAttempts,
+        wrongAnswers: result.wrongAnswers,
+        durationSeconds: result.durationSeconds,
         starsEarned: starsToEarn,
       })
 
       // 2) Cộng sao (chỉ lần đầu)
       if (alreadyDone) {
-        showToast(`🧮 Bé đã ôn lại "${topic.title}" — đã ghi vào lịch sử học tập. Sao chỉ được nhận ở lần đầu nhé!`)
+        showToast(`${cat.redoIcon} ${tone.you} đã ôn lại "${topic.title}" — đã ghi vào lịch sử học tập. Sao chỉ được nhận ở lần đầu nhé!`)
       } else {
-        await addStars(familyId, childId, starsToEarn, `Hoàn thành Toán tư duy: ${topic.title}`)
+        await addStars(familyId, childId, starsToEarn, `Hoàn thành ${cat.label}: ${topic.title}`)
         await submitCompletion(
           familyId,
-          { id: 'math-' + topic.id, title: `Toán tư duy: ${topic.title}`, stars: starsToEarn, child_id: childId },
+          { id: taskId, title: `${cat.label}: ${topic.title}`, stars: starsToEarn, child_id: childId },
           null,
-          `Bé đã hoàn thành học toán tư duy và trả lời đúng các thử thách của chủ đề: ${topic.title}`,
+          cat.note(topic.title),
           'approved'
         )
+        await retireItemTask(cat.kind, topic)
         setChildBalance(prev => prev + starsToEarn)
-        const mathFull = topic.stars || 8
+        const fullStars = topic.stars || 8
         showToast(
-          starsToEarn < mathFull
-            ? `${tone.you} nhận +${starsToEarn} ⭐ (${mathFirstTryCount}/${mathTotal} câu đúng ngay lần đầu). Đúng hết ngay lần đầu sẽ được trọn ${mathFull} ⭐!`
-            : `🎉 Tuyệt vời! ${tone.you} được nhận +${starsToEarn} ⭐ khi làm xong Toán tư duy!`
+          starsToEarn < fullStars
+            ? `${tone.you} nhận +${starsToEarn} ⭐ (${result.firstTryCount}/${total} câu đúng ngay lần đầu). Đúng hết ngay lần đầu sẽ được trọn ${fullStars} ⭐!`
+            : `🎉 Tuyệt vời! ${tone.you} được nhận +${starsToEarn} ⭐ khi làm xong ${cat.label}!`
         )
         celebrate({ particleCount: 120, spread: 70, origin: { y: 0.6 } })
       }
-      setSelectedMathTopic(null)
+      if (catalogKey === 'math') setSelectedMathTopic(null)
+      else setSelectedExploreTopic(null)
       loadAppData()
     } catch (err) {
-      showToast('❌ Chưa lưu được kết quả: ' + err.message + '. Bé hãy thử lại nhé!')
+      showToast('❌ Chưa lưu được kết quả: ' + err.message + '. ' + tone.you + ' hãy thử lại nhé!')
     }
+  }
+
+  /**
+   * Lưới thẻ chủ đề cho Toán tư duy & Khám Phá Thế Giới.
+   *
+   * LUẬT MỞ KHOÁ (giữ nguyên cho cả hai khu): chủ đề chỉ mở khi bố mẹ đã giao
+   * VÀ con đã học xong chủ đề liền trước. Chủ đề đầu tiên luôn mở sẵn để con có
+   * đường vào. Toàn bộ luật do learningItemState (src/lib/learning.js) tính, dùng
+   * chung với tab Đọc sách và bảng giao bài của bố mẹ để không bao giờ lệch nhau.
+   */
+  const renderTopicGrid = ({ topics, catalogKey, cardSubtitle, onOpen, lockedToast }) => {
+    const cat = LEARNING_AREAS[catalogKey]
+    return (
+      <div className="books-grid">
+        {topics.map((topic, idx) => {
+          const { isDone, isAssigned, isUnlocked, prevItem } = learningItemState({
+            tasks, completions, childId: profile.child.id,
+            kind: cat.kind, prefix: cat.prefix, items: topics, index: idx,
+          })
+
+          return (
+            <div key={topic.id} className={`book-card glass ${!isUnlocked ? 'locked' : ''}`}>
+              <div className="book-lock-overlay">
+                {!isUnlocked && <span className="lock-icon">🔒</span>}
+                <span className="book-emoji">{topic.emoji}</span>
+              </div>
+              <h4>{topic.title}</h4>
+              <p className="subtitle">{topic.subtitle || cardSubtitle(topic)}</p>
+              <span className="stars-badge">⭐️ {topic.stars} Sao</span>
+
+              {isUnlocked ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-block"
+                  onClick={() => onOpen(topic)}
+                >
+                  {isDone ? 'Ôn lại chủ đề ➜' : 'Vào học ngay ➜'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-block btn-locked"
+                  onClick={() => showToast(
+                    // Đã giao rồi mà vẫn khoá thì chỉ còn thiếu bài liền trước.
+                    // Nói đúng lý do để con biết mình chỉ cách một bài nữa,
+                    // thay vì tưởng bố mẹ chưa giao và bỏ luôn.
+                    isAssigned
+                      ? `📖 Con học xong "${prevItem?.title}" là bài này mở ra ngay!`
+                      : lockedToast
+                  )}
+                >
+                  {isAssigned ? '⏳ Học xong bài trước đã nhé' : '🔒 Chờ Bố Mẹ giao bài này'}
+                </button>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
   }
 
   // Con bấm "Đổi quà"
@@ -1712,6 +1965,156 @@ function AppContent() {
           {/* Tab 2: Quản lý Nhiệm vụ */}
           {activeTab === 'tasks' && (
             <div className="tab-pane-grid">
+              {/*
+                GIAO BÀI HỌC TRONG APP — lối giao bài chính.
+
+                Ba khu nội dung đều khoá bài: con chỉ mở được một bài khi bố mẹ
+                đã giao VÀ đã học xong bài liền trước. Trước đây "giao" nghĩa là
+                bố mẹ phải tự gõ một nhiệm vụ có tiêu đề trùng khớp tên bài — với
+                hơn 50 bài thì bất khả thi, nên hầu hết nội dung nằm sau ổ khoá.
+                Bảng này giao bài bằng 1 cú bấm và trỏ CỨNG vào đúng mục nội dung.
+              */}
+              <section className="card glass assign-panel">
+                <h3>🎯 Giao Bài Học Trong App</h3>
+                <p className="assign-hint">
+                  Con chỉ mở được bài khi bố mẹ đã giao <strong>và</strong> đã học xong bài liền trước.
+                  Học xong trong app con tự nhận sao, bố mẹ không phải duyệt lại.
+                </p>
+
+                {children.length === 0 ? (
+                  <p className="empty-message">Bố mẹ tạo hồ sơ cho con trước đã nhé!</p>
+                ) : (
+                  <>
+                    {/* Chọn con — dùng chung ô "Giao cho bé" của form bên dưới */}
+                    <div className="assign-kid-row">
+                      {children.map(child => (
+                        <button
+                          key={child.id}
+                          type="button"
+                          className={`plan-kid-chip ${newTaskChildId === child.id ? 'active' : ''}`}
+                          onClick={() => setNewTaskChildId(child.id)}
+                        >
+                          {child.avatar} {child.name}
+                          <span className="plan-kid-grade">Lớp {child.grade || 2}</span>
+                        </button>
+                      ))}
+                      {assignChild && (
+                        <span className="assign-age-note">
+                          Nội dung theo Lớp {assignChild.grade || 2}
+                          {assignAgeGroup === 'teens' ? ' (tuổi teen)' : ' (tiểu học)'}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Ba khu nội dung + tiến độ của bé đang chọn */}
+                    <div className="suggestions-tabs">
+                      {AREA_ORDER.map(kind => {
+                        const area = LEARNING_AREAS[kind]
+                        const items = areaItems(kind, assignAgeGroup)
+                        const doneCount = items.filter(it => completions.some(
+                          c => c.child_id === newTaskChildId && c.task_id === area.prefix + it.id
+                        )).length
+                        return (
+                          <button
+                            key={kind}
+                            type="button"
+                            className={`suggestion-tab-btn ${assignArea === kind ? 'active' : ''}`}
+                            onClick={() => setAssignArea(kind)}
+                          >
+                            {area.icon} {area.label}
+                            <span className="assign-progress">{doneCount}/{items.length}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    {(() => {
+                      const area = LEARNING_AREAS[assignArea]
+                      const areaTask = findAreaTask(tasks, newTaskChildId, assignArea)
+                      return (
+                        <>
+                          {/* Mức 1: mở cả khu, con tự đi lần lượt */}
+                          <div className="assign-area-row">
+                            {areaTask ? (
+                              <>
+                                <span className="assign-area-open">
+                                  ✅ Cả khu {area.icon} {area.label} đang mở — con tự học lần lượt
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-xs"
+                                  onClick={() => handleDeactivateTask(areaTask.id)}
+                                >
+                                  Thu lại
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => handleAssignArea(assignArea)}
+                              >
+                                🔓 Mở cả khu — con tự học lần lượt
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Mức 2: giao đúng từng bài */}
+                          <div className="assign-item-list">
+                            {assignList.map((item, idx) => {
+                              // Đọc đúng luật khoá mà con đang chịu, để bố mẹ
+                              // thấy chính xác cái con thấy
+                              const { isDone, isAssigned, isUnlocked } = learningItemState({
+                                tasks, completions, childId: newTaskChildId,
+                                kind: assignArea, prefix: area.prefix,
+                                items: assignList, index: idx,
+                              })
+                              const itemTask = findItemTask(tasks, newTaskChildId, assignArea, item)
+
+                              let status = '🔒 Chưa giao'
+                              let statusClass = 'locked'
+                              if (isDone) { status = '✅ Đã xong'; statusClass = 'done' }
+                              else if (isUnlocked) { status = '🔓 Đang mở'; statusClass = 'open' }
+                              else if (isAssigned) { status = '⏳ Chờ xong bài trước'; statusClass = 'waiting' }
+
+                              return (
+                                <div key={item.id} className={`assign-item ${statusClass}`}>
+                                  <span className="assign-item-emoji">{item.emoji}</span>
+                                  <div className="assign-item-main">
+                                    <strong>{idx + 1}. {item.title}</strong>
+                                    <span className={`assign-item-status ${statusClass}`}>{status}</span>
+                                  </div>
+                                  <span className="stars-badge">⭐️ {item.stars}</span>
+                                  {isDone ? null : itemTask ? (
+                                    <button
+                                      type="button"
+                                      className="btn btn-danger btn-xs"
+                                      onClick={() => handleDeactivateTask(itemTask.id)}
+                                    >
+                                      ✅ Đã giao — Thu lại
+                                    </button>
+                                  ) : areaTask ? (
+                                    <span className="assign-item-note">theo cả khu</span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary btn-xs"
+                                      onClick={() => handleAssignItem(assignArea, item)}
+                                    >
+                                      Giao bài này
+                                    </button>
+                                  )}
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </>
+                      )
+                    })()}
+                  </>
+                )}
+              </section>
+
               {/* Form Thêm nhiệm vụ */}
               <section className="card glass">
                 <h3>Thêm Nhiệm Vụ Mới</h3>
@@ -1742,11 +2145,15 @@ function AppContent() {
                           setNewTaskDesc(task.desc)
                           setNewTaskStars(task.stars)
                           setNewTaskRecurrence(task.recurrence)
+                          // Gợi ý nào trỏ vào nội dung trong app thì mang theo
+                          // khu đó, để nhiệm vụ tạo ra mở khoá được bài cho con
+                          setNewTaskType(task.taskType || '')
                           showToast(`Đã chọn: ${task.title} ✨`)
                         }}
                         title={task.desc}
                       >
                         <span className="task-title-pill">{task.title}</span>
+                        {task.taskType && <span className="task-link-pill">🔗</span>}
                         <span className="task-stars-pill">+{task.stars}⭐</span>
                       </button>
                     ))}
@@ -1754,6 +2161,22 @@ function AppContent() {
                 </div>
 
                 <form onSubmit={handleCreateTask} className="form-group text-left">
+                  {/* Nhiệm vụ đang gắn với một khu nội dung — bố mẹ bỏ được nếu
+                      chỉ muốn nhắc miệng mà không mở khoá bài */}
+                  {newTaskType && LEARNING_AREAS[newTaskType] && (
+                    <div className="task-link-note">
+                      <span>🔗 Mở khu {areaBadge(newTaskType)} cho con</span>
+                      <button
+                        type="button"
+                        className="task-link-clear"
+                        onClick={() => setNewTaskType('')}
+                        title="Bỏ liên kết, chỉ tạo nhiệm vụ thường"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
                   <label htmlFor="task-title-input">Tên nhiệm vụ</label>
                   <input 
                     id="task-title-input"
@@ -1835,6 +2258,14 @@ function AppContent() {
                             <h4>{task.title}</h4>
                             <p className="subtitle">{task.description}</p>
                             <span className="badge-tag">{recurrenceMap[task.recurrence]}</span>
+                            {/* Phân biệt rõ bài học trong app với việc nhà: loại
+                                này con tự nhận sao, bố mẹ không phải duyệt */}
+                            {isContentTask(task) && (
+                              <span className="badge-tag badge-content">
+                                🔗 {areaBadge(task.task_type)}
+                                {task.content_ref ? '' : ' · cả khu'}
+                              </span>
+                            )}
                           </div>
                           <div className="element-action">
                             <span className="stars-badge">⭐️ {task.stars}</span>
@@ -2564,13 +2995,19 @@ function AppContent() {
             onClick={() => {
               setActiveTab('math')
               setSelectedMathTopic(null)
-              setMathPageIndex(0)
-              setMathQuizSelectedOption(null)
-              setMathQuizAnsweredCorrectly(false)
-              setMathQuizShowFeedback(false)
             }}
           >
             {tone.tabs.math}
+          </button>
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'explore' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('explore')
+              setSelectedExploreTopic(null)
+            }}
+          >
+            {tone.tabs.explore}
           </button>
           <button
             type="button"
@@ -2691,14 +3128,26 @@ function AppContent() {
                           ) : (
                             todayTasks.map(task => {
                               const isPending = completions.some(c => c.task_id === task.id && c.status === 'pending')
+                              // Bài học trong app tự cộng sao -> không cho nộp minh chứng
+                              const isLesson = isContentTask(task)
                               return (
                                 <div key={task.id} className="plan-today-task">
                                   <div>
                                     <strong>{task.title}</strong>
-                                    <span className="task-star-tag">⭐ {task.stars}</span>
-                                    {isPending && <span className="recurrence-badge">⌛ Chờ duyệt</span>}
+                                    <span className="task-star-tag">
+                                      ⭐ {isLesson ? `tối đa ${task.stars}` : task.stars}
+                                    </span>
+                                    {isPending && !isLesson && <span className="recurrence-badge">⌛ Chờ duyệt</span>}
                                   </div>
-                                  {!isPending && (
+                                  {isLesson ? (
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary btn-sm"
+                                      onClick={() => openTaskContent(task)}
+                                    >
+                                      📖 Vào học ngay ➜
+                                    </button>
+                                  ) : !isPending && (
                                     <button
                                       type="button"
                                       className="btn btn-success btn-sm"
@@ -2736,20 +3185,35 @@ function AppContent() {
                       daily: 'Mỗi ngày',
                       weekly: 'Mỗi tuần'
                     }[task.recurrence]
+                    // Bài học trong app: con vào học là tự nhận sao, không nộp minh chứng
+                    const isLesson = isContentTask(task)
 
                     return (
-                      <div key={task.id} className={`task-kid-card glass ${isPending ? 'card-pending' : ''}`}>
-                        <div className="task-star-tag">⭐ {task.stars}</div>
+                      <div key={task.id} className={`task-kid-card glass ${isPending && !isLesson ? 'card-pending' : ''}`}>
+                        <div className="task-star-tag">
+                          ⭐ {isLesson ? `tối đa ${task.stars}` : task.stars}
+                        </div>
                         <h4>{task.title}</h4>
                         {task.description && <p className="desc">{task.description}</p>}
                         <div className="recurrence-badge">{recurrenceText}</div>
-                        
-                        {isPending ? (
+
+                        {isLesson ? (
+                          <>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-block"
+                              onClick={() => openTaskContent(task)}
+                            >
+                              📖 Vào học ngay ➜
+                            </button>
+                            <p className="task-selfstar-note">Học xong trong app là tự nhận sao ⭐</p>
+                          </>
+                        ) : isPending ? (
                           <div className="pending-status-banner">
                             ⌛ Chờ bố mẹ duyệt cộng sao
                           </div>
                         ) : (
-                          <button 
+                          <button
                             type="button"
                             className="btn btn-success btn-block"
                             onClick={() => handleChildSubmitCompletion(task)}
@@ -2963,12 +3427,12 @@ function AppContent() {
 
                   <div className="books-grid">
                     {booksData[kidAgeGroup].map((book, idx) => {
-                      const isDone = completions.some(c => c.child_id === profile.child.id && c.task_id === 'book-' + book.id)
-                      const isAssigned = tasks.some(t => t.child_id === profile.child.id && (t.title.toLowerCase().includes(book.title.toLowerCase()) || t.task_type === 'book')) || idx === 0 || isDone
-                      const prevBook = idx > 0 ? booksData[kidAgeGroup][idx - 1] : null
-                      const isUnlocked = isAssigned && (idx === 0 || completions.some(
-                        c => c.child_id === profile.child.id && c.task_id === 'book-' + prevBook.id
-                      ))
+                      // Cùng một hàm luật khoá với Toán tư duy & Khám phá
+                      const { isAssigned, isUnlocked, prevItem } = learningItemState({
+                        tasks, completions, childId: profile.child.id,
+                        kind: 'book', prefix: LEARNING_AREAS.book.prefix,
+                        items: booksData[kidAgeGroup], index: idx,
+                      })
 
                       return (
                         <div key={book.id} className={`book-card glass ${!isUnlocked ? 'locked' : ''}`}>
@@ -2998,12 +3462,17 @@ function AppContent() {
                               Đọc sách ➜
                             </button>
                           ) : (
-                            <button 
-                              type="button" 
+                            <button
+                              type="button"
                               className="btn btn-block btn-locked"
-                              onClick={() => showToast('🔒 Truyện này chưa được Bố Mẹ giao! Bé nhờ Bố Mẹ thêm vào Kế Hoạch / Nhiệm Vụ nhé! 😊')}
+                              onClick={() => showToast(
+                                // Cùng cách chỉ đường như Toán & Khám phá
+                                isAssigned
+                                  ? `📖 Con đọc xong "${prevItem?.title}" là truyện này mở ra ngay!`
+                                  : '🔒 Truyện này chưa được giao. Con nhờ Bố Mẹ mở: Nhiệm vụ ➜ 🎯 Giao bài học ➜ 📚 Góc đọc sách nhé! 😊'
+                              )}
                             >
-                              🔒 Chờ Bố Mẹ giao bài này
+                              {isAssigned ? '⏳ Đọc xong truyện trước đã nhé' : '🔒 Chờ Bố Mẹ giao bài này'}
                             </button>
                           )}
                         </div>
@@ -3030,17 +3499,26 @@ function AppContent() {
                       /* Đang đọc các trang truyện */
                       <div className="reader-page-view">
                         <div className="page-image-box">
-                          <img
-                            src={readingBook.pages[readingPageIndex].image}
-                            alt={`Minh họa trang ${readingPageIndex + 1}`}
-                            className="book-illustration"
-                            onError={(e) => {
-                              // Fallback khi chưa có ảnh vật lý
-                              e.target.style.display = 'none'
-                              e.target.nextSibling.style.display = 'flex'
-                            }}
-                          />
-                          <div className="book-illustration-fallback" style={{ display: 'none' }}>
+                          {/* Truyện mới chưa có ảnh riêng thì bỏ trống trường image.
+                              Không render <img> khi thiếu src: thẻ img không có src
+                              KHÔNG bắn sự kiện error, nên onError phía dưới sẽ không
+                              chạy và khung ảnh sẽ trống trơn thay vì hiện 📖. */}
+                          {readingBook.pages[readingPageIndex].image && (
+                            <img
+                              src={readingBook.pages[readingPageIndex].image}
+                              alt={`Minh họa trang ${readingPageIndex + 1}`}
+                              className="book-illustration"
+                              onError={(e) => {
+                                // Fallback khi có đường dẫn nhưng file ảnh chưa tồn tại
+                                e.target.style.display = 'none'
+                                e.target.nextSibling.style.display = 'flex'
+                              }}
+                            />
+                          )}
+                          <div
+                            className="book-illustration-fallback"
+                            style={{ display: readingBook.pages[readingPageIndex].image ? 'none' : 'flex' }}
+                          >
                             <span style={{ fontSize: '48px' }}>📖</span>
                             <span style={{ fontSize: '12px', marginTop: '8px', color: '#999' }}>Hình ảnh minh họa...</span>
                           </div>
@@ -3165,254 +3643,102 @@ function AppContent() {
             </div>
           )}
 
-          {/* Tab con 5: Sân Chơi Toán Tư Duy Lớp 2 */}
+          {/* Tab con 5: Sân Chơi Toán Tư Duy */}
           {activeTab === 'math' && (
             <div className="tab-pane">
               {!selectedMathTopic ? (
                 <>
-                  <h3 className="section-title text-center">🧮 Sân Chơi Toán Tư Duy Lớp 2</h3>
-                  <p className="subtitle text-center">Bé hãy chọn một chủ đề toán học để rèn luyện tư duy logic và nhận thêm Sao nhé!</p>
+                  <h3 className="section-title text-center">🧮 Sân Chơi Toán Tư Duy</h3>
+                  <p className="subtitle text-center">
+                    {tone.isTeen
+                      ? 'Chọn một chủ đề để rèn tư duy logic và tích luỹ sao.'
+                      : 'Bé hãy chọn một chủ đề toán học để rèn luyện tư duy logic và nhận thêm Sao nhé!'}
+                  </p>
 
-                  <div className="books-grid">
-                    {mathData.map((topic, idx) => {
-                      const isDone = completions.some(c => c.child_id === profile.child.id && c.task_id === 'math-' + topic.id)
-                      const isAssigned = tasks.some(t => t.child_id === profile.child.id && (t.title.toLowerCase().includes(topic.title.toLowerCase()) || t.task_type === 'math')) || idx === 0 || isDone
-                      const prevTopic = idx > 0 ? mathData[idx - 1] : null
-                      const isUnlocked = isAssigned && (idx === 0 || completions.some(
-                        c => c.child_id === profile.child.id && c.task_id === 'math-' + prevTopic.id
-                      ))
-
-                      return (
-                        <div key={topic.id} className={`book-card glass ${!isUnlocked ? 'locked' : ''}`}>
-                          <div className="book-lock-overlay">
-                            {!isUnlocked && <span className="lock-icon">🔒</span>}
-                            <span className="book-emoji">{topic.emoji}</span>
-                          </div>
-                          <h4>{topic.title}</h4>
-                          <p className="subtitle">5 thử thách câu hỏi trắc nghiệm tư duy</p>
-                          <span className="stars-badge">⭐️ {topic.stars} Sao</span>
-                          
-                          {isUnlocked ? (
-                            <button
-                              type="button"
-                              className="btn btn-primary btn-block"
-                              onClick={() => {
-                                setSelectedMathTopic(topic)
-                                setMathPageIndex(0)
-                                setMathQuizSelectedOption(null)
-                                setMathQuizAnsweredCorrectly(false)
-                                setMathQuizShowFeedback(false)
-                                setMathWrongAttempts(0)
-                                setMathWrongAnswers([])
-                                setMathFirstTryCount(0)
-                                setMathQuestionMissed(false)
-                                setMathStartedAt(Date.now())
-                              }}
-                            >
-                              Vào học ngay ➜
-                            </button>
-                          ) : (
-                            <button 
-                              type="button" 
-                              className="btn btn-block btn-locked"
-                              onClick={() => showToast('🔒 Chủ đề Toán này chưa được Bố Mẹ giao! Bé nhờ Bố Mẹ thêm vào Kế Hoạch / Nhiệm Vụ nhé! 😊')}
-                            >
-                              🔒 Chờ Bố Mẹ giao bài này
-                            </button>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </>
-              ) : (
-                /* Giao diện Học & Làm bài trắc nghiệm Toán */
-                <div className="book-reader-container card glass">
-                  <div className="reader-header">
-                    <span className="book-title-header">{selectedMathTopic.emoji} {selectedMathTopic.title}</span>
+                  <div className="age-group-toggle">
                     <button
                       type="button"
-                      className="btn-close-reader"
-                      onClick={() => setSelectedMathTopic(null)}
+                      className={`toggle-age-btn ${kidAgeGroup === 'kids' ? 'active' : ''}`}
+                      onClick={() => setKidAgeGroup('kids')}
                     >
-                      ✕ Đóng lại
+                      🧸 Toán Tiểu Học
+                    </button>
+                    <button
+                      type="button"
+                      className={`toggle-age-btn ${kidAgeGroup === 'teens' ? 'active' : ''}`}
+                      onClick={() => setKidAgeGroup('teens')}
+                    >
+                      🧭 Tư Duy Tuổi Teen
                     </button>
                   </div>
 
-                  <div className="reader-content-body">
-                    {mathPageIndex < selectedMathTopic.lesson.steps.length ? (
-                      /* Đang xem phần Lý thuyết & Kiến thức trọng tâm dạng thẻ toán học visual */
-                      <div className="math-step-view">
-                        <div className="math-step-header">
-                          <span className="quiz-tag glow">{selectedMathTopic.lesson.badge}</span>
-                          <span className="math-step-badge">Bài {mathPageIndex + 1} / {selectedMathTopic.lesson.steps.length}</span>
-                        </div>
+                  {renderTopicGrid({
+                    topics: mathData[kidAgeGroup],
+                    catalogKey: 'math',
+                    cardSubtitle: (topic) => `${topic.quizzes.length} thử thách trắc nghiệm tư duy`,
+                    onOpen: setSelectedMathTopic,
+                    lockedToast: '🔒 Chủ đề Toán này chưa được giao. Con nhờ Bố Mẹ mở: Nhiệm vụ ➜ 🎯 Giao bài học ➜ 🧮 Toán tư duy nhé! 😊',
+                  })}
+                </>
+              ) : (
+                <TopicReader
+                  key={selectedMathTopic.id}
+                  topic={selectedMathTopic}
+                  tone={tone}
+                  theme="math"
+                  onClose={() => setSelectedMathTopic(null)}
+                  onFinished={(result) => handleTopicFinished(selectedMathTopic, 'math', result)}
+                />
+              )}
+            </div>
+          )}
 
-                        <div className="math-lesson-card glass">
-                          <h3 className="math-step-title">{selectedMathTopic.lesson.steps[mathPageIndex].title}</h3>
-                          <p className="math-step-desc">{selectedMathTopic.lesson.steps[mathPageIndex].desc}</p>
-                          
-                          {/* Khối công thức toán nổi bật dạng bảng tính */}
-                          <div className="math-formula-box">
-                            <span className="formula-icon">⚡</span>
-                            <div className="formula-text">{selectedMathTopic.lesson.steps[mathPageIndex].formula}</div>
-                          </div>
+          {/* Tab con 6: Khám Phá Thế Giới — kiến thức nền ngoài sách giáo khoa */}
+          {activeTab === 'explore' && (
+            <div className="tab-pane">
+              {!selectedExploreTopic ? (
+                <>
+                  <h3 className="section-title text-center">🌍 Khám Phá Thế Giới</h3>
+                  <p className="subtitle text-center">
+                    {tone.isTeen
+                      ? 'Kiến thức nền ngoài sách giáo khoa: khoa học, lịch sử - địa lý, môi trường và an toàn số.'
+                      : 'Cơ thể em, loài vật, cây cỏ, Trái Đất và quê hương Việt Nam — bé khám phá và nhận Sao nhé!'}
+                  </p>
 
-                          {/* Mẹo tính nhẩm hay */}
-                          <div className="math-tip-box">
-                            <span className="tip-text">{selectedMathTopic.lesson.steps[mathPageIndex].tip}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      /* Đang làm các câu hỏi trắc nghiệm */
-                      (() => {
-                        const currentQuizIndex = mathPageIndex - selectedMathTopic.lesson.steps.length
-                        const currentQuiz = selectedMathTopic.quizzes[currentQuizIndex]
-                        return (
-                          <div className="reader-quiz-view math-quiz-theme">
-                            <div className="math-quiz-header">
-                              <span className="quiz-tag math-quiz-tag">🧠 THỬ THÁCH CÂU {currentQuizIndex + 1} / {selectedMathTopic.quizzes.length}</span>
-                              <span className="math-star-reward">⭐️ Thưởng 5 Sao</span>
-                            </div>
-
-                            <h4 className="quiz-question math-question-title">{currentQuiz.question}</h4>
-                            
-                            {/* Phép tính / Biểu thức minh họa sinh động */}
-                            {currentQuiz.equation && (
-                              <div className="math-equation-banner">
-                                <span className="equation-math-text">{currentQuiz.equation}</span>
-                              </div>
-                            )}
-
-                            <div className="quiz-options-list math-options-grid">
-                              {currentQuiz.options.map((option, idx) => (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  className={`quiz-option-btn math-option-card ${mathQuizSelectedOption === idx ? 'selected' : ''}`}
-                                  disabled={mathQuizAnsweredCorrectly}
-                                  onClick={() => {
-                                    setMathQuizSelectedOption(idx)
-                                    setMathQuizShowFeedback(false)
-                                  }}
-                                >
-                                  <span className="option-letter-badge">{String.fromCharCode(65 + idx)}</span>
-                                  <span className="option-text-val">{option}</span>
-                                </button>
-                              ))}
-                            </div>
-
-                            {mathQuizShowFeedback && !mathQuizAnsweredCorrectly && (
-                              <div className="error-banner animate-bounce">
-                                ❌ Chưa đúng rồi! Bé hãy suy nghĩ kỹ và chọn lại đáp án nhé 💪
-                              </div>
-                            )}
-
-                            {mathQuizAnsweredCorrectly && (
-                              <div className="success-banner moral-box math-success-box">
-                                <span className="moral-title">🎉 XUẤT SẮC! LỜI GIẢI CHI TIẾT:</span>
-                                <p className="moral-text">{currentQuiz.explanation}</p>
-                              </div>
-                            )}
-
-                            <div className="quiz-actions">
-                              {!mathQuizAnsweredCorrectly ? (
-                                <button
-                                  type="button"
-                                  className="btn btn-primary math-action-btn"
-                                  disabled={mathQuizSelectedOption === null}
-                                  onClick={() => {
-                                    if (mathQuizSelectedOption === currentQuiz.correctAnswer) {
-                                      setMathQuizAnsweredCorrectly(true)
-                                      if (!mathQuestionMissed) setMathFirstTryCount(prev => prev + 1)
-                                    } else {
-                                      setMathQuizShowFeedback(true)
-                                      setMathQuestionMissed(true)
-                                      setMathWrongAttempts(prev => prev + 1)
-                                      setMathWrongAnswers(prev => [...prev, {
-                                        q: currentQuiz.question,
-                                        chose: currentQuiz.options[mathQuizSelectedOption],
-                                        correct: currentQuiz.options[currentQuiz.correctAnswer],
-                                      }])
-                                    }
-                                  }}
-                                >
-                                  💡 Kiểm tra kết quả
-                                </button>
-                              ) : (
-                                currentQuizIndex < selectedMathTopic.quizzes.length - 1 ? (
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary math-action-btn"
-                                    onClick={() => {
-                                      setMathPageIndex(prev => prev + 1)
-                                      setMathQuizSelectedOption(null)
-                                      setMathQuizAnsweredCorrectly(false)
-                                      setMathQuizShowFeedback(false)
-                                      setMathQuestionMissed(false)
-                                    }}
-                                  >
-                                    Câu hỏi tiếp theo ➜
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className="btn btn-success animate-pulse math-action-btn"
-                                    onClick={() => handleMathTopicFinished(selectedMathTopic)}
-                                  >
-                                    Hoàn thành & Nhận {selectedMathTopic.stars} Sao! ⭐️
-                                  </button>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })()
-                    )}
+                  <div className="age-group-toggle">
+                    <button
+                      type="button"
+                      className={`toggle-age-btn ${kidAgeGroup === 'kids' ? 'active' : ''}`}
+                      onClick={() => setKidAgeGroup('kids')}
+                    >
+                      🧸 Khám Phá Tí Hon
+                    </button>
+                    <button
+                      type="button"
+                      className={`toggle-age-btn ${kidAgeGroup === 'teens' ? 'active' : ''}`}
+                      onClick={() => setKidAgeGroup('teens')}
+                    >
+                      🧭 Hiểu Biết Tuổi Teen
+                    </button>
                   </div>
 
-                  <div className="reader-footer">
-                    <span className="page-indicator">
-                      {mathPageIndex < selectedMathTopic.lesson.steps.length
-                        ? `Lý thuyết: Trang ${mathPageIndex + 1} / ${selectedMathTopic.lesson.steps.length}`
-                        : `Thử thách: Câu ${mathPageIndex - selectedMathTopic.lesson.steps.length + 1} / ${selectedMathTopic.quizzes.length}`}
-                    </span>
-                    {mathPageIndex < selectedMathTopic.lesson.steps.length && (
-                      <div className="navigation-buttons">
-                        <button
-                          type="button"
-                          className="btn btn-secondary btn-sm"
-                          disabled={mathPageIndex === 0}
-                          onClick={() => setMathPageIndex(prev => prev - 1)}
-                        >
-                          ⇦ Quay lại
-                        </button>
-                        {mathPageIndex === selectedMathTopic.lesson.steps.length - 1 ? (
-                          <ReadingGateButton
-                            className="btn btn-primary btn-sm"
-                            text={[
-                              selectedMathTopic.lesson.steps[mathPageIndex]?.desc,
-                              selectedMathTopic.lesson.steps[mathPageIndex]?.tip,
-                            ].filter(Boolean).join(' ')}
-                            tone={tone}
-                            onReady={() => setMathPageIndex(prev => prev + 1)}
-                          >
-                            Vào làm bài trắc nghiệm ➜
-                          </ReadingGateButton>
-                        ) : (
-                          <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                            onClick={() => setMathPageIndex(prev => prev + 1)}
-                          >
-                            Xem tiếp ➜
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  {renderTopicGrid({
+                    topics: exploreData[kidAgeGroup],
+                    catalogKey: 'explore',
+                    cardSubtitle: (topic) => `${topic.quizzes.length} câu hỏi khám phá`,
+                    onOpen: setSelectedExploreTopic,
+                    lockedToast: '🔒 Chủ đề Khám Phá này chưa được giao. Con nhờ Bố Mẹ mở: Nhiệm vụ ➜ 🎯 Giao bài học ➜ 🌍 Khám phá nhé! 😊',
+                  })}
+                </>
+              ) : (
+                <TopicReader
+                  key={selectedExploreTopic.id}
+                  topic={selectedExploreTopic}
+                  tone={tone}
+                  theme="explore"
+                  onClose={() => setSelectedExploreTopic(null)}
+                  onFinished={(result) => handleTopicFinished(selectedExploreTopic, 'explore', result)}
+                />
               )}
             </div>
           )}
@@ -4017,7 +4343,7 @@ function AppContent() {
                                            c.status === 'approved'
                                     )
                                     try {
-                                      await logLearningSession(familyId, profile.child.id, {
+                                      await safeLogLearningSession(familyId, profile.child.id, {
                                         kind: 'sgk',
                                         refId: String(selectedLesson.id),
                                         title: selectedLesson.title,

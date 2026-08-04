@@ -1297,6 +1297,181 @@ body {
   border-radius: 10px;
 }
 
+/* Gợi ý có trỏ vào nội dung trong app */
+.task-link-pill {
+  font-size: 11px;
+}
+
+.task-link-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px dashed var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+.task-link-clear {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+/* Nhãn phân biệt nhiệm vụ bài học với việc nhà trong "Việc đang giao" */
+.badge-tag.badge-content {
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+/* 12b. BẢNG "GIAO BÀI HỌC TRONG APP" CỦA BỐ MẸ
+   Bảng này liệt kê hàng chục bài nên phải chiếm cả chiều ngang và có vùng cuộn
+   riêng, nếu không nó đẩy form "Thêm nhiệm vụ" xuống quá sâu. */
+.assign-panel {
+  grid-column: 1 / -1;
+  text-align: left;
+}
+
+.assign-hint {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+.assign-kid-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.assign-age-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.assign-progress {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.assign-area-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assign-area-row {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+.assign-area-open {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.assign-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.assign-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assign-item {
+    background: rgba(15, 23, 42, 0.5);
+  }
+}
+
+.assign-item.done { border-left-color: var(--success); }
+.assign-item.open { border-left-color: var(--primary); }
+.assign-item.waiting { border-left-color: var(--warning); }
+.assign-item.locked { border-left-color: var(--border); }
+
+.assign-item-emoji {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.assign-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assign-item-main strong {
+  font-size: 12px;
+  color: var(--text-h);
+}
+
+.assign-item-status {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.assign-item-status.done { color: var(--success); }
+.assign-item-status.open { color: var(--primary); }
+.assign-item-status.waiting { color: var(--warning); }
+.assign-item-status.locked { color: var(--text); opacity: 0.6; }
+
+.assign-item-note {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* Nhắc con rằng bài học tự cộng sao, không cần nộp minh chứng */
+.task-selfstar-note {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--success);
+}
+
 /* 13. GIAO DIỆN GÓC ĐỌC SÁCH & TRÌNH ĐỌC TRUYỆN */
 .age-group-toggle {
   display: flex;
@@ -2074,6 +2249,127 @@ body {
   padding: 14px 28px !important;
   border-radius: 14px !important;
   font-weight: 800 !important;
+}
+
+/* ======================================================
+   KHÁM PHÁ THẾ GIỚI - biến thể màu của bộ đọc bài
+   ------------------------------------------------------
+   Khu Khám Phá dùng LẠI toàn bộ layout của Toán tư duy
+   (TopicReader.jsx), chỉ đổi tông màu từ tím - hồng sang
+   xanh lá - xanh biển để con nhận ra ngay mình đang ở khu
+   nào mà không cần đọc tiêu đề.
+   Mọi luật ở đây đều nằm trong .explore-theme nên không
+   ảnh hưởng một dòng nào tới tab Toán.
+   ====================================================== */
+
+.explore-theme .quiz-tag.glow {
+  background: linear-gradient(135deg, #10b981, #0ea5e9);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.explore-theme .math-step-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(110, 231, 183, 0.3);
+}
+
+.explore-theme .math-step-title {
+  background: linear-gradient(135deg, #34d399, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Ô "Sự thật thú vị" - viền liền thay vì nét đứt kiểu công thức toán */
+.explore-theme .math-formula-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(14, 165, 233, 0.15));
+  border: 2px solid rgba(52, 211, 153, 0.55);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+}
+
+/* Sự thật thú vị là câu văn dài, không phải công thức ngắn -> chữ nhỏ hơn cho dễ đọc */
+.explore-theme .formula-text {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #6ee7b7;
+  letter-spacing: 0;
+}
+
+.explore-theme .math-quiz-tag {
+  background: linear-gradient(135deg, #059669, #0284c7) !important;
+}
+
+.explore-theme .math-option-card:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.25);
+}
+
+.explore-theme .math-option-card.selected {
+  background: linear-gradient(135deg, #0d9488, #0ea5e9) !important;
+  border-color: #5eead4 !important;
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.5);
+}
+
+/* Ô minh hoạ emoji lớn cho Khám Phá - giúp bé nhìn hình biết ngay bài nói gì */
+.explore-illus-scene {
+  border-radius: 16px;
+  padding: 28px 20px 18px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Lớp sáng nhẹ phía trên để tạo chiều sâu */
+.explore-illus-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.explore-illus-emojis {
+  font-size: 3rem;
+  letter-spacing: 8px;
+  line-height: 1.4;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: illustFloat 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes illustFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.explore-illus-label {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 16px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive: màn hình nhỏ thì emoji nhỏ hơn chút */
+@media (max-width: 480px) {
+  .explore-illus-emojis {
+    font-size: 2.2rem;
+    letter-spacing: 4px;
+  }
+  .explore-illus-scene {
+    padding: 20px 14px 14px;
+  }
 }
 
 /* ======================================================
@@ -3918,17 +4214,27 @@ body {
   background: rgba(139, 92, 246, 0.08);
   cursor: pointer;
   font-weight: 600;
+  color: var(--text-h);
+  font-family: var(--sans);
   transition: all 0.2s;
 }
 
 .plan-kid-chip:hover {
   border-color: rgba(139, 92, 246, 0.7);
+  background: rgba(139, 92, 246, 0.15);
 }
 
 .plan-kid-chip.active {
   background: rgba(139, 92, 246, 0.22);
   border-color: #8b5cf6;
-  color: #4c1d95;
+  color: #a78bfa;
+}
+
+@media (prefers-color-scheme: dark) {
+  .plan-kid-chip.active {
+    color: #c4b5fd;
+    background: rgba(139, 92, 246, 0.3);
+  }
 }
 
 .plan-kid-grade {
@@ -3937,6 +4243,7 @@ body {
   background: rgba(139, 92, 246, 0.2);
   padding: 2px 8px;
   border-radius: 999px;
+  color: inherit;
 }
 
 .plan-kid-grade-edit,
@@ -3951,23 +4258,24 @@ body {
 .plan-grade-edit-row label {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text);
 }
 
 .plan-grade-btn {
   padding: 6px 14px;
-  border: 2px solid rgba(100, 116, 139, 0.3);
+  border: 2px solid var(--border);
   border-radius: 10px;
   background: transparent;
   cursor: pointer;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text);
+  font-family: var(--sans);
   transition: all 0.2s;
 }
 
 .plan-grade-btn:hover {
   border-color: #8b5cf6;
-  color: #4c1d95;
+  color: var(--text-h);
 }
 
 .plan-grade-btn.active {
@@ -3985,15 +4293,24 @@ body {
 .plan-week-select label {
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text);
 }
 
 .plan-week-select select {
   padding: 8px 12px;
   border: 2px solid rgba(139, 92, 246, 0.3);
   border-radius: 10px;
-  background: #fff;
+  background: var(--bg);
+  color: var(--text-h);
   font-weight: 600;
+  font-family: var(--sans);
+}
+
+@media (prefers-color-scheme: dark) {
+  .plan-week-select select {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(139, 92, 246, 0.4);
+  }
 }
 
 .plan-days-grid {
@@ -4013,26 +4330,71 @@ body {
   gap: 8px;
 }
 
+@media (prefers-color-scheme: dark) {
+  .plan-day-card {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+}
+
 .plan-day-card.today {
   border-color: #8b5cf6;
   background: rgba(139, 92, 246, 0.14);
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
 }
 
+@media (prefers-color-scheme: dark) {
+  .plan-day-card.today {
+    background: rgba(139, 92, 246, 0.22);
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+  }
+}
+
 .plan-day-card h4 {
   margin: 0 0 4px;
-  color: #4c1d95;
+  color: #a78bfa;
   font-size: 15px;
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  .plan-day-card h4 {
+    color: #c4b5fd;
+  }
 }
 
 .plan-day-card select,
 .plan-day-card input {
   width: 100%;
   padding: 8px 10px;
-  border: 2px solid rgba(139, 92, 246, 0.25);
+  border: 1.5px solid rgba(139, 92, 246, 0.3);
   border-radius: 10px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.85);
+  color: #1e293b;
   font-size: 13px;
+  font-family: var(--sans);
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.plan-day-card select:focus,
+.plan-day-card input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  .plan-day-card select,
+  .plan-day-card input {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(139, 92, 246, 0.35);
+    color: #e2e8f0;
+  }
+  .plan-day-card select option {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
 }
 
 .plan-field-label {
@@ -4040,7 +4402,8 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: #64748b;
+  color: var(--text);
+  opacity: 0.8;
 }
 
 .plan-open-btn {

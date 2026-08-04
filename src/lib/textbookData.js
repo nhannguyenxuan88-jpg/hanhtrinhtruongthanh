@@ -3344,5 +3344,808 @@ export const textbookData = [
         ]
       }
     ]
+  },
+
+  // ==========================================================================
+  // TIẾNG ANH LỚP 2
+  // Bé lớp 2 trước đây chưa có môn Tiếng Anh nào trong app (chỉ lớp 8 mới có),
+  // nên bài học được xếp vào các TUẦN LẺ 1, 3, 5 ... 29 để rải đều cả năm và
+  // không dồn vào một quãng. Nhờ trường "week", các bài này tự động xuất hiện
+  // trong tab SGK lẫn danh sách chọn bài của Kế hoạch tuần.
+  // Cố ý KHÔNG thêm vào textbookPdfs.js vì chưa có file PDF gốc — nút
+  // "Xem sách gốc" sẽ tự ẩn.
+  // Câu hỏi ra bằng tiếng Việt (hỏi nghĩa / chọn từ đúng) vì bé lớp 2 mới
+  // làm quen mặt chữ, chưa đọc hiểu được đề bài bằng tiếng Anh.
+  // ==========================================================================
+  {
+    "id": "anh2",
+    "subject": "Tiếng Anh",
+    "grade": 2,
+    "volume": "Global Success (Tuần 1 - 29)",
+    "emoji": "🔤",
+    "color": "#f59e0b",
+    "stars": 5,
+    "lessons": [
+      {
+        "id": "anh2_unit1",
+        "week": 1,
+        "title": "Unit 1: Hello! - Chào hỏi và giới thiệu tên",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 1: HELLO! - XIN CHÀO!”\n\nBài đầu tiên giúp bé biết chào hỏi và nói tên mình bằng tiếng Anh.\n\n---\n\n📚 TỪ VỰNG\n\n• hello /hê-lâu/: xin chào\n\n• hi /hai/: chào (thân mật)\n\n• goodbye /gút-bai/: tạm biệt\n\n• friend /frendơ/: bạn\n\n• teacher /ti-chơ/: cô giáo, thầy giáo\n\n---\n\n📝 MẪU CÂU\n\n• Hello! I am Nam. → Xin chào! Mình là Nam.\n\n• What is your name? → Bạn tên là gì?\n\n• My name is Mai. → Mình tên là Mai.\n\n• Nice to meet you. → Rất vui được gặp bạn.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBé thử chào bố mẹ bằng câu “Hello! My name is ...” rồi nói “Goodbye” khi đi ngủ nhé!",
+        "quizzes": [
+          {
+            "question": "“Hello” có nghĩa là gì?",
+            "options": [
+              "Xin chào",
+              "Tạm biệt",
+              "Cảm ơn",
+              "Xin lỗi"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Hello = Xin chào. Bé dùng để chào khi gặp ai đó."
+          },
+          {
+            "question": "Muốn nói “Tạm biệt”, bé dùng từ nào?",
+            "options": [
+              "Hello",
+              "Goodbye",
+              "Friend",
+              "Teacher"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Goodbye = Tạm biệt, dùng khi chia tay."
+          },
+          {
+            "question": "“My name is Mai.” nghĩa là gì?",
+            "options": [
+              "Mình tên là Mai",
+              "Mai là bạn của mình",
+              "Mai đi học",
+              "Chào Mai"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ My name is ... = Mình tên là ... Bé dùng để giới thiệu tên."
+          },
+          {
+            "question": "Bạn hỏi “What is your name?”, bé trả lời thế nào?",
+            "options": [
+              "Goodbye!",
+              "My name is Nam.",
+              "Thank you.",
+              "I am fine."
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Câu hỏi tên thì trả lời bằng “My name is ...” kèm tên của bé."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit2",
+        "week": 3,
+        "title": "Unit 2: Numbers - Các số từ 1 đến 20",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 2: NUMBERS - CON SỐ”\n\nBé học đếm từ 1 đến 20 bằng tiếng Anh.\n\n---\n\n📚 TỪ VỰNG\n\n• 1 one · 2 two · 3 three · 4 four · 5 five\n\n• 6 six · 7 seven · 8 eight · 9 nine · 10 ten\n\n• 11 eleven · 12 twelve · 13 thirteen · 14 fourteen · 15 fifteen\n\n• 16 sixteen · 17 seventeen · 18 eighteen · 19 nineteen · 20 twenty\n\n---\n\n📝 MẪU CÂU\n\n• How old are you? → Bạn bao nhiêu tuổi?\n\n• I am seven years old. → Mình bảy tuổi.\n\n• How many books? → Có bao nhiêu quyển sách?\n\n• There are five books. → Có năm quyển sách.\n\n---\n\n💬 MẸO NHỚ\n\nTừ 13 đến 19 đều kết thúc bằng “-teen”: thirteen, fourteen, fifteen... Bé nhớ đuôi “-teen” là nhớ được cả nhóm!",
+        "quizzes": [
+          {
+            "question": "Số 5 trong tiếng Anh là từ nào?",
+            "options": [
+              "four",
+              "five",
+              "nine",
+              "ten"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ five = 5. Bé nhớ: four = 4, five = 5."
+          },
+          {
+            "question": "“Twelve” là số mấy?",
+            "options": [
+              "2",
+              "10",
+              "12",
+              "20"
+            ],
+            "correctAnswer": 2,
+            "explanation": "✅ twelve = 12. Còn twenty mới là 20 nhé."
+          },
+          {
+            "question": "Bé 7 tuổi, nói tiếng Anh thế nào?",
+            "options": [
+              "I am seven years old.",
+              "I am ten years old.",
+              "My name is seven.",
+              "There are seven."
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ I am seven years old = Mình bảy tuổi."
+          },
+          {
+            "question": "Các số từ 13 đến 19 thường có đuôi là gì?",
+            "options": [
+              "-ty",
+              "-teen",
+              "-ing",
+              "-er"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Đuôi “-teen”: thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit3",
+        "week": 5,
+        "title": "Unit 3: Colours - Màu sắc",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 3: COLOURS - MÀU SẮC”\n\nBé gọi tên các màu quen thuộc bằng tiếng Anh.\n\n---\n\n📚 TỪ VỰNG\n\n• red /rét/: màu đỏ\n\n• yellow /y-e-lâu/: màu vàng\n\n• blue /blu/: màu xanh da trời\n\n• green /grin/: màu xanh lá\n\n• black /blách/: màu đen\n\n• white /oai/: màu trắng\n\n• orange /o-rinh/: màu cam\n\n• pink /pinh/: màu hồng\n\n---\n\n📝 MẪU CÂU\n\n• What colour is it? → Nó màu gì?\n\n• It is red. → Nó màu đỏ.\n\n• I like blue. → Mình thích màu xanh da trời.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBé nhìn quanh phòng và gọi tên màu của 3 đồ vật bằng tiếng Anh nhé!",
+        "quizzes": [
+          {
+            "question": "“Red” là màu gì?",
+            "options": [
+              "Màu đỏ",
+              "Màu vàng",
+              "Màu đen",
+              "Màu xanh"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ red = màu đỏ, giống màu quả cà chua chín."
+          },
+          {
+            "question": "Lá cây có màu xanh lá, tiếng Anh gọi là gì?",
+            "options": [
+              "blue",
+              "green",
+              "grey",
+              "brown"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ green = xanh lá. Còn blue là xanh da trời nhé."
+          },
+          {
+            "question": "“It is white.” nghĩa là gì?",
+            "options": [
+              "Nó màu trắng",
+              "Nó màu đen",
+              "Nó rất đẹp",
+              "Nó màu hồng"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ white = màu trắng, như màu tờ giấy."
+          },
+          {
+            "question": "Muốn hỏi “Nó màu gì?”, bé nói thế nào?",
+            "options": [
+              "How old are you?",
+              "What is your name?",
+              "What colour is it?",
+              "How many?"
+            ],
+            "correctAnswer": 2,
+            "explanation": "✅ What colour is it? = Nó màu gì?"
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit4",
+        "week": 7,
+        "title": "Unit 4: My Family - Gia đình của em",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 4: MY FAMILY - GIA ĐÌNH CỦA EM”\n\nBé giới thiệu những người thân trong nhà.\n\n---\n\n📚 TỪ VỰNG\n\n• family /phe-mi-li/: gia đình\n\n• father / dad: bố\n\n• mother / mum: mẹ\n\n• brother: anh trai, em trai\n\n• sister: chị gái, em gái\n\n• grandfather: ông\n\n• grandmother: bà\n\n---\n\n📝 MẪU CÂU\n\n• This is my father. → Đây là bố của mình.\n\n• Who is this? → Đây là ai?\n\n• I love my family. → Mình yêu gia đình mình.\n\n---\n\n💬 MẸO NHỚ\n\nTiếng Anh không phân biệt anh/em như tiếng Việt: brother dùng cho cả anh trai lẫn em trai, sister dùng cho cả chị gái lẫn em gái.",
+        "quizzes": [
+          {
+            "question": "“Mother” nghĩa là gì?",
+            "options": [
+              "Bố",
+              "Mẹ",
+              "Bà",
+              "Chị"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ mother (hoặc mum) = mẹ. Bố là father hoặc dad."
+          },
+          {
+            "question": "Bé muốn nói “Đây là bà của mình”, chọn câu đúng:",
+            "options": [
+              "This is my grandmother.",
+              "This is my grandfather.",
+              "This is my sister.",
+              "This is my teacher."
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ grandmother = bà. grandfather mới là ông."
+          },
+          {
+            "question": "Chị gái trong tiếng Anh là từ nào?",
+            "options": [
+              "brother",
+              "sister",
+              "mother",
+              "friend"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ sister dùng cho cả chị gái và em gái."
+          },
+          {
+            "question": "“I love my family.” nghĩa là gì?",
+            "options": [
+              "Mình yêu gia đình mình",
+              "Gia đình mình rất đông",
+              "Đây là gia đình mình",
+              "Mình có một gia đình"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ love = yêu, family = gia đình → Mình yêu gia đình mình."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit5",
+        "week": 9,
+        "title": "Unit 5: School Things - Đồ dùng học tập",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 5: SCHOOL THINGS - ĐỒ DÙNG HỌC TẬP”\n\nBé gọi tên những thứ trong cặp sách của mình.\n\n---\n\n📚 TỪ VỰNG\n\n• book /búc/: quyển sách\n\n• pen /pen/: bút mực\n\n• pencil /pen-sồ/: bút chì\n\n• ruler /ru-lơ/: cái thước\n\n• rubber / eraser: cục tẩy\n\n• bag /bách/: cặp sách\n\n• notebook: quyển vở\n\n---\n\n📝 MẪU CÂU\n\n• This is my pen. → Đây là bút của mình.\n\n• What is this? → Đây là cái gì?\n\n• It is a ruler. → Đó là cái thước.\n\n• May I have a pencil, please? → Cho mình mượn bút chì được không ạ?\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBé mở cặp ra và gọi tên 4 món đồ bằng tiếng Anh nhé!",
+        "quizzes": [
+          {
+            "question": "“Pencil” là đồ dùng gì?",
+            "options": [
+              "Bút chì",
+              "Cục tẩy",
+              "Cái thước",
+              "Quyển sách"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ pencil = bút chì. Bút mực là pen."
+          },
+          {
+            "question": "Cái thước kẻ trong tiếng Anh là từ nào?",
+            "options": [
+              "bag",
+              "ruler",
+              "book",
+              "pen"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ ruler = cái thước, dùng để kẻ và đo."
+          },
+          {
+            "question": "“It is a book.” nghĩa là gì?",
+            "options": [
+              "Đó là quyển sách",
+              "Đó là cái cặp",
+              "Đó là cái bút",
+              "Đó là cục tẩy"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ book = quyển sách."
+          },
+          {
+            "question": "Muốn hỏi “Đây là cái gì?”, bé nói thế nào?",
+            "options": [
+              "Who is this?",
+              "What is this?",
+              "How old are you?",
+              "What colour is it?"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ What is this? dùng để hỏi đồ vật. Who is this? là hỏi người."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit6",
+        "week": 11,
+        "title": "Unit 6: My Body - Cơ thể của em",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 6: MY BODY - CƠ THỂ CỦA EM”\n\nBé gọi tên các bộ phận trên cơ thể mình.\n\n---\n\n📚 TỪ VỰNG\n\n• head /hét/: cái đầu\n\n• hair /he-ơ/: tóc\n\n• eye /ai/: mắt\n\n• nose /nâu-zơ/: mũi\n\n• mouth /mao-th/: miệng\n\n• ear /i-ơ/: tai\n\n• hand /hen-đơ/: bàn tay\n\n• leg /lếch/: chân\n\n---\n\n📝 MẪU CÂU\n\n• Touch your nose! → Chạm vào mũi nào!\n\n• I have two eyes. → Mình có hai mắt.\n\n• Wash your hands. → Rửa tay đi con.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBố mẹ đọc “Touch your ear!”, bé chạm vào tai. Chơi vài lượt là bé thuộc luôn!",
+        "quizzes": [
+          {
+            "question": "“Eye” là bộ phận nào?",
+            "options": [
+              "Mắt",
+              "Tai",
+              "Mũi",
+              "Miệng"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ eye = mắt. Bé có two eyes (hai mắt)."
+          },
+          {
+            "question": "Bàn tay trong tiếng Anh là từ nào?",
+            "options": [
+              "leg",
+              "hand",
+              "head",
+              "hair"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ hand = bàn tay. leg là chân."
+          },
+          {
+            "question": "“Wash your hands.” nghĩa là gì?",
+            "options": [
+              "Rửa tay đi",
+              "Rửa mặt đi",
+              "Chạm vào tay",
+              "Giơ tay lên"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ wash = rửa, hands = hai bàn tay → Rửa tay đi. Rửa tay trước khi ăn nhé bé!"
+          },
+          {
+            "question": "Cô giáo nói “Touch your nose!”, bé phải chạm vào đâu?",
+            "options": [
+              "Vào tai",
+              "Vào mũi",
+              "Vào chân",
+              "Vào tóc"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ nose = mũi, nên bé chạm vào mũi."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit7",
+        "week": 13,
+        "title": "Unit 7: Animals - Các con vật",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 7: ANIMALS - CÁC CON VẬT”\n\nBé gọi tên những con vật quen thuộc.\n\n---\n\n📚 TỪ VỰNG\n\n• dog /đóc/: con chó\n\n• cat /két/: con mèo\n\n• bird /bơd/: con chim\n\n• fish /phích/: con cá\n\n• chicken: con gà\n\n• duck /đắc/: con vịt\n\n• cow /cao/: con bò\n\n• elephant: con voi\n\n---\n\n📝 MẪU CÂU\n\n• I have a cat. → Mình có một con mèo.\n\n• Do you like dogs? → Bạn có thích chó không?\n\n• Yes, I do. / No, I do not. → Có, mình thích. / Không, mình không thích.\n\n---\n\n💬 MẸO NHỚ\n\nThêm chữ “s” khi có nhiều con: one cat (một con mèo) → two cats (hai con mèo).",
+        "quizzes": [
+          {
+            "question": "“Cat” là con gì?",
+            "options": [
+              "Con chó",
+              "Con mèo",
+              "Con gà",
+              "Con cá"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ cat = con mèo. Con chó là dog."
+          },
+          {
+            "question": "Con voi trong tiếng Anh là từ nào?",
+            "options": [
+              "elephant",
+              "duck",
+              "bird",
+              "cow"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ elephant = con voi, con vật to lớn có vòi dài."
+          },
+          {
+            "question": "“I have a dog.” nghĩa là gì?",
+            "options": [
+              "Mình có một con chó",
+              "Mình thích chó",
+              "Con chó của mình đâu rồi",
+              "Đây là con chó"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ I have = mình có → Mình có một con chó."
+          },
+          {
+            "question": "Có 2 con mèo thì viết thế nào cho đúng?",
+            "options": [
+              "two cat",
+              "two cats",
+              "two catt",
+              "second cat"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Nhiều hơn một thì thêm “s”: two cats."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit8",
+        "week": 15,
+        "title": "Unit 8: Food and Drinks - Đồ ăn và thức uống",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 8: FOOD AND DRINKS - ĐỒ ĂN VÀ THỨC UỐNG”\n\nBé nói về món ăn và đồ uống mình thích.\n\n---\n\n📚 TỪ VỰNG\n\n• rice /rai-sờ/: cơm\n\n• bread /brét/: bánh mì\n\n• milk /minh-kờ/: sữa\n\n• water /oa-tơ/: nước\n\n• egg /éch/: quả trứng\n\n• apple /á-pồ/: quả táo\n\n• banana: quả chuối\n\n• fish: cá (món ăn)\n\n---\n\n📝 MẪU CÂU\n\n• I like milk. → Mình thích sữa.\n\n• I do not like fish. → Mình không thích cá.\n\n• What do you want? → Bạn muốn gì?\n\n• I want some water, please. → Cho mình xin ít nước ạ.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBữa tối nay, bé thử gọi tên 2 món trên bàn ăn bằng tiếng Anh nhé!",
+        "quizzes": [
+          {
+            "question": "“Milk” là gì?",
+            "options": [
+              "Sữa",
+              "Nước",
+              "Cơm",
+              "Bánh mì"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ milk = sữa. Nước là water."
+          },
+          {
+            "question": "Quả táo trong tiếng Anh là từ nào?",
+            "options": [
+              "banana",
+              "apple",
+              "egg",
+              "bread"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ apple = quả táo. banana là quả chuối."
+          },
+          {
+            "question": "“I like rice.” nghĩa là gì?",
+            "options": [
+              "Mình thích cơm",
+              "Mình không thích cơm",
+              "Mình muốn cơm",
+              "Cơm ngon quá"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ I like ... = Mình thích ... → Mình thích cơm."
+          },
+          {
+            "question": "Muốn xin một cốc nước lịch sự, bé nói thế nào?",
+            "options": [
+              "Water!",
+              "I want some water, please.",
+              "I like water.",
+              "What is water?"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Thêm “please” để câu nói lịch sự hơn: I want some water, please."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit9",
+        "week": 17,
+        "title": "Unit 9: In My House - Trong ngôi nhà của em",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 9: IN MY HOUSE - TRONG NGÔI NHÀ CỦA EM”\n\nBé gọi tên các phòng và đồ đạc trong nhà.\n\n---\n\n📚 TỪ VỰNG\n\n• house /hao-sờ/: ngôi nhà\n\n• room /rum/: căn phòng\n\n• bedroom: phòng ngủ\n\n• kitchen /kít-chần/: nhà bếp\n\n• bathroom: phòng tắm\n\n• table /tê-bồ/: cái bàn\n\n• chair /che-ơ/: cái ghế\n\n• bed /bét/: cái giường\n\n---\n\n📝 MẪU CÂU\n\n• This is my bedroom. → Đây là phòng ngủ của mình.\n\n• The book is on the table. → Quyển sách ở trên bàn.\n\n• Where is the cat? → Con mèo ở đâu?\n\n---\n\n💬 MẸO NHỚ\n\nGhép từ rất dễ đoán nghĩa: bed (giường) + room (phòng) = bedroom (phòng ngủ); bath (tắm) + room = bathroom (phòng tắm).",
+        "quizzes": [
+          {
+            "question": "“Kitchen” là phòng nào trong nhà?",
+            "options": [
+              "Nhà bếp",
+              "Phòng ngủ",
+              "Phòng tắm",
+              "Phòng khách"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ kitchen = nhà bếp, nơi mẹ nấu ăn."
+          },
+          {
+            "question": "Cái ghế trong tiếng Anh là từ nào?",
+            "options": [
+              "table",
+              "chair",
+              "bed",
+              "room"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ chair = cái ghế. table là cái bàn."
+          },
+          {
+            "question": "“Bedroom” nghĩa là gì?",
+            "options": [
+              "Phòng ngủ",
+              "Phòng tắm",
+              "Nhà bếp",
+              "Cái giường"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ bed (giường) + room (phòng) = bedroom (phòng ngủ)."
+          },
+          {
+            "question": "“The book is on the table.” nghĩa là gì?",
+            "options": [
+              "Quyển sách ở trên bàn",
+              "Quyển sách ở dưới bàn",
+              "Cái bàn ở trên sách",
+              "Quyển sách ở trong phòng"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ on = ở trên → Quyển sách ở trên bàn."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit10",
+        "week": 19,
+        "title": "Unit 10: Clothes - Quần áo",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 10: CLOTHES - QUẦN ÁO”\n\nBé gọi tên quần áo mình mặc hằng ngày.\n\n---\n\n📚 TỪ VỰNG\n\n• clothes /clâu-zơ/: quần áo\n\n• shirt /sơt/: áo sơ mi\n\n• T-shirt: áo phông\n\n• trousers /trao-zơs/: cái quần dài\n\n• skirt /sờ-kơt/: cái váy\n\n• shoes /su-zơ/: đôi giày\n\n• hat /hét/: cái mũ\n\n---\n\n📝 MẪU CÂU\n\n• I am wearing a red T-shirt. → Mình đang mặc áo phông màu đỏ.\n\n• Put on your shoes. → Đi giày vào nào.\n\n• It is a nice hat. → Cái mũ đẹp quá.\n\n---\n\n💬 MẸO NHỚ\n\nGiày và quần luôn đi thành đôi nên tiếng Anh luôn có chữ “s”: shoes, trousers.",
+        "quizzes": [
+          {
+            "question": "“Shoes” là gì?",
+            "options": [
+              "Đôi giày",
+              "Cái mũ",
+              "Cái váy",
+              "Áo sơ mi"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ shoes = đôi giày. Luôn có chữ “s” vì giày đi thành đôi."
+          },
+          {
+            "question": "Cái mũ trong tiếng Anh là từ nào?",
+            "options": [
+              "hat",
+              "shirt",
+              "skirt",
+              "bag"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ hat = cái mũ, dùng để che nắng."
+          },
+          {
+            "question": "“I am wearing a blue T-shirt.” nghĩa là gì?",
+            "options": [
+              "Mình đang mặc áo phông màu xanh",
+              "Mình thích áo phông màu xanh",
+              "Mình có một cái áo phông",
+              "Áo phông của mình màu đỏ"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ wearing = đang mặc, blue = xanh da trời → Mình đang mặc áo phông màu xanh."
+          },
+          {
+            "question": "Mẹ nói “Put on your shoes.”, bé phải làm gì?",
+            "options": [
+              "Đi giày vào",
+              "Cởi giày ra",
+              "Đội mũ vào",
+              "Mặc áo vào"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ put on = mặc vào, đi vào → Đi giày vào nào."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit11",
+        "week": 21,
+        "title": "Unit 11: The Weather - Thời tiết và mùa",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 11: THE WEATHER - THỜI TIẾT”\n\nBé nói về trời nắng, trời mưa và các mùa trong năm.\n\n---\n\n📚 TỪ VỰNG\n\n• sunny /sắn-ni/: trời nắng\n\n• rainy /rê-ni/: trời mưa\n\n• windy /uyn-đi/: trời có gió\n\n• cloudy: trời nhiều mây\n\n• hot /hót/: nóng\n\n• cold /câu-đờ/: lạnh\n\n• spring: mùa xuân · summer: mùa hè\n\n• autumn: mùa thu · winter: mùa đông\n\n---\n\n📝 MẪU CÂU\n\n• What is the weather like today? → Hôm nay thời tiết thế nào?\n\n• It is sunny. → Trời nắng.\n\n• It is hot in summer. → Mùa hè trời nóng.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nMỗi sáng bé nhìn ra cửa sổ rồi nói một câu: “It is sunny today!” nhé.",
+        "quizzes": [
+          {
+            "question": "“It is rainy.” nghĩa là gì?",
+            "options": [
+              "Trời mưa",
+              "Trời nắng",
+              "Trời gió",
+              "Trời lạnh"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ rainy = có mưa → Trời mưa. Bé nhớ mang ô nhé!"
+          },
+          {
+            "question": "Mùa hè trong tiếng Anh là từ nào?",
+            "options": [
+              "spring",
+              "summer",
+              "autumn",
+              "winter"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ summer = mùa hè. spring là mùa xuân."
+          },
+          {
+            "question": "Trời lạnh thì dùng từ nào?",
+            "options": [
+              "hot",
+              "cold",
+              "sunny",
+              "windy"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ cold = lạnh. hot mới là nóng."
+          },
+          {
+            "question": "Muốn hỏi “Hôm nay thời tiết thế nào?”, bé nói câu nào?",
+            "options": [
+              "What colour is it?",
+              "What is the weather like today?",
+              "How old are you?",
+              "Where is my hat?"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ What is the weather like today? = Hôm nay thời tiết thế nào?"
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit12",
+        "week": 23,
+        "title": "Unit 12: Days of the Week - Các ngày trong tuần",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 12: DAYS OF THE WEEK - CÁC NGÀY TRONG TUẦN”\n\nBé học gọi tên các thứ trong tuần.\n\n---\n\n📚 TỪ VỰNG\n\n• Monday: thứ Hai\n\n• Tuesday: thứ Ba\n\n• Wednesday: thứ Tư\n\n• Thursday: thứ Năm\n\n• Friday: thứ Sáu\n\n• Saturday: thứ Bảy\n\n• Sunday: Chủ nhật\n\n• today: hôm nay · tomorrow: ngày mai\n\n---\n\n📝 MẪU CÂU\n\n• What day is it today? → Hôm nay là thứ mấy?\n\n• It is Monday. → Hôm nay là thứ Hai.\n\n• I go to school on Monday. → Mình đi học vào thứ Hai.\n\n---\n\n💬 MẸO NHỚ\n\nTên các thứ trong tiếng Anh LUÔN viết hoa chữ cái đầu: Monday, Sunday - dù đứng giữa câu.",
+        "quizzes": [
+          {
+            "question": "“Monday” là thứ mấy?",
+            "options": [
+              "Thứ Hai",
+              "Thứ Ba",
+              "Chủ nhật",
+              "Thứ Sáu"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Monday = thứ Hai, ngày đầu tuần đi học."
+          },
+          {
+            "question": "Chủ nhật trong tiếng Anh là từ nào?",
+            "options": [
+              "Saturday",
+              "Sunday",
+              "Friday",
+              "Monday"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Sunday = Chủ nhật. Saturday là thứ Bảy."
+          },
+          {
+            "question": "“Today” nghĩa là gì?",
+            "options": [
+              "Hôm nay",
+              "Ngày mai",
+              "Hôm qua",
+              "Buổi sáng"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ today = hôm nay. tomorrow là ngày mai."
+          },
+          {
+            "question": "Tên các thứ trong tuần bằng tiếng Anh được viết thế nào?",
+            "options": [
+              "Luôn viết hoa chữ cái đầu",
+              "Luôn viết thường",
+              "Viết hoa toàn bộ",
+              "Tuỳ ý"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Trong tiếng Anh, tên thứ và tên tháng luôn viết hoa chữ cái đầu: Monday, Sunday."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit13",
+        "week": 25,
+        "title": "Unit 13: I Like... - Nói về sở thích",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 13: I LIKE... - MÌNH THÍCH...”\n\nBé nói về việc mình thích làm.\n\n---\n\n📚 TỪ VỰNG\n\n• play /plây/: chơi\n\n• read /rít/: đọc\n\n• sing /sinh/: hát\n\n• dance /đan-sờ/: nhảy múa\n\n• draw /đrô/: vẽ\n\n• swim /suym/: bơi\n\n• run /răn/: chạy\n\n---\n\n📝 MẪU CÂU\n\n• I like singing. → Mình thích hát.\n\n• I do not like running. → Mình không thích chạy.\n\n• Do you like drawing? → Bạn có thích vẽ không?\n\n• Yes, I do. / No, I do not. → Có. / Không.\n\n---\n\n💬 MẸO NHỚ\n\nSau “like” thì động từ thêm đuôi “-ing”: like + sing → like singing; like + read → like reading.",
+        "quizzes": [
+          {
+            "question": "“I like singing.” nghĩa là gì?",
+            "options": [
+              "Mình thích hát",
+              "Mình thích nhảy",
+              "Mình thích vẽ",
+              "Mình thích bơi"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ sing = hát → I like singing = Mình thích hát."
+          },
+          {
+            "question": "Từ nào có nghĩa là “vẽ”?",
+            "options": [
+              "draw",
+              "dance",
+              "run",
+              "read"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ draw = vẽ. dance là nhảy múa."
+          },
+          {
+            "question": "Chọn câu đúng: I like ___ books.",
+            "options": [
+              "read",
+              "reading",
+              "to reads",
+              "reads"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Sau “like” thì động từ thêm “-ing”: I like reading books."
+          },
+          {
+            "question": "Bạn hỏi “Do you like swimming?” và bé thích bơi. Bé trả lời:",
+            "options": [
+              "Yes, I do.",
+              "No, I do not.",
+              "I am fine.",
+              "Goodbye."
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Thích thì trả lời “Yes, I do.”; không thích thì “No, I do not.”"
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit14",
+        "week": 27,
+        "title": "Unit 14: At School - Ở trường",
+        "content": "🌅 BÀI HỌC\n\n“UNIT 14: AT SCHOOL - Ở TRƯỜNG”\n\nBé nói về trường lớp và những câu cô giáo hay dùng.\n\n---\n\n📚 TỪ VỰNG\n\n• school /sờ-kun/: trường học\n\n• classroom: lớp học\n\n• desk /đét-sờ/: bàn học\n\n• board /bo-đờ/: cái bảng\n\n• playground: sân chơi\n\n• library: thư viện\n\n---\n\n📝 MẪU CÂU CÔ GIÁO HAY DÙNG\n\n• Stand up! → Đứng lên!\n\n• Sit down! → Ngồi xuống!\n\n• Open your book. → Mở sách ra.\n\n• Be quiet, please. → Trật tự nào.\n\n• Listen to me. → Nghe cô nói nào.\n\n---\n\n💬 BÉ CÙNG THỰC HÀNH\n\nBố mẹ làm cô giáo, đọc “Stand up!” và “Sit down!” để bé làm theo - vừa học vừa vận động!",
+        "quizzes": [
+          {
+            "question": "Cô giáo nói “Stand up!”, bé phải làm gì?",
+            "options": [
+              "Đứng lên",
+              "Ngồi xuống",
+              "Mở sách",
+              "Giơ tay"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ stand up = đứng lên. sit down mới là ngồi xuống."
+          },
+          {
+            "question": "“Classroom” nghĩa là gì?",
+            "options": [
+              "Lớp học",
+              "Sân chơi",
+              "Thư viện",
+              "Nhà bếp"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ class (lớp) + room (phòng) = classroom (lớp học)."
+          },
+          {
+            "question": "“Open your book.” nghĩa là gì?",
+            "options": [
+              "Mở sách ra",
+              "Đóng sách lại",
+              "Cất sách đi",
+              "Đọc to lên"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ open = mở → Mở sách ra."
+          },
+          {
+            "question": "Thư viện trong tiếng Anh là từ nào?",
+            "options": [
+              "library",
+              "playground",
+              "board",
+              "desk"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ library = thư viện, nơi bé mượn và đọc sách."
+          }
+        ]
+      },
+      {
+        "id": "anh2_unit15",
+        "week": 29,
+        "title": "Unit 15: Review - Ôn tập cả năm",
+        "content": "🌅 BÀI HỌC\n\n“REVIEW - ÔN TẬP CẢ NĂM”\n\nBé cùng ôn lại tất cả những gì đã học trong năm.\n\n---\n\n📚 NHỚ LẠI TỪ VỰNG\n\n• Chào hỏi: hello, hi, goodbye\n\n• Số đếm: one, two, three... twenty\n\n• Màu sắc: red, yellow, blue, green, black, white\n\n• Gia đình: father, mother, brother, sister\n\n• Đồ dùng: book, pen, pencil, ruler, bag\n\n• Cơ thể: head, eye, nose, hand, leg\n\n• Con vật: dog, cat, bird, fish, elephant\n\n• Đồ ăn: rice, bread, milk, water, apple\n\n---\n\n📝 NHỚ LẠI MẪU CÂU\n\n• My name is ... → Mình tên là ...\n\n• I am seven years old. → Mình bảy tuổi.\n\n• I like ... → Mình thích ...\n\n• This is my ... → Đây là ... của mình.\n\n• It is sunny today. → Hôm nay trời nắng.\n\n---\n\n💬 BÉ THỬ TÀI\n\nBé thử tự giới thiệu 4 câu về mình bằng tiếng Anh: tên, tuổi, màu yêu thích và việc mình thích làm nhé!",
+        "quizzes": [
+          {
+            "question": "Bé tự giới thiệu tên mình bằng câu nào?",
+            "options": [
+              "My name is Lan.",
+              "I am fine.",
+              "This is a book.",
+              "It is sunny."
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ My name is ... dùng để giới thiệu tên."
+          },
+          {
+            "question": "Từ nào KHÔNG phải là màu sắc?",
+            "options": [
+              "green",
+              "yellow",
+              "pencil",
+              "black"
+            ],
+            "correctAnswer": 2,
+            "explanation": "✅ pencil là bút chì, không phải màu. green, yellow, black đều là màu."
+          },
+          {
+            "question": "Ghép đúng: “I have two ___.” (hai con mèo)",
+            "options": [
+              "cat",
+              "cats",
+              "cat's",
+              "catss"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ Nhiều hơn một thì thêm “s”: two cats."
+          },
+          {
+            "question": "Câu nào dùng để nói về sở thích?",
+            "options": [
+              "I like drawing.",
+              "Sit down, please.",
+              "What day is it today?",
+              "Goodbye!"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ I like ... dùng để nói về điều mình thích: I like drawing = Mình thích vẽ."
+          }
+        ]
+      }
+    ]
   }
 ]

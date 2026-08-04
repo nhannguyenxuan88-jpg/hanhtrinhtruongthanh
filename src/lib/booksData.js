@@ -464,6 +464,154 @@ export const booksData = {
         correctAnswer: 1,
         moral: '💡 Bài học: Hãy luôn học cách lắng nghe lời khuyên đúng đắn của người khác, bướng bỉnh cứng đầu sẽ dễ tự rước họa vào thân.'
       }
+    },
+
+    // ======================================================================
+    // TRUYỆN BỔ SUNG
+    // Nối vào CUỐI mảng chứ không chèn giữa: thứ tự mảng chính là thứ tự mở
+    // khoá của con, chèn vào giữa sẽ làm xáo trộn tiến độ đang học dở.
+    // Các truyện này chưa có ảnh minh hoạ riêng nên bỏ trống trường `image`
+    // — bộ đọc sách đã có sẵn ảnh dự phòng 📖, giao diện không vỡ.
+    // ======================================================================
+    {
+      id: 'son_tinh_thuy_tinh',
+      title: 'Sơn Tinh - Thuỷ Tinh',
+      subtitle: 'Truyền thuyết giải thích mùa lũ và ý chí chống thiên tai',
+      emoji: '🌊',
+      stars: 4,
+      pages: [
+        {
+          text: 'Đời Vua Hùng thứ mười tám có nàng công chúa Mị Nương xinh đẹp nết na. Vua muốn kén cho con một người chồng thật tài giỏi. Một hôm có hai chàng trai cùng đến cầu hôn. Chàng thứ nhất là Sơn Tinh, thần núi Tản Viên, vẫy tay về phía đông thì nổi lên cồn bãi, vẫy tay về phía tây thì mọc lên đồi núi. Chàng thứ hai là Thuỷ Tinh, thần nước, gọi gió thì gió đến, hô mưa thì mưa về.',
+        },
+        {
+          text: 'Cả hai đều tài giỏi ngang nhau nên Vua Hùng rất khó xử. Vua bèn ra điều kiện: ngày mai ai mang lễ vật đến trước sẽ được cưới Mị Nương. Lễ vật gồm voi chín ngà, gà chín cựa, ngựa chín hồng mao. Sáng sớm hôm sau, Sơn Tinh đem đủ lễ vật đến trước nên rước được Mị Nương về núi.',
+        },
+        {
+          text: 'Thuỷ Tinh đến sau, không lấy được vợ nên nổi giận đùng đùng, hô mưa gọi gió dâng nước lên đánh Sơn Tinh. Nước dâng cao bao nhiêu, Sơn Tinh lại bốc từng quả đồi, dời từng dãy núi cho đất cao lên bấy nhiêu. Đánh mãi không thắng nổi, Thuỷ Tinh đành rút quân. Nhưng năm nào cũng vậy, cứ đến mùa, Thuỷ Tinh lại dâng nước gây mưa bão - và năm nào Sơn Tinh cũng đứng vững.',
+        }
+      ],
+      quiz: {
+        question: 'Vì sao Sơn Tinh luôn thắng được Thuỷ Tinh dù bị dâng nước tấn công năm này qua năm khác?',
+        options: [
+          'Vì Thuỷ Tinh quá yếu, không có phép thuật gì đáng kể.',
+          'Vì Sơn Tinh không hoảng sợ mà chủ động ứng phó: nước dâng cao đến đâu, chàng nâng đồi núi cao lên đến đó.',
+          'Vì Vua Hùng đã sai quân lính ra giúp Sơn Tinh đánh trả.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Câu chuyện giải thích vì sao nước ta năm nào cũng có mùa mưa bão, và nhắc ta rằng con người không sợ thiên tai mà luôn chủ động phòng chống. Gặp khó khăn, bé đừng hoảng - hãy bình tĩnh tìm cách ứng phó!'
+      }
+    },
+    {
+      id: 'banh_chung_banh_day',
+      title: 'Sự Tích Bánh Chưng Bánh Dày',
+      subtitle: 'Lòng hiếu thảo quý hơn của cải quý hiếm',
+      emoji: '🌾',
+      stars: 4,
+      pages: [
+        {
+          text: 'Vua Hùng đã già, muốn truyền ngôi cho con nhưng có tới hai mươi người con trai. Vua bèn gọi các con đến và bảo: "Nhân dịp đầu năm, ai tìm được món ăn ngon nhất, ý nghĩa nhất để dâng cúng tổ tiên thì ta sẽ truyền ngôi cho người đó."',
+        },
+        {
+          text: 'Các hoàng tử đua nhau sai người lên rừng xuống biển tìm của ngon vật lạ. Riêng hoàng tử thứ mười tám là Lang Liêu, mẹ mất sớm, nhà lại nghèo, quanh năm chỉ quen ruộng đồng nên rất lo lắng. Một đêm, chàng nằm mơ thấy một vị thần bảo: "Trong trời đất, không gì quý bằng hạt gạo. Con hãy lấy gạo mà làm bánh dâng lên vua cha."',
+        },
+        {
+          text: 'Tỉnh dậy, Lang Liêu lấy gạo nếp làm hai thứ bánh: một chiếc bánh vuông gói lá dong, nhân đậu xanh thịt lợn, tượng trưng cho Đất; một chiếc bánh tròn trắng mịn, tượng trưng cho Trời. Ngày dâng lễ, giữa bao sơn hào hải vị, vua cha nếm bánh của Lang Liêu và tấm tắc khen ngon, lại càng cảm động vì ý nghĩa của nó. Vua truyền ngôi cho Lang Liêu và đặt tên hai thứ bánh là bánh chưng và bánh dày. Từ đó, Tết đến nhà nào cũng gói bánh chưng.',
+        }
+      ],
+      quiz: {
+        question: 'Vì sao Vua Hùng chọn truyền ngôi cho Lang Liêu chứ không phải các hoàng tử mang của ngon vật lạ?',
+        options: [
+          'Vì Lang Liêu là con trai út nên được vua cha thương nhất.',
+          'Vì bánh của Lang Liêu làm từ hạt gạo do chính tay người nông dân làm ra, mang ý nghĩa Trời Đất và tấm lòng hiếu thảo, chứ không phải của cải xa xỉ đi tìm ở đâu xa.',
+          'Vì bánh chưng bánh dày là hai món đắt tiền nhất trong buổi lễ.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Điều quý giá nhất không nằm ở thứ đắt tiền mà ở tấm lòng và công sức thật của mình. Món quà bé tự tay làm tặng bố mẹ luôn ý nghĩa hơn món quà mua sẵn!'
+      }
+    },
+    {
+      id: 'cau_be_chan_cuu',
+      title: 'Cậu Bé Chăn Cừu Nói Dối',
+      subtitle: 'Nói dối một lần, mất niềm tin mãi mãi',
+      emoji: '🐑',
+      stars: 4,
+      pages: [
+        {
+          text: 'Ngày xưa có một cậu bé được giao chăn đàn cừu trên sườn đồi gần làng. Ngày nào cũng ngồi một mình, cậu thấy buồn chán vô cùng. Một hôm, cậu nghĩ ra một trò đùa. Cậu chạy xuống làng hét toáng lên: "Sói! Sói! Có sói ăn thịt cừu!"',
+        },
+        {
+          text: 'Dân làng đang làm việc vội bỏ hết mọi thứ, vác gậy chạy lên đồi cứu đàn cừu. Nhưng lên đến nơi thì chẳng thấy con sói nào cả, chỉ thấy cậu bé ôm bụng cười ngặt nghẽo. Mọi người bực mình bỏ về. Thấy trò đùa vui quá, hôm sau cậu bé lại hét lên "Sói! Sói!" một lần nữa. Dân làng lại chạy lên, lại bị lừa, và lần này thì họ thực sự giận dữ.',
+        },
+        {
+          text: 'Rồi một buổi chiều, một con sói thật xuất hiện, lao vào cắn xé đàn cừu. Cậu bé hoảng sợ chạy xuống làng gào khản cả cổ: "Sói! Sói thật rồi! Cứu cháu với!" Nhưng lần này chẳng ai buồn ngẩng đầu lên. Ai cũng nghĩ cậu lại đùa như hai lần trước. Đàn cừu bị sói ăn mất gần hết. Cậu bé ngồi khóc trên đồi, hối hận thì đã muộn.',
+        }
+      ],
+      quiz: {
+        question: 'Vì sao khi sói đến thật, dân làng lại không chạy lên cứu cậu bé nữa?',
+        options: [
+          'Vì dân làng bận việc, không nghe thấy tiếng cậu bé kêu cứu.',
+          'Vì cậu bé đã nói dối hai lần trước đó, nên không ai còn tin lời cậu nữa - dù lần này cậu nói thật.',
+          'Vì dân làng sợ con sói nên không dám lên đồi.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Niềm tin xây rất lâu nhưng mất chỉ trong một lần nói dối. Khi đã mất niềm tin, bé nói thật cũng không ai tin nữa. Hãy luôn trung thực, kể cả khi biết mình sẽ bị mắng!'
+      }
+    },
+    {
+      id: 'kien_va_ve_sau',
+      title: 'Kiến Và Ve Sầu',
+      subtitle: 'Chăm chỉ lo xa hôm nay, an lành ngày mai',
+      emoji: '🐜',
+      stars: 4,
+      pages: [
+        {
+          text: 'Mùa hè nắng đẹp, cỏ cây tươi tốt. Trên cành cây, chú Ve Sầu suốt ngày ca hát véo von, chẳng lo nghĩ gì. Dưới đất, đàn Kiến nối đuôi nhau tha từng hạt lúa, từng mẩu bánh về tổ. Trời nắng gắt, lưng kiến ướt đẫm mà chúng vẫn cần mẫn đi về.',
+        },
+        {
+          text: 'Ve Sầu nhìn xuống, cười lớn: "Các bạn Kiến ơi, trời đẹp thế này sao không nghỉ ngơi ca hát cùng tôi? Thức ăn ngoài kia thiếu gì mà phải khổ sở thế!" Kiến ngẩng lên đáp: "Mùa hè có nhiều thức ăn thật, nhưng mùa đông sắp tới rồi. Chúng tôi tích trữ bây giờ để mùa đông không phải đói."',
+        },
+        {
+          text: 'Mùa đông đến, tuyết phủ trắng xoá, cây cối trơ trụi, không còn một chiếc lá. Ve Sầu đói lả, run rẩy tìm đến tổ Kiến gõ cửa xin ăn. Đàn Kiến ấm áp trong tổ đầy ắp lương thực, thương tình chia cho Ve Sầu chút thức ăn và nói: "Bạn hãy nhớ, mùa hè năm sau đừng chỉ ca hát nữa nhé." Ve Sầu cúi đầu xấu hổ.',
+        }
+      ],
+      quiz: {
+        question: 'Vì sao đàn Kiến vẫn no đủ trong khi Ve Sầu bị đói khi mùa đông đến?',
+        options: [
+          'Vì Kiến may mắn tìm được một kho thức ăn bỏ quên.',
+          'Vì Kiến chăm chỉ tích trữ lương thực từ mùa hè, biết lo xa cho những ngày khó khăn sắp tới.',
+          'Vì Kiến ăn ít hơn Ve Sầu nên không bị đói.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Việc gì cần làm thì làm sớm, đừng để đến lúc gấp mới cuống lên. Bé học bài mỗi ngày một chút thì hôm kiểm tra sẽ nhẹ nhàng, giống như đàn Kiến có sẵn kho thức ăn cho mùa đông vậy!'
+      }
+    },
+    {
+      id: 'be_khong_di_theo_nguoi_la',
+      title: 'Bé Không Đi Theo Người Lạ',
+      subtitle: 'Kỹ năng tự bảo vệ mình khi không có bố mẹ bên cạnh',
+      emoji: '🛡️',
+      stars: 5,
+      pages: [
+        {
+          text: 'Chiều thứ Sáu, bé Na tan học và đứng ở cổng trường chờ mẹ đến đón như mọi khi. Hôm nay mẹ hơi muộn. Một cô gái lạ mặt tươi cười bước đến: "Cháu là Na phải không? Cô là bạn của mẹ cháu. Mẹ cháu bận họp nên nhờ cô đón cháu về. Lên xe cô chở về nhé, cô có mua sẵn sữa với bánh cho cháu này."',
+        },
+        {
+          text: 'Na thấy hơi vui vì có bánh, nhưng bé chợt nhớ lời mẹ dặn: "Dù người ta nói quen mẹ, dù người ta cho quà, con cũng tuyệt đối không lên xe ai cả khi chưa hỏi được mẹ." Na lễ phép nói: "Cháu cảm ơn cô, nhưng cháu phải đợi mẹ ạ." Rồi bé quay lại đi thẳng vào phòng bảo vệ của trường, nơi có bác bảo vệ và nhiều thầy cô đang ở đó.',
+        },
+        {
+          text: 'Na nhờ bác bảo vệ gọi điện cho mẹ. Mẹ nghe máy và giật mình: mẹ không hề nhờ ai đón Na cả! Mười phút sau mẹ đến, ôm chầm lấy con và khen: "Con gái mẹ giỏi lắm! Con đã làm đúng ba việc: không lên xe người lạ, đến chỗ đông người an toàn, và gọi cho mẹ để kiểm tra." Na cười, thấy mình thật dũng cảm.',
+        }
+      ],
+      quiz: {
+        question: 'Bé Na đã làm gì đúng nhất khi người lạ nói là bạn của mẹ và rủ lên xe?',
+        options: [
+          'Nhận bánh và sữa trước, ăn xong rồi mới quyết định có lên xe hay không.',
+          'Từ chối lên xe, đi vào phòng bảo vệ - nơi đông người an toàn - và nhờ gọi điện cho mẹ để kiểm tra.',
+          'Đi theo cô ấy một đoạn xem cô ấy có đưa về đúng nhà mình không.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Quy tắc 3 KHÔNG với người lạ: KHÔNG đi theo - KHÔNG nhận quà - KHÔNG mở cửa. Nếu có ai nói được bố mẹ nhờ đón, bé hãy đến chỗ đông người và gọi điện hỏi bố mẹ trước đã nhé!'
+      }
     }
   ],
   teens: [
@@ -620,6 +768,128 @@ export const booksData = {
         ],
         correctAnswer: 1,
         moral: '💡 Bài học: Lắng nghe bằng cả trái tim là món quà tuyệt vời nhất con có thể dành tặng người khác. Lắng nghe giúp thấu hiểu, thấu hiểu giúp yêu thương gắn kết!'
+      }
+    },
+
+    // ======================================================================
+    // BÀI KỸ NĂNG BỔ SUNG CHO TUỔI TEEN
+    // Bốn bài dưới đây cố ý KHÔNG lặp lại nội dung đã có:
+    // - Quản lý thời gian đã nằm ở "Thói quen 3: Ưu tiên việc quan trọng".
+    // - An toàn mạng & dấu chân số đã có nguyên một chủ đề riêng trong khu
+    //   Khám Phá Thế Giới (src/lib/exploreData.js - kp_an_toan_so).
+    // Nên phần bổ sung tập trung vào 4 khoảng trống thật: cảm xúc, phương
+    // pháp học, tư duy phát triển và ranh giới cá nhân trước áp lực bạn bè.
+    // ======================================================================
+    {
+      id: 'teen_lam_chu_cam_xuc',
+      title: 'Làm Chủ Cảm Xúc',
+      subtitle: 'Gọi tên cảm xúc và khoảng dừng 6 giây',
+      emoji: '😤',
+      stars: 5,
+      pages: [
+        {
+          text: 'Ở tuổi dậy thì, não bộ đang tái cấu trúc mạnh mẽ: vùng cảm xúc (hạch hạnh nhân) phát triển nhanh hơn hẳn vùng lý trí (vỏ não trước trán, phải đến ngoài 20 tuổi mới hoàn thiện). Vì thế con dễ nổi cáu, dễ tủi thân, dễ phản ứng gay gắt hơn hồi nhỏ. Đây là hiện tượng sinh học bình thường chứ không phải con "hư" hay "khó chiều".',
+        },
+        {
+          text: 'Bước đầu tiên để làm chủ cảm xúc là GỌI ĐÚNG TÊN nó. "Con đang tức" thật ra có thể là: bị coi thường, bị hiểu lầm, lo sợ thua kém, hay đơn giản là mệt và đói. Khi con gọi được đúng tên cảm xúc, vùng lý trí bắt đầu hoạt động trở lại và cơn sóng dịu xuống. Các nhà tâm lý gọi đây là "name it to tame it" - gọi tên để thuần hoá.',
+        },
+        {
+          text: 'Bước thứ hai là KHOẢNG DỪNG. Cơn giận dữ dội nhất thường chỉ kéo dài vài giây đầu. Nếu con hít thở sâu và đếm chậm đến 6 trước khi nói hoặc bấm gửi tin nhắn, phần lớn những câu làm tổn thương người khác sẽ không bao giờ được thốt ra. Chỉ một khoảng dừng ngắn cũng đủ để con giữ lại một mối quan hệ.',
+        }
+      ],
+      quiz: {
+        question: 'Tình huống: Con vừa bị bạn thân nói một câu khó nghe trước mặt cả nhóm. Con thấy mặt nóng bừng và rất muốn đáp trả thật đau. Cách xử lý nào là làm chủ cảm xúc?',
+        options: [
+          'Đáp trả ngay bằng một câu nặng hơn để bạn biết mình không dễ bị bắt nạt.',
+          'Hít thở sâu, đếm chậm đến 6, tự gọi tên cảm xúc "mình đang thấy bị xúc phạm trước đám đông", rồi chọn nói chuyện riêng với bạn sau khi cả hai đã bình tĩnh.',
+          'Im lặng bỏ đi, giữ trong lòng và từ đó cắt đứt hoàn toàn không thèm nói chuyện với bạn nữa.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Làm chủ cảm xúc không phải là nén giận hay giả vờ ổn. Đó là gọi đúng tên điều mình đang cảm thấy, cho mình một khoảng dừng, rồi chọn cách phản ứng thay vì để cảm xúc chọn thay mình.'
+      }
+    },
+    {
+      id: 'teen_hoc_cach_hoc',
+      title: 'Học Cách Học',
+      subtitle: 'Pomodoro và ôn tập ngắt quãng - học ít hơn, nhớ lâu hơn',
+      emoji: '🧠',
+      stars: 5,
+      pages: [
+        {
+          text: 'Đa số học sinh học bằng cách đọc đi đọc lại và tô màu highlight. Cách này cho cảm giác "mình đã thuộc" nhưng thực ra là ảo giác: não nhận ra chữ quen mắt chứ chưa hề nhớ được nội dung. Nghiên cứu về trí nhớ cho thấy cách học hiệu quả nhất lại là cách khó chịu nhất - TỰ KIỂM TRA: gấp sách lại và cố nhớ ra, thay vì mở sách ra đọc lại.',
+        },
+        {
+          text: 'Kỹ thuật Pomodoro giúp con bắt đầu và duy trì sự tập trung: học 25 phút thật tập trung, nghỉ 5 phút, làm 4 vòng rồi nghỉ dài 20 phút. Điều kiện bắt buộc là trong 25 phút đó điện thoại phải ở phòng khác, không phải úp xuống bàn - vì chỉ cần nhìn thấy điện thoại là một phần sự chú ý đã bị chia ra rồi.',
+        },
+        {
+          text: 'Ôn tập ngắt quãng (spaced repetition) là chìa khoá để nhớ lâu. Thay vì học dồn 4 tiếng đêm trước ngày thi, con ôn lại cùng nội dung đó vào ngày thứ 1, thứ 3, thứ 7 và thứ 15. Tổng thời gian ít hơn nhiều nhưng kiến thức trụ lại hàng tháng thay vì bay mất sau 2 ngày. Khu Ôn tập trong app này hoạt động đúng theo nguyên lý đó.',
+        }
+      ],
+      quiz: {
+        question: 'Tình huống: Còn 10 ngày nữa thi Sử. Cách ôn nào giúp con nhớ lâu nhất?',
+        options: [
+          'Để dồn đến đêm cuối rồi thức trắng học liền 6 tiếng cho nóng kiến thức.',
+          'Chia nhỏ: mỗi ngày ôn 30 phút theo Pomodoro, ôn lại phần cũ vào các ngày cách quãng, và mỗi lần ôn đều gấp sách tự nhớ lại trước khi mở ra đối chiếu.',
+          'Đọc lại toàn bộ sách giáo khoa 3 lượt và tô highlight thật nhiều màu cho dễ nhìn.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Học nhồi cho cảm giác an tâm nhưng kiến thức bay rất nhanh. Học ngắt quãng và tự kiểm tra thì khó chịu hơn nhưng đó chính là dấu hiệu não đang thật sự ghi nhớ.'
+      }
+    },
+    {
+      id: 'teen_tu_duy_phat_trien',
+      title: 'Tư Duy Phát Triển',
+      subtitle: 'Sức mạnh của hai chữ "chưa" (yet)',
+      emoji: '🌱',
+      stars: 5,
+      pages: [
+        {
+          text: 'Nhà tâm lý học Carol Dweck phát hiện ra hai kiểu tư duy. Người có tư duy cố định tin rằng trí thông minh là thứ bẩm sinh, không đổi được: "Mình dốt Toán, thế thôi." Người có tư duy phát triển tin rằng năng lực có thể rèn được: "Mình CHƯA giỏi Toán." Chỉ khác nhau một chữ, nhưng dẫn tới hai cuộc đời khác nhau.',
+        },
+        {
+          text: 'Khác biệt lộ rõ nhất khi gặp thất bại. Người tư duy cố định né việc khó vì sợ điểm kém sẽ chứng minh mình kém cỏi, và coi lời góp ý là sự công kích cá nhân. Người tư duy phát triển lại xem bài khó là chỗ để luyện, xem lỗi sai là dữ liệu chỉ ra mình cần học phần nào, và chủ động đi hỏi khi chưa hiểu.',
+        },
+        {
+          text: 'Não bộ có tính mềm dẻo thần kinh: mỗi lần con vật lộn với một bài khó, các liên kết thần kinh thực sự được củng cố. Cảm giác "khó quá, đầu căng ra" chính là lúc não đang thay đổi - không phải dấu hiệu con không có năng khiếu. Hãy đổi câu "Mình không làm được" thành "Mình chưa làm được, mình cần thêm cách nào?"',
+        }
+      ],
+      quiz: {
+        question: 'Tình huống: Con thi Toán được 5 điểm dù đã ôn. Suy nghĩ nào thể hiện tư duy phát triển?',
+        options: [
+          '"Rõ ràng mình không có đầu óc Toán, cố nữa cũng vô ích, tập trung vào môn khác cho xong."',
+          '"Mình chưa nắm chắc phần nào? Xem lại từng câu sai, tìm ra lỗ hổng rồi nhờ thầy hoặc bạn giảng lại đúng phần đó."',
+          '"Đề quá khó và thầy chấm quá chặt, điểm này không phản ánh đúng năng lực của mình."'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Điểm số nói lên con đang ở đâu hôm nay, không nói lên con là ai. Thêm chữ "chưa" vào sau mỗi câu "mình không làm được" là bước đầu tiên để thực sự làm được.'
+      }
+    },
+    {
+      id: 'teen_biet_tu_choi',
+      title: 'Biết Nói Lời Từ Chối',
+      subtitle: 'Giữ ranh giới cá nhân trước áp lực bạn bè',
+      emoji: '🗣️',
+      stars: 5,
+      pages: [
+        {
+          text: 'Áp lực đồng trang lứa mạnh nhất ở tuổi teen, vì đây là giai đoạn con cần cảm giác được thuộc về một nhóm. Nó không phải lúc nào cũng lộ liễu kiểu ép buộc. Thường nó rất nhẹ nhàng: "Có mỗi thế mà cũng sợ", "Cả nhóm làm hết rồi, mình cậu không làm à", "Đùa tí thôi mà, khó tính thế". Chính kiểu áp lực nhẹ này lại khó chống lại nhất.',
+        },
+        {
+          text: 'Từ chối không cần phải gay gắt hay giải thích dài dòng - càng giải thích nhiều, càng mở đường cho người khác thuyết phục tiếp. Ba cách hiệu quả: nói ngắn gọn và lặp lại ("Thôi, tớ không làm"), đưa ra phương án thay thế ("Cái đó tớ không tham gia, nhưng đi ăn thì tớ đi"), hoặc mượn lý do bên ngoài ("Bố mẹ tớ kiểm tra định vị, dính là chết").',
+        },
+        {
+          text: 'Một người bạn thật sự sẽ tôn trọng câu từ chối của con. Nếu ai đó chỉ chơi với con khi con chiều theo mọi thứ họ muốn, thì đó không phải tình bạn mà là sự lợi dụng. Mất một nhóm bạn kiểu đó không phải là tổn thất. Và cần nhớ: con luôn có quyền rời khỏi một tình huống thấy không ổn, kể cả khi đã lỡ tham gia được nửa chừng.',
+        }
+      ],
+      quiz: {
+        question: 'Tình huống: Nhóm bạn rủ con trốn tiết đi chơi điện tử và nói "Cả nhóm đi hết rồi, mình cậu ở lại thì hèn quá". Cách phản ứng nào giữ được ranh giới cá nhân tốt nhất?',
+        options: [
+          'Đi cùng cho hoà đồng, vì từ chối sẽ bị cả nhóm cô lập và cho là chảnh.',
+          'Từ chối ngắn gọn và không cần biện minh dài dòng: "Tớ không trốn tiết đâu. Tan học tớ đi cùng cũng được", rồi giữ nguyên quyết định dù bị nói khích thêm.',
+          'Nói dối là bị ốm để tránh mặt, rồi lần sau lại rơi vào đúng tình huống cũ.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: "Không" là một câu trả lời hoàn chỉnh, không cần kèm lời xin lỗi. Người bạn thật sự tôn trọng ranh giới của con; ai bắt con phải đánh đổi nguyên tắc để được chơi cùng thì không đáng gọi là bạn.'
       }
     }
   ]

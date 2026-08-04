@@ -63,8 +63,16 @@ create table if not exists tasks (
   stars int not null default 1 check (stars > 0),
   recurrence text not null default 'once' check (recurrence in ('once','daily','weekly')),
   active boolean not null default true,
+  task_type text,
+  content_ref text,
   created_at timestamptz not null default now()
 );
+
+-- Bảng tasks có thể đã tồn tại từ trước (create ... if not exists bỏ qua),
+-- nên vẫn phải thêm cột rời. Chi tiết: supabase/migration_assign.sql
+alter table tasks add column if not exists task_type   text;
+alter table tasks add column if not exists content_ref text;
+create index if not exists tasks_child_type_idx on tasks (child_id, task_type);
 
 create table if not exists completions (
   id uuid primary key default gen_random_uuid(),
@@ -312,7 +320,9 @@ create table if not exists learning_sessions (
   child_id  uuid not null references children(id)  on delete cascade,
 
   -- Loại hoạt động và mã bài học gốc
-  kind    text not null check (kind in ('sgk', 'book', 'math')),
+  -- 'explore' = khu Khám Phá Thế Giới. Máy đã cài sẵn từ trước thì chạy thêm
+  -- supabase/migration_explore.sql để nới ràng buộc này.
+  kind    text not null check (kind in ('sgk', 'book', 'math', 'explore')),
   ref_id  text not null,
   title   text not null,
   subject text,

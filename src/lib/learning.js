@@ -74,6 +74,86 @@ const RANKS = {
   },
 }
 
+// ---------- 1b. Bố mẹ đã giao bài này chưa? ----------
+
+/**
+ * Kiểm tra một mục nội dung (truyện / chủ đề Toán / chủ đề Khám phá) đã được bố
+ * mẹ giao cho bé chưa. Đây là NỬA ĐẦU của luật khoá bài; nửa sau ("phải học xong
+ * bài liền trước") nằm ở phía giao diện vì nó phụ thuộc thứ tự hiển thị.
+ *
+ * Có 3 cách một bài được coi là đã giao:
+ *   1. Nhiệm vụ "mở cả khu"  — task_type đúng khu, content_ref rỗng.
+ *      Con tự học lần lượt hết khu mà bố mẹ không phải bấm từng bài.
+ *   2. Nhiệm vụ mở đúng bài  — task_type đúng khu, content_ref trùng id bài.
+ *   3. Tiêu đề nhiệm vụ chứa tên bài — giữ lại để những nhiệm vụ bố mẹ đã gõ
+ *      tay từ trước (và cả những nhiệm vụ tạo trên database chưa chạy
+ *      migration_assign.sql, khi đó 2 cột kia là undefined) vẫn mở khoá đúng.
+ *
+ * LƯU Ý: hàm này CỐ Ý không tự cho qua bài đầu tiên hay bài đã học xong. Hai
+ * ngoại lệ đó thuộc về luật hiển thị, để nguyên tại chỗ gọi cho dễ đọc.
+ */
+export function isLearningItemAssigned(tasks, childId, kind, item) {
+  if (!childId || !item) return false
+  const itemId = String(item.id)
+  const itemTitle = String(item.title || '').toLowerCase()
+
+  return (tasks || []).some(t => {
+    if (t.child_id !== childId) return false
+    if (t.task_type === kind && (!t.content_ref || String(t.content_ref) === itemId)) return true
+    return itemTitle.length > 0 && String(t.title || '').toLowerCase().includes(itemTitle)
+  })
+}
+
+/** Bố mẹ đã giao nhiệm vụ "mở cả khu" cho bé này chưa? */
+export function findAreaTask(tasks, childId, kind) {
+  return (tasks || []).find(
+    t => t.child_id === childId && t.task_type === kind && !t.content_ref
+  ) || null
+}
+
+/** Nhiệm vụ trỏ đúng vào một bài cụ thể (nếu có). */
+export function findItemTask(tasks, childId, kind, item) {
+  if (!item) return null
+  const itemId = String(item.id)
+  return (tasks || []).find(
+    t => t.child_id === childId && t.task_type === kind && String(t.content_ref) === itemId
+  ) || null
+}
+
+/**
+ * TOÀN BỘ luật khoá bài, tính một lần cho một bài trong danh sách.
+ *
+ * VÌ SAO PHẢI GOM VÀO ĐÂY:
+ * Luật này từng được viết lại bằng tay ở từng chỗ cần dùng (lưới Toán, lưới Đọc
+ * sách, bảng giao bài của bố mẹ, nút "Vào học ngay" trên nhiệm vụ). Mỗi bản sao
+ * là một cơ hội để khoá bị hở: nút "Vào học ngay" chẳng hạn, nếu tự mở bài mà
+ * không xét luật thì bố mẹ giao bài số 7 là con vào học được ngay, bỏ qua 6 bài
+ * trước — đúng thứ mà khoá chặt sinh ra để ngăn.
+ *
+ * `items` PHẢI là danh sách đã đúng thứ tự học và `index` là vị trí trong đó,
+ * vì "đã xong bài liền trước" chỉ có nghĩa khi biết thứ tự.
+ *
+ * Trả về: { item, prevItem, isDone, isAssigned, prevDone, isUnlocked }
+ *  - isAssigned  bố mẹ đã giao (hoặc là bài đầu tiên, hoặc con đã học xong rồi)
+ *  - isUnlocked  đã giao VÀ đã xong bài liền trước -> con vào học được
+ * Tách riêng isAssigned để chỗ gọi nói đúng lý do khoá cho con nghe.
+ */
+export function learningItemState({ tasks, completions, childId, kind, prefix, items, index }) {
+  const list = items || []
+  const item = list[index]
+  const isItemDone = (it) => !!it && (completions || []).some(
+    c => c.child_id === childId && c.task_id === prefix + it.id
+  )
+
+  const isDone = isItemDone(item)
+  const isAssigned = !!item
+    && (isLearningItemAssigned(tasks, childId, kind, item) || index === 0 || isDone)
+  const prevItem = index > 0 ? list[index - 1] : null
+  const prevDone = index === 0 ? true : isItemDone(prevItem)
+
+  return { item, prevItem, isDone, isAssigned, prevDone, isUnlocked: isAssigned && prevDone }
+}
+
 // ---------- 2. Cổng chống đọc lướt ----------
 
 /**

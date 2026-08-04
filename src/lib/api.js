@@ -100,12 +100,38 @@ export async function fetchTasks() {
   return data
 }
 
+// Nhiệm vụ trỏ vào bài học trong app cần 2 cột task_type / content_ref
+// (supabase/migration_assign.sql). Nếu bố mẹ chưa chạy migration đó, PostgREST
+// trả về PGRST204 "Could not find the 'task_type' column" và MỌI việc tạo nhiệm
+// vụ sẽ thất bại — kể cả việc nhà. Không được để một migration bị quên làm tê
+// liệt chức năng cơ bản nhất của app, nên ở đây thử lại một lần không kèm 2 cột.
+function isMissingColumnError(error) {
+  if (!error) return false
+  const text = `${error.code || ''} ${error.message || ''}`.toLowerCase()
+  return text.includes('pgrst204')
+    || (text.includes('column') && (text.includes('does not exist') || text.includes('could not find')))
+}
+
 export async function addTask(familyId, task) {
-  const { data, error } = await supabase
+  const insert = (payload) => supabase
     .from('tasks')
-    .insert({ family_id: familyId, ...task })
+    .insert({ family_id: familyId, ...payload })
     .select()
     .single()
+
+  let { data, error } = await insert(task)
+
+  if (error && isMissingColumnError(error) && ('task_type' in task || 'content_ref' in task)) {
+    console.warn(
+      'Database chưa có cột task_type/content_ref — hãy chạy supabase/migration_assign.sql. '
+      + 'Vẫn tạo nhiệm vụ nhưng nút "Mở cả khu" sẽ không mở khoá được.'
+    )
+    const fallback = { ...task }
+    delete fallback.task_type
+    delete fallback.content_ref
+    ;({ data, error } = await insert(fallback))
+  }
+
   if (error) throw error
   return data
 }
@@ -350,4 +376,23 @@ export async function logLearningSession(familyId, childId, s) {
     .single()
   if (error) throw error
   return data
+}
+
+/**
+ * Ghi lịch sử học nhưng KHÔNG BAO GIỜ chặn việc cộng sao cho con.
+ *
+ * VÌ SAO CẦN:
+ * Ở mọi luồng học, lịch sử được ghi TRƯỚC khi cộng sao. Nếu bước ghi lỗi
+ * (mất mạng giữa chừng, hoặc bố mẹ chưa chạy migration mới) thì con học
+ * xong mà không nhận được sao nào — mất công sức thật của con vì một lỗi
+ * kỹ thuật. Lịch sử học chỉ là dữ liệu tham khảo cho bố mẹ, còn sao là
+ * động lực của con: khi phải chọn, luôn ưu tiên con.
+ */
+export async function safeLogLearningSession(familyId, childId, s) {
+  try {
+    return await logLearningSession(familyId, childId, s)
+  } catch (err) {
+    console.warn('Không ghi được lịch sử học tập (vẫn cộng sao cho con):', err?.message)
+    return null
+  }
 }
