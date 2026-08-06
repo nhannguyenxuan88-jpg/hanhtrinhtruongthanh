@@ -385,7 +385,7 @@ export async function chatWithPika({
     // Nếu dính lỗi Quota 429 cho tất cả các mô hình, đưa ra thông báo rõ ràng cho người dùng
     if (isQuotaError) {
       return {
-        text: `⏳ **Tài khoản API Key miễn phí tạm thời đạt giới hạn lượt gọi (Google AI 429 Rate Limit):**\n\nBản Free Tier của Google AI giới hạn số câu hỏi trong khoảng 1 phút. Bạn chỉ cần chờ khoảng 30 - 50 giây rồi bấm gửi lại nhé!\n\nTrong lúc chờ, Pika hỗ trợ con trả lời ở chế độ offline:\n\n` + generateOfflineResponse(userMessage, { childName, sgkContext }),
+        text: `⏳ **Tài khoản API Key miễn phí tạm thời đạt giới hạn lượt gọi (Google AI 429 Rate Limit):**\n\nBản Free Tier của Google AI giới hạn số câu hỏi trong khoảng 1 phút. Bạn chỉ cần chờ khoảng 30 - 50 giây rồi bấm gửi lại nhé!\n\n🛡️ *(Bố mẹ hoàn toàn yên tâm: API Key cá nhân chạy trên gói Free Tier miễn phí 100%, việc bị giới hạn lượt gọi chỉ tạm ngưng kết nối ít giây chứ KHÔNG BAO GIỜ bị phát sinh chi phí hay trừ tiền!)*\n\nTrong lúc chờ, Pika hỗ trợ con trả lời ở chế độ offline:\n\n` + generateOfflineResponse(userMessage, { childName, sgkContext }),
         isOffline: true,
         error: lastErrorMsg
       }

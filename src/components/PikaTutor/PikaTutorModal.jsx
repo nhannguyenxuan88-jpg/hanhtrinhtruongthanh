@@ -337,8 +337,23 @@ export default function PikaTutorModal({
       {showSettings && (
         <div className="pika-settings-popup">
           <h4 className="font-bold text-gray-800 text-sm mb-1">⚙️ Cấu Hình API Key Gemini</h4>
-          <p className="text-xs text-gray-500 mb-2">
-            Nhập API Key tạo từ Google AI Studio (bắt đầu bằng AIzaSy...).
+          
+          <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-2.5 mb-3 text-[11px] text-emerald-950 leading-relaxed shadow-sm">
+            <div className="font-extrabold text-emerald-800 mb-1 flex items-center gap-1">
+              🛡️ Cam Kết An Toàn Chi Phí 100%
+            </div>
+            <p className="m-0 text-[11px] font-medium">
+              API Key từ <strong className="font-bold text-emerald-900">Google AI Studio</strong> hoạt động mặc định ở gói <strong>Miễn Phí (Free Tier)</strong>:
+            </p>
+            <ul className="m-0 pl-4 pt-1 text-[10.5px] list-disc space-y-0.5 font-medium text-emerald-900">
+              <li><strong>Tuyệt đối KHÔNG phát sinh chi phí hay trừ tiền.</strong></li>
+              <li>Google không yêu cầu thẻ tín dụng cho tài khoản cá nhân Free Tier.</li>
+              <li>Khi chạm hạn mức miễn phí (15 câu/phút), hệ thống tạm ngưng vài chục giây mà không tốn 1 đồng nào.</li>
+            </ul>
+          </div>
+
+          <p className="text-xs text-gray-600 mb-1.5 font-semibold">
+            Nhập API Key cá nhân từ <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-amber-600 underline font-bold">aistudio.google.com</a>:
           </p>
           <input
             type="password"
