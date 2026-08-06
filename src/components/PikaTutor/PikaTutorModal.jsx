@@ -437,7 +437,7 @@ export default function PikaTutorModal({
           className={`pika-btn-board ${showWhiteboard ? 'active' : ''}`}
           title="Bật/Tắt bảng vẽ nháp bài tập"
         >
-          🎨 {showWhiteboard ? 'Ẩn bảng' : 'Bảng nháp'}
+          🎨<span className="pika-btn-board-label"> {showWhiteboard ? 'Ẩn bảng' : 'Bảng nháp'}</span>
         </button>
 
         <button

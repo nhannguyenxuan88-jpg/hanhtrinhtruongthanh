@@ -473,14 +473,21 @@ export function speakText(text, { pitch = 1.1, rate = 1.0, onStart, onEnd } = {}
 
   activeUtterance = utterance
 
-  // Danh sách giọng đọc nạp bất đồng bộ — lần gọi đầu sau khi mở trang có thể
-  // còn rỗng, phải chờ sự kiện voiceschanged rồi mới speak.
+  // Danh sách giọng đọc nạp bất đồng bộ — trên di động (Android/iOS) có thể
+  // mất tới hơn 1 giây mới có, nên thử lại vài lần thay vì chỉ chờ 300ms.
   let started = false
   const speakNow = () => {
     if (started) return
     started = true
     if (activeUtterance !== utterance) return // đã bị stopSpeaking() trước khi kịp đọc
     const viVoice = pickVietnameseVoice()
+    if (!viVoice && window.speechSynthesis.getVoices().length > 0) {
+      // Máy KHÔNG có giọng tiếng Việt (hay gặp trên điện thoại chưa cài):
+      // im lặng còn hơn để giọng Anh mặc định đánh vần tiếng Việt sai bét.
+      console.warn('Pika TTS: thiết bị chưa cài giọng tiếng Việt, bỏ qua đọc thoại.')
+      finish()
+      return
+    }
     if (viVoice) utterance.voice = viVoice
     window.speechSynthesis.speak(utterance)
   }
@@ -489,7 +496,16 @@ export function speakText(text, { pitch = 1.1, rate = 1.0, onStart, onEnd } = {}
     speakNow()
   } else {
     window.speechSynthesis.addEventListener('voiceschanged', speakNow, { once: true })
-    setTimeout(speakNow, 300) // dự phòng khi trình duyệt không bắn voiceschanged
+    // Dự phòng khi không bắn voiceschanged: đợi voices nạp tối đa ~2 giây
+    let tries = 0
+    const poll = setInterval(() => {
+      tries += 1
+      if (started) { clearInterval(poll); return }
+      if (window.speechSynthesis.getVoices().length > 0 || tries >= 10) {
+        clearInterval(poll)
+        speakNow()
+      }
+    }, 200)
   }
 
   return utterance

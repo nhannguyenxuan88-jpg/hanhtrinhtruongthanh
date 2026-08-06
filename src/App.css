@@ -3070,7 +3070,7 @@ body {
   color: #4f46e5;
   margin: 16px 0 12px;
   display: inline-block;
-  background: #eeef4;
+  background: #eef2ff;
   padding: 4px 14px;
   border-radius: 12px;
 }
@@ -6439,6 +6439,7 @@ body {
 
 .pika-text-input {
   flex: 1;
+  min-width: 0; /* cho phép input co lại trong flexbox — không có sẽ tràn ngang trên mobile */
   background: #ffffff !important;
   color: #0f172a !important;
   border: 2px solid #fde68a;
@@ -6489,6 +6490,111 @@ body {
 .pika-floating-btn-wrap:hover {
   transform: translateY(-4px) scale(1.05);
   filter: drop-shadow(0 10px 20px rgba(245, 158, 11, 0.4));
+}
+
+/* ===== PIKA MOBILE (điện thoại) ===== */
+@media (max-width: 640px) {
+  .pika-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  /* Chiếm trọn màn hình điện thoại — dvh trừ sẵn thanh địa chỉ trình duyệt */
+  .pika-container {
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    border-width: 0;
+    box-shadow: none;
+  }
+
+  .pika-container.pika-inline-workspace {
+    height: calc(100dvh - 160px);
+    min-height: 420px;
+    border-radius: 20px;
+    border-width: 2px;
+  }
+
+  .pika-header {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+
+  .pika-header-h2 {
+    font-size: 1.02rem;
+  }
+
+  .pika-header-sub {
+    font-size: 0.68rem;
+  }
+
+  .pika-btn-toggle {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .pika-settings-popup {
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+
+  .pika-chat-area {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .pika-msg-bubble {
+    max-width: 86%;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+  }
+
+  .pika-sgk-banner {
+    padding: 6px 10px;
+  }
+
+  .pika-quick-chips {
+    padding: 6px 10px;
+    /* Cuộn ngang mượt trên cảm ứng, ẩn thanh cuộn */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pika-quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pika-input-bar {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  /* Nút bảng nháp thu gọn còn mỗi icon 🎨 để chừa chỗ cho ô nhập */
+  .pika-btn-board {
+    padding: 9px 10px;
+    font-size: 14px;
+  }
+
+  .pika-btn-board .pika-btn-board-label {
+    display: none;
+  }
+
+  .pika-btn-mic {
+    padding: 9px 11px;
+    font-size: 14px;
+  }
+
+  .pika-text-input {
+    padding: 9px 10px;
+    font-size: 16px; /* ≥16px để iOS không tự zoom khi chạm vào ô nhập */
+    font-weight: 500;
+  }
+
+  .pika-btn-send {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
