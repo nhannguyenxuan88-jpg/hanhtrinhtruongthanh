@@ -10,7 +10,7 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 // trang để bé (và bố mẹ) biết đang ở đâu.
 const MIN_SWIPE_PX = 50
 
-export default function PdfPageFlipViewer({ url }) {
+export default function PdfPageFlipViewer({ url, onPageChange }) {
   const stageRef = useRef(null)      // vùng chứa, dùng để đo chiều rộng
   const canvasRef = useRef(null)
   const docRef = useRef(null)
@@ -68,6 +68,19 @@ export default function PdfPageFlipViewer({ url }) {
       const pdfPage = await d.getPage(num)
       const base = pdfPage.getViewport({ scale: 1 })
 
+      // Trích xuất văn bản chữ hiển thị trên trang PDF này cho Gia Sư Pika đọc
+      let extractedText = ''
+      try {
+        const textContent = await pdfPage.getTextContent()
+        extractedText = (textContent.items || []).map(item => item.str).join(' ').replace(/\s+/g, ' ').trim()
+      } catch (e) {
+        console.warn('Không trích xuất được chữ PDF trang', num, e)
+      }
+
+      if (onPageChange) {
+        onPageChange({ page: num, totalPages: d.numPages, pageText: extractedText })
+      }
+
       // Bề ngang vừa khung; chấp nhận cuộn dọc nếu trang cao hơn màn hình.
       const maxW = Math.max(stage.clientWidth, 1)
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -91,7 +104,7 @@ export default function PdfPageFlipViewer({ url }) {
     } finally {
       setRendering(false)
     }
-  }, [])
+  }, [onPageChange])
 
   useEffect(() => {
     if (doc) renderPage(page)
