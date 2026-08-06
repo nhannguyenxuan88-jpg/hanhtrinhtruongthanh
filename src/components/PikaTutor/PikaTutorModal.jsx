@@ -8,7 +8,8 @@ import {
   stopSpeaking,
   getGeminiApiKey,
   setGeminiApiKey,
-  verifyGeminiApiKey
+  verifyGeminiApiKey,
+  describeMicError
 } from '../../lib/pikaAiService'
 
 export default function PikaTutorModal({
@@ -77,9 +78,20 @@ export default function PikaTutorModal({
           sendMessageRef.current?.(text)
         }
       },
-      onError: () => {
+      onError: (code) => {
         setIsListening(false)
         setPikaState('idle')
+        // Hiện hướng dẫn cụ thể trong khung chat thay vì lặng lẽ tắt micro
+        const guide = describeMicError(code)
+        if (guide) {
+          setMessages(prev => [...prev, {
+            id: `mic-err-${Date.now()}`,
+            role: 'pika',
+            text: guide,
+            isOffline: true,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }])
+        }
       },
       onEnd: () => {
         setIsListening(false)
@@ -178,7 +190,7 @@ export default function PikaTutorModal({
 
   const toggleMic = () => {
     if (!recognizerRef.current) {
-      alert('Trình duyệt của bạn chưa hỗ trợ nhận diện giọng nói tiếng Việt.')
+      alert('Trình duyệt này chưa hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome (máy tính hoặc Android) để nói chuyện với Pika nhé.')
       return
     }
 
@@ -187,14 +199,25 @@ export default function PikaTutorModal({
       setIsListening(false)
       setPikaState('idle')
     } else {
+      stopSpeaking()
       try {
-        stopSpeaking()
         recognizerRef.current.start()
-        setIsListening(true)
-        setPikaState('listening')
-      } catch (err) {
-        console.warn('Speech error:', err)
+      } catch {
+        // start() ném InvalidStateError nếu phiên nghe trước chưa kết thúc hẳn
+        // — hủy phiên cũ rồi thử lại một nhịp sau
+        try { recognizerRef.current.abort() } catch { /* bỏ qua */ }
+        setTimeout(() => {
+          try { recognizerRef.current.start() } catch (err2) {
+            console.warn('Speech start error:', err2)
+            return
+          }
+          setIsListening(true)
+          setPikaState('listening')
+        }, 150)
+        return
       }
+      setIsListening(true)
+      setPikaState('listening')
     }
   }
 

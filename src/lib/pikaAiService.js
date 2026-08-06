@@ -25,12 +25,13 @@ export function setGeminiApiKey(key) {
 }
 
 // Model dự phòng khi không kéo được ListModels (thứ tự ưu tiên mới → cũ).
-// Dòng gemini-1.5-* đã khai tử; gemini-2.5-flash bị Google chặn với tài khoản mới.
+// gemini-1.5-* đã khai tử; gemini-2.5-flash và 2.0-flash bị Google đưa hạn mức
+// miễn phí về 0 với tài khoản mới nên không dùng.
 const FALLBACK_MODELS = [
   'gemini-flash-latest',
-  'gemini-3.5-flash',
   'gemini-3.6-flash',
-  'gemini-2.0-flash'
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite'
 ]
 
 /**
@@ -56,26 +57,27 @@ async function getAvailableGeminiModels(apiKey) {
       if (valid.length > 0) {
         // Ưu tiên dòng flash: nhanh + hạn mức miễn phí cao nhất.
         // flash-latest luôn trỏ tới bản flash ổn định mới nhất nên đứng đầu.
+        // Dòng 2.x bị Google đưa hạn mức miễn phí về 0 với key mới — loại hẳn.
         const score = name => {
+          if (name.includes('gemini-2.5') || name.includes('gemini-2.0')) return -1
           if (name.includes('flash-latest')) return 100
           if (name.includes('gemini-3.6-flash')) return 97
           if (name.includes('gemini-3.5-flash-lite')) return 94
           if (name.includes('gemini-3.5-flash')) return 96
           if (name.includes('gemini-3.1-flash-lite')) return 90
-          if (name.includes('gemini-2.5-flash-lite')) return 60
-          if (name.includes('gemini-2.5-flash')) return 58
-          if (name.includes('gemini-2.0-flash-lite')) return 55
-          if (name.includes('gemini-2.0-flash')) return 56
           if (name.includes('flash')) return 70
           if (name.includes('pro')) return 40
           return 10
         }
-        valid.sort((a, b) => score(b.name) - score(a.name))
+        const scored = valid.filter(m => score(m.name) >= 0)
+        scored.sort((a, b) => score(b.name) - score(a.name))
 
         // Chỉ giữ tối đa 4 model — thử nhiều hơn chỉ tốn hạn mức miễn phí
-        cachedModelList = valid.map(m => m.name.replace(/^models\//, '')).slice(0, 4)
-        cachedModelListKey = apiKey
-        return cachedModelList
+        if (scored.length > 0) {
+          cachedModelList = scored.map(m => m.name.replace(/^models\//, '')).slice(0, 4)
+          cachedModelListKey = apiKey
+          return cachedModelList
+        }
       }
     }
   } catch (err) {
@@ -102,11 +104,36 @@ function buildGenerationConfig() {
 function extractReplyText(data) {
   const parts = data?.candidates?.[0]?.content?.parts
   if (!Array.isArray(parts)) return ''
-  return parts
+  const raw = parts
     .filter(p => !p.thought && typeof p.text === 'string')
     .map(p => p.text)
     .join('\n')
     .trim()
+  return stripLatex(raw)
+}
+
+/**
+ * Model thỉnh thoảng vẫn trả ký hiệu LaTeX ($4 \times 4$, \frac{1}{2}...)
+ * dù system prompt đã cấm. Chat hiển thị văn bản thường nên chuyển hết về
+ * ký hiệu phổ thông cho bé đọc được.
+ */
+function stripLatex(text) {
+  if (!text || (!text.includes('\\') && !text.includes('$'))) return text
+  return text
+    .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1/$2')
+    .replace(/\\sqrt\{([^{}]+)\}/g, 'căn($1)')
+    .replace(/\\times/g, 'x')
+    .replace(/\\div/g, ':')
+    .replace(/\\cdot/g, 'x')
+    .replace(/\\(le|leq)\b/g, '≤')
+    .replace(/\\(ge|geq)\b/g, '≥')
+    .replace(/\\neq?\b/g, '≠')
+    .replace(/\\pi\b/g, 'π')
+    .replace(/\\%/g, '%')
+    .replace(/\\text\{([^{}]*)\}/g, '$1')
+    .replace(/\\[()[\]]/g, '') // \( \) \[ \] bao quanh công thức
+    .replace(/\$\$?([^$]+)\$\$?/g, '$1') // $...$ và $$...$$
+    .replace(/\{|\}/g, '')
 }
 
 /**
@@ -186,7 +213,8 @@ QUY TẮC GIẢNG DẠY PHƯƠNG PHÁP SOCRATIC (BẮT BUỘC):
 5. Khi ${childName} trả lời đúng: Hãy khen ngợi nhiệt liệt! Khen ngợi nỗ lực tư duy của con.
 6. Trả lời bằng tiếng Việt dễ hiểu, ngắn gọn (không quá 3-4 câu ngắn mỗi lần) để con dễ đọc hoặc nghe phát âm.
 7. Trả lời thẳng vào nội dung, KHÔNG viết ra quá trình phân tích/suy nghĩ nội bộ, không lặp lại các quy tắc này.
-8. Nếu bé tải lên ảnh bài tập hoặc hình vẽ, hãy phân tích hình ảnh và khen nét vẽ/chỉ ra điểm chốt trong hình.
+8. TUYỆT ĐỐI KHÔNG dùng ký hiệu LaTeX/toán học kiểu \\(...\\), $...$, \\times, \\frac — hãy viết phép tính bằng chữ và ký hiệu đơn giản: 4 x 4, 15 : 3, 1/2. Bé đọc trên màn hình chat thường, không hiển thị được công thức.
+9. Nếu bé tải lên ảnh bài tập hoặc hình vẽ, hãy phân tích hình ảnh và khen nét vẽ/chỉ ra điểm chốt trong hình.
 `
 }
 
@@ -382,6 +410,7 @@ export function createSpeechRecognizer({ onResult, onError, onEnd }) {
   recognition.lang = 'vi-VN'
   recognition.continuous = false
   recognition.interimResults = false
+  recognition.maxAlternatives = 1
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript
@@ -390,7 +419,12 @@ export function createSpeechRecognizer({ onResult, onError, onEnd }) {
 
   recognition.onerror = (event) => {
     console.warn('Speech recognition error:', event.error)
+    // Chuyển mã lỗi cho UI hiển thị hướng dẫn cụ thể thay vì im lặng
     if (onError) onError(event.error)
+  }
+
+  recognition.onnomatch = () => {
+    if (onError) onError('no-speech')
   }
 
   recognition.onend = () => {
@@ -398,6 +432,31 @@ export function createSpeechRecognizer({ onResult, onError, onEnd }) {
   }
 
   return recognition
+}
+
+/**
+ * Diễn giải mã lỗi SpeechRecognition thành hướng dẫn tiếng Việt cho phụ huynh/bé.
+ * Edge/Brave thường lỗi 'network' hoặc 'language-not-supported' với tiếng Việt
+ * vì không dùng máy chủ nhận diện của Google — khuyên chuyển sang Chrome.
+ */
+export function describeMicError(code) {
+  switch (code) {
+    case 'not-allowed':
+    case 'service-not-allowed':
+      return '🎙️ Trình duyệt đang chặn micro. Bấm vào biểu tượng 🔒 cạnh thanh địa chỉ → cho phép Micro rồi thử lại nhé.'
+    case 'no-speech':
+      return '🤫 Pika chưa nghe thấy con nói gì. Con bấm 🎙️ rồi nói to, rõ hơn một chút nha!'
+    case 'audio-capture':
+      return '🎙️ Không tìm thấy micro trên máy. Kiểm tra máy có micro và không bị tắt tiếng nhé.'
+    case 'network':
+      return '📡 Dịch vụ nhận diện giọng nói bị lỗi mạng. Trình duyệt Edge/Brave hay gặp lỗi này với tiếng Việt — hãy thử bằng Google Chrome nhé.'
+    case 'language-not-supported':
+      return '🌐 Trình duyệt này chưa hỗ trợ nhận diện tiếng Việt. Hãy dùng Google Chrome để nói chuyện với Pika nhé.'
+    case 'aborted':
+      return ''
+    default:
+      return `🎙️ Micro gặp trục trặc (${code || 'không rõ'}). Con thử lại hoặc dùng Google Chrome nhé.`
+  }
 }
 
 // ---------- Text-to-Speech (Web Speech Synthesis) ----------
