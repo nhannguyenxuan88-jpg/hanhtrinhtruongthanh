@@ -5,7 +5,7 @@ import PdfPageFlipViewer from './PdfPageFlipViewer'
  * cuộn dài) — phù hợp với màn hình di động và máy tính bảng.
  * Được render ở CẢ hai view (bố mẹ và bé), vì tab Sách Giáo Khoa tồn tại ở cả hai.
  */
-export default function PdfViewerModal({ pdf, onClose }) {
+export default function PdfViewerModal({ pdf, onClose, onOpenPika }) {
   if (!pdf) return null
   return (
     <div className="pin-overlay sgk-pdf-overlay" onClick={onClose}>
@@ -13,6 +13,15 @@ export default function PdfViewerModal({ pdf, onClose }) {
         <div className="sgk-pdf-viewer-head">
           <div className="sgk-pdf-viewer-title">📕 {pdf.label}</div>
           <div className="sgk-pdf-viewer-actions">
+            {onOpenPika && (
+              <button
+                type="button"
+                className="btn btn-warning btn-sm"
+                onClick={() => onOpenPika({ title: pdf.label, subject: 'SGK PDF' })}
+              >
+                🐥 Hỏi Pika
+              </button>
+            )}
             <a
               className="btn btn-secondary btn-sm"
               href={pdf.url}

@@ -58,6 +58,8 @@ import {
 import { LEARNING_AREAS, AREA_ORDER, areaItems, areaBadge } from './lib/assignables'
 import { getTone, REWARD_SUGGESTIONS, isTeenGrade } from './lib/tone'
 import SgkPdfButton from './components/SgkPdfButton'
+import PikaTutorModal from './components/PikaTutor/PikaTutorModal'
+import PikaAvatar from './components/PikaTutor/PikaAvatar'
 import './App.css'
 
 const ANIMAL_EMOJIS = ['🦊', '🐨', '🦁', '🐯', '🐼', '🐰', '🐸', '🦄', '🐷', '🐱', '🐶', '🐵']
@@ -243,6 +245,15 @@ function AppContent() {
   const [sgkGrade, setSgkGrade] = useState(2)                          // khối lớp đang xem: 2 | 8
   const [sgkPdfOpen, setSgkPdfOpen] = useState(null)                   // { url, label } | null: modal xem sách gốc PDF
   const sgkBooks = sgkGrade === 8 ? textbookData8 : textbookData
+
+  // Trạng thái Gia Sư Pika
+  const [showPikaModal, setShowPikaModal] = useState(false)
+  const [pikaSgkContext, setPikaSgkContext] = useState(null)
+
+  const handleOpenPika = (sgkCtx = null) => {
+    setPikaSgkContext(sgkCtx)
+    setShowPikaModal(true)
+  }
 
   // Trạng thái Kế hoạch tuần
   const [weeklyPlans, setWeeklyPlans] = useState([])
@@ -2974,6 +2985,16 @@ function AppContent() {
           </button>
           <button
             type="button"
+            className={`nav-tab-btn ${activeTab === 'pika' ? 'active' : ''}`}
+            onClick={() => {
+              setPikaSgkContext(null)
+              setActiveTab('pika')
+            }}
+          >
+            {tone.tabs.pika}
+          </button>
+          <button
+            type="button"
             className={`nav-tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
             onClick={() => setActiveTab('tasks')}
           >
@@ -3061,6 +3082,25 @@ function AppContent() {
         {/* Nội dung chính của con */}
         <main className="dashboard-main-content">
           
+          {/* Tab con: Gia Sư AI Pika */}
+          {activeTab === 'pika' && (
+            <div className="tab-pane">
+              <PikaTutorModal
+                profile={profile}
+                sgkContext={pikaSgkContext}
+                isModal={false}
+                onRewardStars={async (stars, reason) => {
+                  await addStars(familyId, profile.child.id, stars, reason)
+                  setChildBalance(prev => prev + stars)
+                  showToast(`🎉 Con nhận được +${stars} ⭐ từ Gia Sư Pika!`)
+                }}
+                onLogSession={async (sessionData) => {
+                  await safeLogLearningSession(familyId, profile.child.id, sessionData)
+                }}
+              />
+            </div>
+          )}
+
           {/* Tab con 0: Hôm nay học gì? */}
           {activeTab === 'plan' && (
             <div className="tab-pane">
@@ -3950,6 +3990,21 @@ function AppContent() {
                         </div>
                       </div>
                     </div>
+                    <button
+                      type="button"
+                      className="btn btn-warning btn-sm shadow flex items-center gap-1"
+                      style={{ background: 'linear-gradient(135deg, #f59e0b, #eab308)', color: '#fff', border: 'none', fontWeight: 'bold' }}
+                      onClick={() => handleOpenPika({
+                        id: selectedLesson.id,
+                        title: selectedLesson.title,
+                        subject: selectedTextbook?.subject,
+                        grade: sgkGrade,
+                        theory: selectedLesson.theory || selectedLesson.summary || (typeof selectedLesson.content === 'string' ? selectedLesson.content.slice(0, 300) : ''),
+                        quizzes: selectedLesson.quizzes || []
+                      })}
+                    >
+                      🐥 Hỏi Gia Sư Pika 💡
+                    </button>
                     {/* Progress dots */}
                     <div className="sgk-reader-progress">
                       <div className={`sgk-step-dot ${sgkLessonView === 'content' ? 'active' : 'done'}`}>1<span>Đọc bài</span></div>
@@ -4485,7 +4540,48 @@ function AppContent() {
           )}
 
           {/* Modal xem sách gốc PDF (view của bé) */}
-          <PdfViewerModal pdf={sgkPdfOpen} onClose={() => setSgkPdfOpen(null)} />
+          <PdfViewerModal pdf={sgkPdfOpen} onClose={() => setSgkPdfOpen(null)} onOpenPika={handleOpenPika} />
+
+          {/* Floating Pika Mascot Button cho bé (chỉ hiện khi chưa ở tab Pika) */}
+          {activeTab !== 'pika' && (
+            <div className="pika-floating-btn-wrap" style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 40, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <PikaAvatar
+                state="idle"
+                size="sm"
+                onClick={() => handleOpenPika(selectedLesson ? {
+                  id: selectedLesson.id,
+                  title: selectedLesson.title,
+                  subject: selectedTextbook?.subject,
+                  grade: sgkGrade,
+                  theory: selectedLesson.theory || selectedLesson.summary || (typeof selectedLesson.content === 'string' ? selectedLesson.content.slice(0, 300) : ''),
+                  quizzes: selectedLesson.quizzes || []
+                } : null)}
+              />
+              <span 
+                onClick={() => handleOpenPika(null)}
+                style={{ background: '#f59e0b', color: '#78350f', fontSize: '11px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', boxShadow: '0 2px 5px rgba(0,0,0,0.15)', cursor: 'pointer', marginTop: '4px' }}
+              >
+                Hỏi Pika 🐥
+              </span>
+            </div>
+          )}
+
+          {/* Modal Gia Sư AI Pika */}
+          {showPikaModal && (
+            <PikaTutorModal
+              profile={profile}
+              sgkContext={pikaSgkContext}
+              onClose={() => setShowPikaModal(false)}
+              onRewardStars={async (stars, reason) => {
+                await addStars(familyId, profile.child.id, stars, reason)
+                setChildBalance(prev => prev + stars)
+                showToast(`🎉 Con nhận được +${stars} ⭐ từ Gia Sư Pika!`)
+              }}
+              onLogSession={async (sessionData) => {
+                await safeLogLearningSession(familyId, profile.child.id, sessionData)
+              }}
+            />
+          )}
 
         </main>
       </div>

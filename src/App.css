@@ -6126,3 +6126,405 @@ body {
   animation: pulse-fire 0.8s ease-in-out infinite alternate;
 }
 
+/* ===== GIA SƯ AI PIKA STYLES ===== */
+.pika-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: pikaFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes pikaFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.pika-container {
+  background: linear-gradient(180deg, #fffbeb 0%, #fff7ed 100%);
+  width: 100%;
+  max-width: 920px;
+  height: 85vh;
+  max-height: 750px;
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 0 3px #fcd34d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 4px solid #f59e0b;
+  box-sizing: border-box;
+}
+
+.pika-container.pika-inline-workspace {
+  max-height: 680px;
+  height: 680px;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+}
+
+.pika-header {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  color: white;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pika-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pika-header-h2 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pika-star-badge-claimed {
+  background: #fef08a;
+  color: #78350f;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pika-header-sub {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+
+.pika-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pika-btn-toggle {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pika-btn-toggle.active {
+  background: white;
+  color: #78350f;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.pika-btn-icon {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pika-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.pika-btn-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.pika-btn-close:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.pika-settings-popup {
+  position: absolute;
+  top: 64px;
+  right: 16px;
+  z-index: 50;
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border: 2px solid #fcd34d;
+  width: 280px;
+}
+
+.pika-sgk-banner {
+  background: #fef3c7;
+  border-bottom: 1px solid #fde68a;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pika-sgk-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #78350f;
+}
+
+.pika-sgk-quick-btn {
+  background: white;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pika-sgk-quick-btn:hover {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.pika-chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(254, 243, 199, 0.15);
+}
+
+.pika-msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.pika-msg-row.user {
+  justify-content: flex-end;
+}
+
+.pika-msg-bubble {
+  max-width: 78%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.pika-msg-bubble.pika {
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid #fef3c7;
+  border-top-left-radius: 4px;
+}
+
+.pika-msg-bubble.user {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border-top-right-radius: 4px;
+}
+
+.pika-quick-chips {
+  padding: 8px 16px;
+  background: #fffbeb;
+  border-top: 1px solid #fde68a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.pika-chip-btn {
+  background: #ffffff;
+  color: #78350f;
+  border: 1px solid #fcd34d;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pika-chip-btn:hover {
+  background: #fef9c3;
+  border-color: #f59e0b;
+}
+
+.pika-input-bar {
+  background: #ffffff;
+  padding: 10px 14px;
+  border-top: 2px solid #fef3c7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pika-btn-board {
+  background: #fffbeb;
+  color: #78350f;
+  border: 1px solid #fcd34d;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pika-btn-board.active {
+  background: #f59e0b;
+  color: white;
+  border-color: #d97706;
+}
+
+.pika-btn-mic {
+  background: #fbbf24;
+  color: #78350f;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+.pika-btn-mic.listening {
+  background: #ef4444;
+  color: white;
+  animation: pulse 1s infinite;
+}
+
+.pika-text-input {
+  flex: 1;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px solid #fde68a;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  outline: none;
+  font-family: inherit;
+}
+
+.pika-text-input::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400;
+}
+
+.pika-text-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.pika-btn-send {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transition: transform 0.2s;
+}
+
+.pika-btn-send:hover:not(:disabled) {
+  transform: scale(1.04);
+}
+
+.pika-btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pika-floating-btn-wrap {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.pika-floating-btn-wrap:hover {
+  transform: translateY(-4px) scale(1.05);
+  filter: drop-shadow(0 10px 20px rgba(245, 158, 11, 0.4));
+}
+
+@media (prefers-color-scheme: dark) {
+  .pika-container {
+    background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+    border-color: #f59e0b;
+  }
+  .pika-chat-area {
+    background: rgba(15, 23, 42, 0.6);
+  }
+  .pika-msg-bubble.pika {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+  }
+  .pika-quick-chips {
+    background: #0f172a;
+    border-color: #334155;
+  }
+  .pika-chip-btn {
+    background: #1e293b;
+    color: #fef08a;
+    border-color: #475569;
+  }
+  .pika-input-bar {
+    background: #0f172a;
+    border-color: #334155;
+  }
+  .pika-sgk-banner {
+    background: #1e1b4b;
+    border-color: #312e81;
+  }
+  .pika-sgk-title {
+    color: #fef08a;
+  }
+}
+
+
+

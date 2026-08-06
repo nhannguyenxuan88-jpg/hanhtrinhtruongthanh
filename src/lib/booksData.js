@@ -9,15 +9,15 @@ export const booksData = {
       pages: [
         {
           text: 'Ngày xửa ngày xưa, có ba chú heo con rời mẹ đi dựng nhà riêng. Chú heo thứ nhất lười biếng, chỉ muốn làm cho nhanh nên dựng một căn nhà bằng rơm. Chú heo thứ hai ham chơi, dựng một căn nhà bằng gỗ sơ sài. Chỉ có chú heo thứ ba là chăm chỉ, chịu khó vận chuyển từng viên gạch để xây một ngôi nhà bằng gạch vô cùng kiên cố.',
-          image: '/assets/books/ba_chu_heo_con_1.jpg'
+          image: '/assets/books/ba_chu_heo_con_1.svg'
         },
         {
           text: 'Một ngày nọ, con Sói Xám xuất hiện. Nó tìm đến nhà chú heo thứ nhất, thổi phù một cái là căn nhà rơm sụp đổ. Chú heo thứ nhất vội chạy sang nhà chú heo thứ hai. Con Sói lại xông đến, thổi mạnh vài cái làm căn nhà gỗ cũng gãy đổ tan tành. Ba chú heo vội vã chạy thục mạng sang nhà chú heo thứ ba.',
-          image: '/assets/books/ba_chu_heo_con_2.jpg'
+          image: '/assets/books/ba_chu_heo_con_2.svg'
         },
         {
           text: 'Con Sói Xám tìm đến nhà chú heo thứ ba, nó hít thật sâu và thổi hết sức nhưng căn nhà bằng gạch vững chắc vẫn không hề lay chuyển. Sói Xám tức giận leo qua đường ống khói vào nhà, nhưng chú heo thứ ba đã thông minh chuẩn bị sẵn một nồi nước sôi dưới bếp. Sói ngã vào nồi nước sôi và vội vã tháo chạy mất hút. Ba chú heo mừng rỡ và học được bài học đắt giá về sự cẩn thận.',
-          image: '/assets/books/ba_chu_heo_con_3.jpg'
+          image: '/assets/books/ba_chu_heo_con_3.svg'
         }
       ],
       quiz: {
@@ -40,15 +40,15 @@ export const booksData = {
       pages: [
         {
           text: 'Tùng Anh là một cậu bé học lớp 2 rất ngoan. Mỗi khi giúp bố mẹ lau dọn nhà cửa sạch sẽ hay đạt điểm 10 trắc nghiệm, cậu lại được bố mẹ thưởng một số tiền tiêu vặt nhỏ. Trước đây, cứ có tiền là Tùng Anh lại chạy ngay ra tiệm tạp hóa mua kẹo ngọt và đồ chơi nhựa.',
-          image: '/assets/books/tiet_kiem_1.jpg'
+          image: '/assets/books/tiet_kiem_1.svg'
         },
         {
           text: 'Một hôm, Tùng Anh nhìn thấy một bộ sách truyện lịch sử rất hay ở nhà sách nhưng giá lại khá cao. Cậu hỏi mua thì mẹ nhẹ nhàng bảo: "Con hãy thử dùng heo đất tiết kiệm số tiền tiêu vặt bố mẹ thưởng nhé. Khi đủ tiền, con sẽ tự tay mua bộ sách này!". Tùng Anh quyết định nuôi một chú heo đất màu hồng xinh xinh.',
-          image: '/assets/books/tiet_kiem_2.jpg'
+          image: '/assets/books/tiet_kiem_2.svg'
         },
         {
           text: 'Mỗi lần nhận thưởng, Tùng Anh chia tiền làm 3 phần: 1 phần bỏ vào heo đất tiết kiệm, 1 phần dùng mua đồ dùng học tập cần thiết, và 1 phần nhỏ dành bỏ quỹ từ thiện. Sau 2 tháng kiên trì bỏ heo đất, Tùng Anh ngạc nhiên thấy chú heo nặng trịch. Cậu vui mừng đập heo đất và tự tay trả tiền mua bộ sách yêu thích. Cậu nhận ra niềm vui từ sự tự lập!',
-          image: '/assets/books/tiet_kiem_3.jpg'
+          image: '/assets/books/tiet_kiem_3.svg'
         }
       ],
       quiz: {
@@ -70,16 +70,16 @@ export const booksData = {
       stars: 5,
       pages: [
         {
-          text: 'Ngày xửa ngày xưa, ở một làng nọ có anh Khoai hiền lành, siêng năng làm thuê cho lão phú ông. Lão hứa nếu anh chăm chỉ làm việc 3 năm thì sẽ gạch con gái cho. Anh Khoai tin lời, không quản ngại nắng mưa, ra sức cày cấy giúp nhà lão phú ông giàu có bậc nhất trong vùng.',
-          image: '/assets/books/cay_tre_1.jpg'
+          text: 'Ngày xửa ngày xưa, ở một làng nọ có anh Khoai hiền lành, siêng năng làm thuê cho lão phú ông. Lão hứa nếu anh chăm chỉ làm việc 3 năm thì sẽ gả con gái cho. Anh Khoai tin lời, không quản ngại nắng mưa, ra sức cày cấy giúp nhà lão phú ông giàu có bậc nhất trong vùng.',
+          image: '/assets/books/cay_tre_1.svg'
         },
         {
           text: 'Đến hẹn 3 năm, lão phú ông lật lọng, bày mưu bảo anh Khoai: "Con muốn cưới con gái ta thì phải vào rừng tìm cho được một cây tre có đủ 100 đốt!". Anh Khoai thật thà lùng sục khắp rừng sâu nhưng tìm mãi không đâu có cây tre nào dài đến 100 đốt. Anh tủi thân ngồi khóc.',
-          image: '/assets/books/cay_tre_2.jpg'
+          image: '/assets/books/cay_tre_2.svg'
         },
         {
           text: 'Bụt hiện lên thương anh hiền lành, bảo anh chặt 100 đốt tre rời và hô "Khắc nhập, khắc nhập!". Kỳ diệu thay, 100 đốt tre dính liền thành cây tre cao vút. Khi về làng, anh hô "Khắc xuất, khắc xuất!" để tách ra. Lão phú ông sợ hãi đành phải giữ đúng lời hứa. Anh Khoai hưởng hạnh phúc nhờ sự trung thực và kiên trì.',
-          image: '/assets/books/cay_tre_3.jpg'
+          image: '/assets/books/cay_tre_3.svg'
         }
       ],
       quiz: {
@@ -101,16 +101,16 @@ export const booksData = {
       stars: 4,
       pages: [
         {
-          text: 'Sau thất bại ở cuộc đua lần trước, Thỏ rất hối hận vì tính chủ quan và lười biếng. Thỏ quyết định thách Rùa đua lại một lần nữa. Lần này, Thỏ tự hứa sẽ không ngủ gật mid-way nữa.',
-          image: '/assets/books/rua_tho_1.jpg'
+          text: 'Sau thất bại ở cuộc đua lần trước, Thỏ rất hối hận vì tính chủ quan và lười biếng. Thỏ quyết định thách Rùa đua lại một lần nữa. Lần này, Thỏ tự hứa sẽ không ngủ gật giữa đường nữa.',
+          image: '/assets/books/rua_tho_1.svg'
         },
         {
           text: 'Trên đường đua mới, Thỏ chạy hết sức mình và vượt xa Rùa. Tuy nhiên, Rùa vẫn không hề nản chí. Rùa cứ từng bước, từng bước kiên trì tiến về phía trước với nhịp độ đều đặn, không hề dừng lại dù trời nắng gắt.',
-          image: '/assets/books/rua_tho_2.jpg'
+          image: '/assets/books/rua_tho_2.svg'
         },
         {
           text: 'Thỏ về đích trước và thắng cuộc đua, nhưng Thỏ đã chủ động đến bắt tay Rùa và bảo: "Tớ thắng nhờ tốc độ, nhưng tớ học được ở bạn tinh thần kỷ luật kiên trì không bao giờ bỏ cuộc!". Cả hai trở thành bạn tốt cùng nhau rèn luyện thói quen dậy sớm tập thể dục mỗi ngày.',
-          image: '/assets/books/rua_tho_3.jpg'
+          image: '/assets/books/rua_tho_3.svg'
         }
       ],
       quiz: {
@@ -611,6 +611,99 @@ export const booksData = {
         ],
         correctAnswer: 1,
         moral: '💡 Bài học: Quy tắc 3 KHÔNG với người lạ: KHÔNG đi theo - KHÔNG nhận quà - KHÔNG mở cửa. Nếu có ai nói được bố mẹ nhờ đón, bé hãy đến chỗ đông người và gọi điện hỏi bố mẹ trước đã nhé!'
+      }
+    },
+    {
+      id: 'an_khe_tra_vang',
+      title: 'Ăn Khế Trả Vàng',
+      subtitle: 'Truyện cổ tích Việt Nam: hiền lành thì được đền đáp, tham thì thâm',
+      emoji: '🪙',
+      stars: 5,
+      pages: [
+        {
+          text: 'Ngày xưa có hai anh em nhà nọ. Cha mẹ mất sớm, người anh tham lam chia hết ruộng vườn nhà cửa cho mình, chỉ để lại cho người em một túp lều tranh và một cây khế ở góc vườn. Người em không oán trách một lời, ngày ngày tưới nước, bắt sâu, vun gốc cho cây. Cây khế như biết ơn, mùa nào cũng trĩu quả vàng ươm, ngọt lịm.',
+          image: '/assets/books/an_khe_tra_vang_1.png'
+        },
+        {
+          text: 'Một hôm có con chim lạ rất to bay đến ăn khế. Người em buồn rầu: "Chim ơi, cả nhà tôi chỉ trông vào cây khế này thôi." Chim liền cất tiếng: "Ăn một quả, trả cục vàng - may túi ba gang, mang đi mà đựng!" Sáng hôm sau chim đến thật, chở người em vượt biển ra một hòn đảo đầy vàng bạc châu báu. Nhớ đúng lời chim dặn, anh chỉ nhặt vừa đầy chiếc túi ba gang rồi leo lên lưng chim bay về.',
+          image: '/assets/books/an_khe_tra_vang_2.png'
+        },
+        {
+          text: 'Người anh nghe chuyện liền đòi đổi hết gia sản để lấy túp lều và cây khế. Chim lại đến, lại hứa y như cũ. Nhưng người anh may một chiếc túi to tận mười hai gang, ra tới đảo thì nhét vàng đầy túi, đầy cả túi áo túi quần. Chim chở nặng quá, bay ra giữa biển thì chao đảo, người anh cùng túi vàng rơi tòm xuống nước. Còn người em vẫn sống hiền lành, đem vàng chia bớt cho cả xóm nghèo.',
+          image: '/assets/books/an_khe_tra_vang_3.svg'
+        }
+      ],
+      quiz: {
+        question: 'Vì sao người em bay về nhà bình an còn người anh thì rơi xuống biển?',
+        options: [
+          'Vì con chim quý người em hơn nên cố tình hất người anh xuống nước.',
+          'Vì người em biết đủ, chỉ lấy đúng chiếc túi ba gang như lời chim dặn; còn người anh tham lam may túi mười hai gang nên chim chở không nổi.',
+          'Vì hôm đó biển động, gió to nên con chim bay không vững.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: "Tham thì thâm". Người chăm chỉ và biết đủ thì được đền đáp, còn lòng tham quá mức làm mất luôn cả thứ đang cầm trong tay. Khi đã nhận đủ phần của mình, con hãy tập nói: "Con đủ rồi ạ, con cảm ơn!"'
+      }
+    },
+    {
+      id: 'mai_an_tiem',
+      title: 'Sự Tích Dưa Hấu',
+      subtitle: 'Truyện cổ tích Việt Nam: Mai An Tiêm và đôi bàn tay tự làm nên tất cả',
+      emoji: '🍉',
+      stars: 5,
+      pages: [
+        {
+          text: 'Mai An Tiêm là con nuôi của vua Hùng, được vua yêu quý ban cho nhiều của cải. Nhưng chàng không khoe khoang, chỉ nói: "Của cải này là do tay tôi làm ra mà có." Vua nghe vậy thì giận, cho là chàng kiêu ngạo, liền đày cả gia đình ra một hòn đảo hoang giữa biển, chỉ cho mang theo ít lương thực. Vợ chàng lo sợ khóc, nhưng An Tiêm vẫn bình tĩnh: "Còn hai bàn tay là còn sống được, mình đừng lo."',
+          image: '/assets/books/mai_an_tiem_1.png'
+        },
+        {
+          text: 'Ra đảo, cả nhà xúm vào dựng lều, đào giếng, bắt cá, hái rau rừng. Một hôm An Tiêm thấy đàn chim từ phương xa bay tới, nhả xuống bãi cát mấy hạt đen nhánh. Chàng nghĩ: "Chim ăn được thì chắc người cũng ăn được." Thế là chàng nhặt hạt đem gieo xuống cát, ngày ngày tưới nước chăm bón. Ít lâu sau dây leo bò xanh khắp bãi, kết thành những quả to tròn, bổ ra ruột đỏ au, ăn vào ngọt mát lạ thường.',
+          image: '/assets/books/mai_an_tiem_2.png'
+        },
+        {
+          text: 'An Tiêm khắc tên mình lên vỏ những quả to nhất rồi thả trôi xuống biển. Thuyền buôn nhặt được, thấy quả ngon quá liền lần tìm đến tận đảo, đổi gạo đổi vải lấy dưa. Chẳng bao lâu hòn đảo hoang trở nên trù phú, thuyền bè ra vào tấp nập. Tin bay về kinh đô, vua Hùng cho gọi cả gia đình về, ôm lấy chàng mà bảo: "Con nói đúng thật rồi!" Từ đó dân ta gọi thứ quả ấy là quả dưa hấu.',
+          image: '/assets/books/mai_an_tiem_3.svg'
+        }
+      ],
+      quiz: {
+        question: 'Điều gì đã giúp gia đình Mai An Tiêm sống được rồi trở nên khá giả trên hòn đảo hoang?',
+        options: [
+          'Nhà vua thương tình nên bí mật sai người chở lương thực ra tiếp tế đều đặn.',
+          'Cả nhà tự lao động - dựng lều, đào giếng, bắt cá - và An Tiêm để ý học từ đàn chim rồi đem hạt lạ gieo trồng.',
+          'Gia đình chàng may mắn đào được một kho báu chôn sẵn dưới bãi cát.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Không ai giúp mình bằng chính đôi tay và cái đầu của mình. Gặp việc khó, thay vì ngồi than thở, con hãy nhìn quanh xem mình làm được gì - như Mai An Tiêm nhìn đàn chim mà tìm ra hạt dưa hấu vậy!'
+      }
+    },
+    {
+      id: 'su_tich_tich_chu',
+      title: 'Sự Tích Tích Chu',
+      subtitle: 'Truyện cổ tích Việt Nam: thương bà khi bà còn ở bên mình',
+      emoji: '🐦',
+      stars: 5,
+      pages: [
+        {
+          text: 'Tích Chu mồ côi cha mẹ từ bé, sống với bà. Bà thương cháu lắm: có miếng ngon bà đều để dành phần cháu, đêm hè nóng bà thức quạt cho cháu ngủ. Vậy mà Tích Chu chỉ mải rong chơi với các bạn, suốt ngày ở ngoài đồng ngoài ngõ. Bà đã già yếu vẫn lụi cụi gánh củi, nấu cơm một mình; gọi cháu thì cháu "dạ" một tiếng rồi lại chạy biến đi chơi tiếp.',
+          image: '/assets/books/su_tich_tich_chu_1.png'
+        },
+        {
+          text: 'Một hôm bà ốm nặng, nằm trên giường khát nước, gọi khản cả tiếng: "Tích Chu ơi, cho bà ngụm nước..." Gọi mãi không thấy cháu về, bà hoá thành một con chim, vỗ cánh bay lên trời. Tích Chu chơi chán về nhà thì vừa kịp thấy con chim bay ra khỏi cửa. Cậu chạy theo, oà khóc: "Bà ơi, bà đừng đi, bà ở lại với cháu!" Chim buồn bã đáp: "Bà khát quá, bà phải đi tìm nước, cháu ở lại nhé..."',
+          image: '/assets/books/su_tich_tich_chu_2.png'
+        },
+        {
+          text: 'Tích Chu ân hận vô cùng, cứ thế chạy theo chim vào tận rừng sâu. Một bà tiên hiện ra bảo: "Nếu cháu lấy được nước suối Tiên cho bà uống thì bà sẽ trở lại thành người. Nhưng đường xa lắm, phải trèo đèo lội suối, cháu đi nổi không?" Tích Chu gật đầu ngay. Cậu đi ròng rã mấy ngày đêm, chân rớm máu vẫn không bỏ cuộc, cuối cùng cũng mang được bình nước về. Bà uống xong liền trở lại thành người. Từ đó Tích Chu không rời bà nửa bước.',
+          image: '/assets/books/su_tich_tich_chu_3.png'
+        }
+      ],
+      quiz: {
+        question: 'Vì sao bà của Tích Chu lại hoá thành chim bay đi?',
+        options: [
+          'Vì bà cũng muốn được bay đi chơi cho vui giống như Tích Chu.',
+          'Vì bà ốm, khát nước, gọi Tích Chu mãi mà cậu còn mải chơi nên không về chăm bà.',
+          'Vì bà tiên đã hoá phép biến bà thành chim để thử lòng Tích Chu.'
+        ],
+        correctAnswer: 1,
+        moral: '💡 Bài học: Người thân yêu thương con mỗi ngày, nhưng không ở bên con mãi mãi. Hôm nay con hãy rót cho ông bà, bố mẹ một cốc nước và hỏi một câu "Ông bà có mệt không ạ?" - đừng đợi phải chạy vào rừng sâu như Tích Chu mới thấy thương.'
       }
     }
   ],

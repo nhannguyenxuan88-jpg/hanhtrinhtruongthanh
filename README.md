@@ -12,7 +12,7 @@
   - **Lớp 8**: 73 bài (Ngữ văn + Toán 8 + Tiếng Anh 8) — 314 câu hỏi
   - Điểm số → Sao thưởng, thanh tiến độ từng quyển sách.
   - **Xem sách gốc PDF**: mỗi quyển sách có nút 📕 mở bản in PDF đầy đủ tranh minh hoạ.
-- **📚 Góc đọc sách**: 20 truyện thiếu nhi kèm câu hỏi tương tác + rút bài học đạo đức; 9 bài kỹ năng sống cho tuổi teen (chủ động, tài chính, mục tiêu, cảm xúc, phương pháp học, tư duy phát triển, ranh giới cá nhân).
+- **📚 Góc đọc sách**: 23 truyện thiếu nhi (có 5 truyện cổ tích Việt Nam) kèm câu hỏi tương tác + rút bài học đạo đức; 9 bài kỹ năng sống cho tuổi teen (chủ động, tài chính, mục tiêu, cảm xúc, phương pháp học, tư duy phát triển, ranh giới cá nhân).
 - **🧮 Toán tư duy**: 13 chủ đề chia theo độ tuổi — 9 chủ đề tiểu học (phép tính, đo lường, tiền Việt, giải toán có lời văn) và 4 chủ đề trung học (suy luận logic, phần trăm & lãi suất, xác suất & biểu đồ, hình học) — 65 câu hỏi.
 - **🌍 Khám phá thế giới**: 10 chủ đề kiến thức nền — cơ thể người, động vật, cây xanh, Trái Đất, an toàn sống, Việt Nam quê hương (tiểu học) và khoa học đời sống, lịch sử, địa lý – môi trường, an toàn số (trung học) — 50 câu hỏi. **Cần chạy `supabase/migration_explore.sql`** nếu database đã cài từ trước.
 - **🎮 Khu game**: trò chơi nhỏ giải trí (arcade).
@@ -71,7 +71,8 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 | `src/lib/api.js` | Lớp truy cập Supabase |
 | `src/lib/assignables.js` | Danh mục 3 khu nội dung bố mẹ giao được — nguồn sự thật dùng chung cho giao diện giao bài và luật khoá bài |
 | `src/lib/learning.js` | Chấm sao, luật "bài này đã giao chưa", ôn tập lặp lại, bản tin tuần |
-| `src/lib/booksData.js` | Thư viện truyện đọc (20 truyện bé + 9 bài kỹ năng teen) |
+| `src/lib/booksData.js` | Thư viện truyện đọc (23 truyện bé + 9 bài kỹ năng teen) |
+| `scripts/gen-book-illustrations.cjs` | Vẽ tranh SVG bù cho những trang truyện chưa có tranh vẽ tay |
 | `src/lib/mathData.js` | Chủ đề Toán tư duy, chia `kids` / `teens` |
 | `src/lib/exploreData.js` | Chủ đề Khám phá thế giới, chia `kids` / `teens` |
 | `src/lib/tone.js` | Giọng điệu & tên tab theo độ tuổi (tiểu học / teen) |

@@ -30,6 +30,7 @@ const KID_TONE = {
   tabs: {
     plan: '📅 Hôm nay',
     tasks: '🎯 Nhiệm vụ',
+    pika: '🐥 Gia Sư Pika',
     books: '📚 Đọc sách',
     math: '🧮 Toán vui',
     explore: '🌍 Khám phá',
@@ -65,6 +66,7 @@ const TEEN_TONE = {
   tabs: {
     plan: 'Hôm nay',
     tasks: 'Nhiệm vụ',
+    pika: 'Gia sư AI',
     books: 'Kỹ năng',
     math: 'Tư duy',
     explore: 'Khám phá',
