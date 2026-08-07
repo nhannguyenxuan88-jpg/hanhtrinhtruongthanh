@@ -49,6 +49,28 @@ export const textbookData = [
             ],
             "correctAnswer": 0,
             "explanation": "✅ Bài thơ khuyên em biết quý trọng thời gian và chăm chỉ học tập."
+          },
+          {
+            "question": "Luyện từ & câu SGK: Từ nào dưới đây là từ chỉ hoạt động của học sinh?",
+            "options": [
+              "Chăm chỉ",
+              "Đọc sách",
+              "Vở hồng",
+              "Trường học"
+            ],
+            "correctAnswer": 1,
+            "explanation": "✅ 'Đọc sách' là từ chỉ hoạt động của học sinh."
+          },
+          {
+            "question": "Luyện từ & câu SGK: Dòng nào dưới đây thuộc mẫu câu giới thiệu?",
+            "options": [
+              "Em là học sinh lớp 2.",
+              "Em đang đọc sách ở thư viện.",
+              "Mái trường mới rất đẹp.",
+              "Em học bài chăm chỉ mỗi ngày."
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ 'Em là học sinh lớp 2' là mẫu câu giới thiệu (Ai là gì?)."
           }
         ]
       },
@@ -4143,6 +4165,209 @@ export const textbookData = [
             ],
             "correctAnswer": 0,
             "explanation": "✅ I like ... dùng để nói về điều mình thích: I like drawing = Mình thích vẽ."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "math2_adv",
+    "subject": "Toán Nâng Cao",
+    "grade": 2,
+    "volume": "1001 Toán Tư Duy (Theo Sách Gốc G:\\Sách giáo khoa)",
+    "emoji": "🧮",
+    "color": "#8b5cf6",
+    "stars": 10,
+    "lessons": [
+      {
+        "id": "math2_adv_b1",
+        "week": 20,
+        "title": "Chuyên đề 1: Bảng nhân 2 & Bảng nhân 5 Nâng cao",
+        "content": "🌅 BÀI HỌC\n\n“BẢNG NHÂN 2 VÀ BẢNG NHÂN 5 - TÍNH TƯ DUY”\n\nPhép nhân là phép cộng các số hạng bằng nhau. Ví dụ: 2 + 2 + 2 = 2 x 3 = 6.\n\n---\n\n⚡ MẸO NHỚ BẢNG NHÂN 2 & 5:\n\n• Bảng nhân 2: Kết quả luôn là các số chẵn (2, 4, 6, 8, 10, 12, 14, 16, 18, 20).\n• Bảng nhân 5: Chữ số tận cùng luôn là 0 hoặc 5 (5, 10, 15, 20, 25, 30, 35, 40, 45, 50).\n\n---\n\n💬 BÀI TOÁN TƯ DUY:\n\nCó 5 đĩa cam, mỗi đĩa có 4 quả cam. Hỏi có tất cả bao nhiêu quả cam?\nPhép tính: 4 x 5 = 20 quả cam.",
+        "quizzes": [
+          {
+            "question": "Tính nhanh phép tính: 5 x 6 = ?",
+            "options": ["25", "30", "35", "20"],
+            "correctAnswer": 1,
+            "explanation": "✅ Đúng rồi! 5 x 6 = 30."
+          },
+          {
+            "question": "Mỗi chiếc xe đạp có 2 bánh xe. Hỏi 8 chiếc xe đạp có tất cả bao nhiêu bánh xe?",
+            "options": ["14 bánh", "16 bánh", "18 bánh", "12 bánh"],
+            "correctAnswer": 1,
+            "explanation": "✅ Phép tính: 2 x 8 = 16 bánh xe."
+          },
+          {
+            "question": "Có 4 đĩa bánh, mỗi đĩa có 5 chiếc bánh. Hỏi có tất cả bao nhiêu chiếc bánh?",
+            "options": ["15 chiếc", "20 chiếc", "25 chiếc", "10 chiếc"],
+            "correctAnswer": 1,
+            "explanation": "✅ Phép tính: 5 x 4 = 20 chiếc bánh."
+          }
+        ]
+      },
+      {
+        "id": "math2_adv_b2",
+        "week": 22,
+        "title": "Chuyên đề 2: Bảng chia 2 & Bảng chia 5 Nâng cao",
+        "content": "🌅 BÀI HỌC\n\n“PHÉP CHIA VÀ BẢNG CHIA 2, 5”\n\nPhép chia là phép toán ngược của phép nhân. Từ phép nhân 2 x 5 = 10, ta có 2 phép chia:\n10 : 2 = 5\n10 : 5 = 2\n\n---\n\n💬 CHIA ĐỀU QUÀ CHO CÁC BẠN:\n\nCó 15 chiếc kẹo chia đều cho 5 bạn. Hỏi mỗi bạn nhận được bao nhiêu chiếc kẹo?\nPhép tính: 15 : 5 = 3 chiếc kẹo.",
+        "quizzes": [
+          {
+            "question": "Tính kết quả phép chia: 18 : 2 = ?",
+            "options": ["8", "9", "7", "6"],
+            "correctAnswer": 1,
+            "explanation": "✅ Đúng rồi! 2 x 9 = 18 nên 18 : 2 = 9."
+          },
+          {
+            "question": "Có 25 cái bánh chia đều vào 5 hộp. Hỏi mỗi hộp có bao nhiêu cái bánh?",
+            "options": ["4 cái", "5 cái", "6 cái", "3 cái"],
+            "correctAnswer": 1,
+            "explanation": "✅ Phép chia: 25 : 5 = 5 cái bánh."
+          },
+          {
+            "question": "Biết x x 5 = 40. Tìm giá trị của x?",
+            "options": ["x = 7", "x = 8", "x = 9", "x = 6"],
+            "correctAnswer": 1,
+            "explanation": "✅ x = 40 : 5 = 8."
+          }
+        ]
+      },
+      {
+        "id": "math2_adv_b3",
+        "week": 26,
+        "title": "Chuyên đề 3: Giải bài toán bằng 2 phép tính",
+        "content": "🌅 BÀI HỌC\n\n“GIẢI BÀI TOÁN BẰNG 2 BƯỚC TÍNH”\n\nTrong các bài toán tư duy, ta cần thực hiện 2 bước:\n• Bước 1: Tìm số lượng chưa biết.\n• Bước 2: Tìm tổng số hoặc hiệu số theo yêu cầu đề bài.\n\n---\n\n💬 VÍ DỤ MẪU:\n\nLớp 2A có 15 học sinh nam. Số học sinh nữ nhiều hơn số học sinh nam 5 bạn. Hỏi lớp 2A có tất cả bao nhiêu học sinh?\n• Bước 1 (Tìm số bạn nữ): 15 + 5 = 20 (bạn)\n• Bước 2 (Tìm tổng cả lớp): 15 + 20 = 35 (bạn).",
+        "quizzes": [
+          {
+            "question": "An có 12 viên bi. Bình có nhiều hơn An 6 viên bi. Hỏi cả hai bạn có bao nhiêu viên bi?",
+            "options": ["18 viên", "30 viên", "24 viên", "36 viên"],
+            "correctAnswer": 1,
+            "explanation": "✅ Bình có: 12 + 6 = 18 viên bi. Cả hai bạn có: 12 + 18 = 30 viên bi."
+          },
+          {
+            "question": "Tổ 1 trồng được 20 cây. Tổ 2 trồng ít hơn Tổ 1 4 cây. Hỏi cả hai tổ trồng được bao nhiêu cây?",
+            "options": ["16 cây", "36 cây", "40 cây", "32 cây"],
+            "correctAnswer": 1,
+            "explanation": "✅ Tổ 2 trồng: 20 - 4 = 16 cây. Cả hai tổ trồng: 20 + 16 = 36 cây."
+          }
+        ]
+      },
+      {
+        "id": "math2_adv_b4",
+        "week": 28,
+        "title": "Chuyên đề 4: Xem đồng hồ chính xác & Đơn vị đo lường",
+        "content": "🌅 BÀI HỌC\n\n“ĐỒNG HỒ & ĐƠN VỊ ĐO LƯỜNG (m, dm, cm, kg, l)”\n\n• Xem đồng hồ: Kim ngắn chỉ giờ, kim dài chỉ phút. 1 giờ = 60 phút.\n• Đơn vị độ dài: 1m = 10dm = 100cm.\n• Đơn vị khối lượng: Kilôgam (kg).\n• Đơn vị dung tích: Lít (l).",
+        "quizzes": [
+          {
+            "question": "Đổi đơn vị: 2m 3dm = ? dm",
+            "options": ["23 dm", "203 dm", "5 dm", "230 dm"],
+            "correctAnswer": 0,
+            "explanation": "✅ 2m = 20dm, vậy 2m 3dm = 20 + 3 = 23dm."
+          },
+          {
+            "question": "Đồng hồ chỉ kim ngắn vào số 4, kim dài chỉ số 12. Hỏi là mấy giờ?",
+            "options": ["4 giờ", "12 giờ", "4 giờ 12 phút", "12 giờ 4 phút"],
+            "correctAnswer": 0,
+            "explanation": "✅ Kim ngắn số 4, kim dài số 12 nghĩa là 4 giờ đúng."
+          }
+        ]
+      },
+      {
+        "id": "math2_adv_b5",
+        "week": 32,
+        "title": "Chuyên đề 5: Hình học tư duy & Đếm hình nâng cao",
+        "content": "🌅 BÀI HỌC\n\n“HÌNH HỌC TƯ DUY - KHỐI HÌNH & BÀI TOÁN ĐẾM HÌNH”\n\n• Hình phẳng: Tam giác (3 cạnh), Tứ giác (4 cạnh).\n• Khối không gian: Khối lập phương (6 mặt vuông), Khối chữ nhật, Khối trụ, Khối cầu.\n• Mẹo đếm hình: Đánh số từng mảnh nhỏ rồi đếm hình đơn và hình ghép!",
+        "quizzes": [
+          {
+            "question": "Khối lập phương có bao nhiêu mặt vuông?",
+            "options": ["4 mặt", "6 mặt", "8 mặt", "12 mặt"],
+            "correctAnswer": 1,
+            "explanation": "✅ Khối lập phương có 6 mặt hình vuông bằng nhau."
+          },
+          {
+            "question": "Quả bóng đá có dạng khối hình nào?",
+            "options": ["Khối trụ", "Khối cầu", "Khối lập phương", "Khối chữ nhật"],
+            "correctAnswer": 1,
+            "explanation": "✅ Quả bóng tròn xoay có dạng khối cầu."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tv2_adv",
+    "subject": "Tiếng Việt Nâng Cao",
+    "grade": 2,
+    "volume": "Mở Rộng Vốn Từ & Cổ Tích Lô-gíc (Theo Sách Gốc)",
+    "emoji": "✨",
+    "color": "#ec4899",
+    "stars": 10,
+    "lessons": [
+      {
+        "id": "tv2_adv_b1",
+        "week": 21,
+        "title": "Truyện cổ tích tư duy: Trí khôn của ta đây",
+        "content": "🌅 ĐỌC BÀI\n\n“TRÍ KHÔN CỦA TA ĐÂY”\n\nMột con hổ thấy bác nông dân điều khiển con trâu to lớn cày ruộng. Hổ thắc mắc hỏi bác nông dân: “Sức trâu to thế sao lại chịu nghe lời người?”. Bác nông dân đáp: “Vì con người có trí khôn”. Hổ muốn xem trí khôn, bác nói trí khôn để ở nhà, rồi dùng dây buộc hổ vào gốc cây để về lấy.\n\n---\n\n💬 BÀI HỌC TƯ DUY:\n\n• Trí khôn không nằm ở vóc dáng to lớn hay sức mạnh bắp thịt.\n• Sự thông minh, hiểu biết và bình tĩnh giúp con người giải quyết mọi khó khăn.",
+        "quizzes": [
+          {
+            "question": "Hổ thắc mắc điều gì khi thấy trâu cày ruộng?",
+            "options": [
+              "Vì sao trâu to lớn lại nghe lời con người",
+              "Vì sao trâu ăn cỏ",
+              "Vì sao ruộng lại rộng",
+              "Vì sao trời nắng"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Hổ ngạc nhiên vì trâu to khỏe mà vẫn nghe lời người nông dân nhỏ bé."
+          },
+          {
+            "question": "Trí khôn giúp con người điều gì?",
+            "options": [
+              "Giải quyết khó khăn bằng sự thông minh và suy nghĩ",
+              "Trở nên to lớn hơn",
+              "Chạy nhanh như thỏ",
+              "Bay được trên trời"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Trí khôn là sự thông minh, giúp con người sáng tạo và làm chủ cuộc sống."
+          }
+        ]
+      },
+      {
+        "id": "tv2_adv_b2",
+        "week": 25,
+        "title": "Thử thách ngôn ngữ: Mở rộng vốn từ về loài vật & thiên nhiên",
+        "content": "🌅 BÀI HỌC\n\n“MỞ RỘNG VỐN TỪ VỀ THIÊN NHIÊN & THÚ CỦNG”\n\n• Từ ngữ chỉ hoạt động của vật: bay lượn, phi nước đại, gầm rống, rỉa lông, bò lết.\n• Từ ngữ chỉ đặc điểm: nhanh như sóc, hiền như nai, khỏe như voi, tinh ranh như cáo.",
+        "quizzes": [
+          {
+            "question": "Thành ngữ nào dùng để khen sự nhanh nhẹn?",
+            "options": ["Nhanh như sóc", "Chậm như rùa", "Hiền như nai", "Khỏe như voi"],
+            "correctAnswer": 0,
+            "explanation": "✅ 'Nhanh như sóc' dùng để miêu tả sự nhanh nhẹn, thoăn thoắt."
+          },
+          {
+            "question": "Từ nào chỉ tiếng kêu của chim sẻ?",
+            "options": ["Lích rích", "Gầm rống", "Gáy vang", "Ục ục"],
+            "correctAnswer": 0,
+            "explanation": "✅ Chim sẻ kêu 'lích rích' ríu rít chuyền cành."
+          }
+        ]
+      },
+      {
+        "id": "tv2_adv_b3",
+        "week": 30,
+        "title": "Tập làm văn sáng tạo: Viết đoạn văn ngắn cảm ơn & xin lỗi",
+        "content": "🌅 BÀI HỌC\n\n“NGHỆ THUẬT NÓI LỜI CẢM ƠN VÀ XIN LỖI CHÂN THÀNH”\n\n• Lời cảm ơn: Khi nhận sự giúp đỡ hay món quà từ người khác.\n• Lời xin lỗi: Khi dũng cảm nhận lỗi và hứa sửa chữa khuyết điểm.",
+        "quizzes": [
+          {
+            "question": "Khi lỡ làm rơi chiếc hộp bút của bạn, em nên làm gì?",
+            "options": [
+              "Nhặt lên giúp bạn và nói lời xin lỗi chân thành",
+              "Bỏ đi coi như không biết",
+              "Đổ lỗi cho bạn khác",
+              "Cười đùa"
+            ],
+            "correctAnswer": 0,
+            "explanation": "✅ Dũng cảm nhận lỗi và nhặt giúp bạn là hành động văn minh, lịch sự."
           }
         ]
       }

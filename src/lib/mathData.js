@@ -623,6 +623,191 @@ export const mathData = {
           explanation: '🏆 Siêu lắm! Gà: 14 x 2 = 28 chân. Chó: 6 x 4 = 24 chân. Tổng: 28 + 24 = 52 cái chân.'
         }
       ]
+    },
+    {
+      id: 'chude_1001_1',
+      title: 'Chủ đề 10: [1001 Toán Tư Duy] Tính nhanh phạm vi 20 & Dãy số quy luật',
+      emoji: '⚡',
+      stars: 6,
+      lesson: {
+        title: 'Mẹo Tính Nhanh Nhóm Tròn Chục & Dãy Số Quy Luật',
+        badge: '📘 1001 TOÁN TƯ DUY LỚP 2',
+        steps: [
+          {
+            title: '1. Mẹo tính nhanh nhóm các số tạo thành tròn chục (10)',
+            desc: 'Cộng (trừ) các số có kết quả là số tròn chục trước rồi mới tính với các số còn lại.',
+            formula: '4 + 5 + 6  ➜  (4 + 6) + 5  ➜  10 + 5 = 15',
+            tip: '💡 Ghép các cặp số bạn thân (1+9, 2+8, 3+7, 4+6, 5+5) tạo thành 10!'
+          },
+          {
+            title: '2. Tìm quy luật dãy số tăng/giảm thần tốc',
+            desc: 'Quan sát hai số liền nhau: nếu tăng thì lấy số sau trừ số trước để tìm khoảng cách rồi cộng tiếp. Nếu giảm thì làm phép trừ.',
+            formula: 'Dãy: 3, 6, 9, ❓  ➜  6 - 3 = 3 (Tăng 3)  ➜  9 + 3 = 12',
+            tip: '🚀 Dãy số tăng dần thì cộng thêm, giảm dần thì trừ đi!'
+          },
+          {
+            title: '3. Bài toán ngược (Tìm cái ban đầu & đã dùng)',
+            desc: 'Tìm cái ban đầu ➜ làm phép cộng. Tìm cái đã dùng (đã bán, đã mất) ➜ làm phép trừ.',
+            formula: 'Có 11 bao gạo, bán đi ❓ bao còn lại 6 bao  ➜  11 - 6 = 5 bao đã bán',
+            tip: '⭐ Đọc kỹ câu hỏi để xác định tìm cái ban đầu hay cái đã mất!'
+          }
+        ]
+      },
+      quizzes: [
+        {
+          question: 'Điền số thích hợp vào chỗ chấm để tính nhanh: 8 + 6 + 2 = ❓',
+          equation: '(8 + 2) + 6 = ❓',
+          options: ['14', '16', '18', '15'],
+          correctAnswer: 1,
+          explanation: '🎉 Tuyệt vời! Ghép (8 + 2) = 10, rồi lấy 10 + 6 = 16.'
+        },
+        {
+          question: 'Hai số tiếp theo của dãy số quy luật: 5, 10, 15, 20, ❓, ❓ là số nào?',
+          equation: 'Dãy số tăng 5 đơn vị ➜ 20 + 5 = ❓',
+          options: ['22 ; 24', '25 ; 30', '21 ; 26', '25 ; 35'],
+          correctAnswer: 1,
+          explanation: '🌟 Chính xác! Dãy số đếm nhảy 5 đơn vị: 20 + 5 = 25 và 25 + 5 = 30.'
+        },
+        {
+          question: 'Cửa hàng có 15 thùng sữa, sau khi bán đi một số thùng thì còn 7 thùng. Hỏi cửa hàng đã bán bao nhiêu thùng?',
+          equation: '15 - 7 = ❓ thùng sữa',
+          options: ['6 thùng', '8 thùng', '9 thùng', '7 thùng'],
+          correctAnswer: 1,
+          explanation: '👏 Đúng rồi! Số thùng đã bán = 15 - 7 = 8 thùng sữa.'
+        }
+      ]
+    },
+    {
+      id: 'chude_1001_2',
+      title: 'Chủ đề 11: [1001 Toán Tư Duy] Phép cộng trừ có nhớ & Ba điểm thẳng hàng',
+      emoji: '📏',
+      stars: 6,
+      lesson: {
+        title: 'Bí Kíp Phép Tính Có Nhớ & Kiểm Tra Thẳng Hàng',
+        badge: '📘 1001 TOÁN TƯ DUY LỚP 2',
+        steps: [
+          {
+            title: '1. Quy tắc cộng có nhớ trong phạm vi 100',
+            desc: 'Cộng từ phải sang trái. Nếu tổng từ 10 trở lên, viết chữ số hàng đơn vị và nhớ 1 sang lượt cộng tiếp theo.',
+            formula: '27 + 28  ➜  7+8=15 (viết 5 nhớ 1)  ➜  2+2+1 = 5  ➜  55',
+            tip: '✨ Nhớ cộng thêm 1 vào hàng chục bé nhé!'
+          },
+          {
+            title: '2. Quy tắc trừ có nhớ trong phạm vi 100',
+            desc: 'Nếu hàng đơn vị không trừ được, mượn 1 chục (cộng 10) để trừ rồi nhớ trả 1 sang số trừ.',
+            formula: '52 - 27  ➜  12-7=5 (nhớ 1)  ➜  5-(2+1) = 2  ➜  25',
+            tip: '💡 Mượn 1 chục thì phải trả 1 sang hàng chục số trừ!'
+          },
+          {
+            title: '3. Ba điểm thẳng hàng',
+            desc: 'Khi 3 điểm cùng nằm trên một đường thẳng thì ta nói ba điểm đó thẳng hàng.',
+            formula: '⚫ (A) ────── ⚫ (B) ────── ⚫ (C)   ➜  A, B, C thẳng hàng',
+            tip: '📐 Đặt thước kẻ nếu cả 3 điểm cùng chạm thước là thẳng hàng.'
+          }
+        ]
+      },
+      quizzes: [
+        {
+          question: 'Thực hiện phép cộng có nhớ: 47 + 38 = ❓',
+          equation: '7+8=15 (viết 5 nhớ 1), 4+3+1=8 ➜ ❓',
+          options: ['75', '85', '83', '87'],
+          correctAnswer: 1,
+          explanation: '🎉 Đỉnh quá! 7+8=15 (viết 5 nhớ 1), 4+3=7 thêm 1 là 8 ➜ Kết quả = 85.'
+        },
+        {
+          question: 'Kết quả của phép trừ có nhớ: 63 - 28 = ❓',
+          equation: '13-8=5 (nhớ 1), 6-(2+1)=3 ➜ ❓',
+          options: ['35', '45', '38', '43'],
+          correctAnswer: 0,
+          explanation: '🌟 Chuẩn xác! 13-8=5, trả 1 vào 2 thành 3, 6-3=3 ➜ Kết quả = 35.'
+        }
+      ]
+    },
+    {
+      id: 'chude_1001_5',
+      title: 'Chủ đề 12: [1001 Toán Tư Duy] Mẹo đọc giờ kém & Bài toán trồng cây',
+      emoji: '⏰',
+      stars: 6,
+      lesson: {
+        title: 'Mẹo Đổi Giờ Kém Thần Tốc & Bài Toán Trồng Cây',
+        badge: '📘 1001 TOÁN TƯ DUY LỚP 2',
+        steps: [
+          {
+            title: '1. Mẹo tính số phút trên đồng hồ',
+            desc: 'Số phút trên đồng hồ = (Số mà kim phút chỉ vào) x 5.',
+            formula: 'Kim ngắn chỉ số 5, kim dài chỉ số 6  ➜  Phút = 6 x 5 = 30 phút  ➜  5 giờ 30',
+            tip: '💡 Khoảng cách giữa 2 số liền nhau trên mặt đồng hồ luôn bằng 5 phút!'
+          },
+          {
+            title: '2. Mẹo nói giờ kém chính xác',
+            desc: 'Khi kim phút vượt quá số 6 (lớn hơn 30 phút), ta đổi sang giờ kém:',
+            formula: 'Giờ kém = (Giờ hiện tại + 1) giờ kém (60 - Số phút hiện tại) phút',
+            tip: '⏱️ Ví dụ: 7 giờ 35 phút  ➜  (7+1) giờ kém (60-35) phút  ➜  8 giờ kém 25 phút!'
+          },
+          {
+            title: '3. Bài toán trồng cây 2 đầu đường',
+            desc: 'Trồng cây trên đoạn đường ở cả 2 đầu: Số cây = (Độ dài đường : Khoảng cách) + 1.',
+            formula: 'Đường dài 30m, cây cách 5m  ➜  30 : 5 = 6 khoảng  ➜  6 + 1 = 7 cây (1 bên)',
+            tip: '🌲 Nếu trồng 2 bên đường thì bé lấy số cây 1 bên x 2!'
+          }
+        ]
+      },
+      quizzes: [
+        {
+          question: 'Đồng hồ chỉ 6 giờ 40 phút. Nói theo cách giờ kém là bao nhiêu?',
+          equation: '(6 + 1) giờ kém (60 - 40) phút = ❓',
+          options: ['7 giờ kém 20 phút', '6 giờ kém 20 phút', '7 giờ kém 40 phút', '8 giờ kém 20 phút'],
+          correctAnswer: 0,
+          explanation: '🎉 Chuẩn rồi! (6 + 1) = 7 giờ, (60 - 40) = 20 phút ➜ 7 giờ kém 20 phút.'
+        },
+        {
+          question: 'Một đoạn đường dài 40m, hai đầu đường đều trồng cây. Mỗi cây cách nhau 10m. Hỏi trồng tất cả bao nhiêu cây trên 1 bên đường?',
+          equation: '(40 : 10) + 1 = ❓ cây',
+          options: ['4 cây', '5 cây', '6 cây', '8 cây'],
+          correctAnswer: 1,
+          explanation: '🌟 Bé giỏi quá! Số khoảng = 40 : 10 = 4. Số cây = 4 + 1 = 5 cây.'
+        }
+      ]
+    },
+    {
+      id: 'chude_1001_6',
+      title: 'Chủ đề 13: [1001 Toán Tư Duy] Phép chia chu kỳ dư & Bài toán đếm hình',
+      emoji: '🧩',
+      stars: 6,
+      lesson: {
+        title: 'Bí Kíp Phép Chia Chu Kỳ Dư & Đếm Đoạn Thẳng Không Sót',
+        badge: '📘 1001 TOÁN TƯ DUY LỚP 2',
+        steps: [
+          {
+            title: '1. Xác định sự vật theo chu kỳ lặp lại bằng số dư',
+            desc: 'Bước 1: Tìm độ dài chu kỳ lặp lại (N). Bước 2: Lấy số thứ tự cần tìm chia cho N lấy số dư.',
+            formula: 'Chu kỳ 3 màu (Đỏ-Xanh-Vàng). Hạt 14 : 3 = 4 dư 2 ➜ Hạt màu thứ 2 (Xanh)',
+            tip: '💡 Dư 1 ➜ vật 1, Dư 2 ➜ vật 2, Dư 0 (chia hết) ➜ vật cuối chu kỳ!'
+          },
+          {
+            title: '2. Phương pháp đếm đoạn thẳng thần tốc',
+            desc: 'Đánh số 1, 2, 3... vào các khoảng nhỏ. Tổng số đoạn thẳng = 1 + 2 + 3 + ...',
+            formula: '3 đoạn nhỏ trên 1 đường  ➜  Tổng đoạn = 1 + 2 + 3 = 6 đoạn thẳng',
+            tip: '📐 Công thức đếm đoạn: n x (n+1) / 2 với n là số khoảng nhỏ!'
+          }
+        ]
+      },
+      quizzes: [
+        {
+          question: 'Dãy cờ treo theo thứ tự: Đỏ, Vàng, Xanh, Đỏ, Vàng, Xanh... Lá cờ thứ 20 là cờ màu gì?',
+          equation: '20 chia 3 (chu kỳ 3 màu) = 6 dư 2 ➜ Màu thứ 2 là màu ❓',
+          options: ['Màu Đỏ', 'Màu Vàng', 'Màu Xanh', 'Màu Tím'],
+          correctAnswer: 1,
+          explanation: '🎉 Đỉnh cao! 20 : 3 = 6 dư 2. Lá cờ thứ 2 trong chu kỳ (Đỏ, Vàng, Xanh) là màu Vàng!'
+        },
+        {
+          question: 'Trên một đường thẳng có 4 điểm A, B, C, D nối tiếp nhau tạo thành 3 đoạn nhỏ. Hỏi có tất cả bao nhiêu đoạn thẳng?',
+          equation: 'Công thức: 1 + 2 + 3 = ❓ đoạn',
+          options: ['4 đoạn', '5 đoạn', '6 đoạn', '7 đoạn'],
+          correctAnswer: 2,
+          explanation: '🌟 Chuẩn xác! Đếm 3 đoạn đơn, 2 đoạn đôi, 1 đoạn ba: 3 + 2 + 1 = 6 đoạn thẳng.'
+        }
+      ]
     }
   ],
 
@@ -918,3 +1103,296 @@ export const mathData = {
     }
   ],
 }
+
+// Bổ sung các câu chuyện Cổ Tích Về Lô-Gíc (Kurio Logic Stories)
+export const logicStories = [
+  {
+    id: 'logic_story_1',
+    title: 'Cổ tích Lô-gíc 01: Cuộc bầu cử chọn thủ lĩnh rừng xanh',
+    emoji: '🦁',
+    coverBadge: 'TRUYỆN TRANH LÔ-GÍC',
+    summary: 'Sư Tử tổ chức cuộc bầu cử công bằng. Các muông thú phải dùng lập luận để chọn ra người lãnh đạo thông thái nhất!',
+    pages: [
+      {
+        page: 1,
+        title: 'Ngày hội bầu cử của Vương quốc Rừng Xanh 🌳',
+        text: 'Muôn loài tập hợp lại dưới gốc cây cổ thụ. Có 3 ứng viên tranh cử: Cáo Ma Thuật 🦊, Voi Dũng Cảm 🐘 và Khỉ Thông Thái 🐵. Sư Tử đưa ra thử thách logic để tìm thủ lĩnh.',
+        dialogue: {
+          character: 'Sư Tử',
+          avatar: '🦁',
+          text: 'Ai trả lời đúng câu đố chọn biểu tượng giống nhau của các bạn sẽ thắng cuộc!'
+        }
+      },
+      {
+        page: 2,
+        title: 'Thử thách phát hiện điểm chung ✦',
+        text: 'An có (▲, ◯, ▢). Minh có (♥, ▢, ★). Chi có (★, ▲, ✦). Hai ứng viên Minh và Chi có điểm chung duy nhất ở biểu tượng nào?',
+        dialogue: {
+          character: 'Khỉ Thông Thái',
+          avatar: '🐵',
+          text: 'Thưa Sư Tử, Minh có ngôi sao ★ và Chi cũng có ngôi sao ★!'
+        }
+      }
+    ],
+    quiz: {
+      question: 'Minh và Chi cùng giống nhau hình biểu tượng nào?',
+      options: ['Hình tam giác ▲', 'Hình vuông ▢', 'Hình ngôi sao ★', 'Hình trái tim ♥'],
+      correctAnswer: 2,
+      explanation: '🎉 Đúng rồi! Minh sở hữu (♥, ▢, ★) và Chi sở hữu (★, ▲, ✦). Điểm chung duy nhất là hình ngôi sao ★!'
+    }
+  },
+  {
+    id: 'logic_story_2',
+    title: 'Cổ tích Lô-gíc 02: Bí mật kẻ ăn vụng cá',
+    emoji: '🐱',
+    coverBadge: 'VỤ ÁN LÔ-GÍC',
+    summary: 'Mẹ mèo vừa nướng 3 con cá ngon lành thì 1 con biến mất! Hãy giúp Thám tử Mèo Mèo dùng phương pháp suy luận loại trừ tìm ra đáp án.',
+    pages: [
+      {
+        page: 1,
+        title: 'Bữa trưa mất tích dưới mái nhà 🏠',
+        text: 'Có 3 nghi phạm: Mèo Vàng 🐱, Chó Đốm 🐶 và Cáo Nhỏ 🦊. Mèo Vàng ngủ cả buổi. Chó Đốm bị xích ở cổng. Cáo Nhỏ vừa chạy ra từ bếp với vết mỡ trên mép!',
+        dialogue: {
+          character: 'Thám tử Mèo',
+          avatar: '🕵️',
+          text: 'Dựa vào vết mỡ và chứng cứ vắng mặt, ai mới là thủ phạm thực sự?'
+        }
+      }
+    ],
+    quiz: {
+      question: 'Dựa vào các chứng cứ trên, ai đã lấy con cá?',
+      options: ['Mèo Vàng 🐱', 'Chó Đốm 🐶', 'Cáo Nhỏ 🦊', 'Không ai cả'],
+      correctAnswer: 2,
+      explanation: '🎉 Xuất sắc! Mèo Vàng ngủ, Chó Đốm bị xích ở xa, chỉ có Cáo Nhỏ có dấu mỡ ở mép nên Cáo Nhỏ là thủ phạm.'
+    }
+  },
+  {
+    id: 'logic_story_3',
+    title: 'Cổ tích Lô-gíc 03: Lạc vào Xứ sở Bánh Ngọt',
+    emoji: '🧁',
+    coverBadge: 'PHIÊU LƯU KỲ DIỆU',
+    summary: 'Bé Bông lạc vào Vương quốc Bánh Ngọt và phải vượt qua Ma trận Hạt Dẻ để tìm đường về nhà!',
+    pages: [
+      {
+        page: 1,
+        title: 'Cánh cổng kẹo sô-cô-la 🍫',
+        text: 'Muốn qua cổng, Bé Bông phải đếm chính xác số hạt dẻ xung quanh ô ma trận có số 3.',
+        dialogue: {
+          character: 'Công chúa Kẹo',
+          avatar: '👸',
+          text: 'Xung quanh ô điền số 3 có bao nhiêu hạt dẻ nào Bé Bông?'
+        }
+      }
+    ],
+    quiz: {
+      question: 'Ô số 3 ở giữa có xung quanh bao nhiêu hạt dẻ?',
+      options: ['1 hạt', '2 hạt', '3 hạt dẻ 🌰', '4 hạt'],
+      correctAnswer: 2,
+      explanation: '🎉 Bé giỏi quá! Ô có số 3 nghĩa là có đúng 3 hạt dẻ kề bên ô đó!'
+    }
+  }
+]
+
+// Dữ liệu Bản Đồ Hành Trình (Learning Journey Path Map - Kurio Style)
+export const journeyMapData = [
+  {
+    id: 1, level: 1, title: 'Cộng trừ siêu tốc', status: 'completed', stars: 3, icon: '🧮',
+    lesson: {
+      badge: '⚡ TÍNH NHẨM SIÊU TỐC',
+      title: 'Bí Kíp Nhóm Số Tròn Chục Super Fast',
+      subtitle: 'Tách ghép các cặp số có tổng bằng 10, 20 hoặc 100 để tính trong 3 giây!',
+      type: 'quick_addition',
+      dialogue: { boyQuestion: 'Làm sao để cộng (18 + 25 + 12) trong 2 giây?', girlAnswer: 'Ghép (18 + 12) = 30 trước, rồi 30 + 25 = 55 siêu dễ!' }
+    }
+  },
+  {
+    id: 2, level: 2, title: 'Chữ số La Mã & Mẹo Tay', status: 'current', timer: '13:20:35', icon: '🖐️',
+    lesson: {
+      badge: 'MẸO ĐẾM THỜI GIAN',
+      title: 'Số La Mã (I, V, X, L) & Số Ngày Trên Khớp Tay',
+      subtitle: 'Thuộc lòng I, V, X, L, C và mẹo đếm tháng 30 hay 31 ngày trên khớp ngón tay!',
+      type: 'roman_numerals',
+      dialogue: { boyQuestion: 'Tháng 7 và Tháng 8 có bao nhiêu ngày?', girlAnswer: 'Cả hai tháng 7 và 8 đều ở đỉnh khớp tay nên đều có 31 ngày!' }
+    }
+  },
+  { id: 3, level: 3, title: 'Rương Kho Báu 1', status: 'chest', isChest: true, rewardStars: 15, icon: '🎁' },
+  {
+    id: 4, level: 4, title: 'Dãy Số Quy Luật & Đếm Lịch', status: 'locked', icon: '✊',
+    lesson: {
+      badge: 'TƯ DUY QUY LUẬT',
+      title: 'Nhận Biết Dãy Số Quy Luật & Ngày Tháng',
+      subtitle: 'Quan sát khoảng cách giữa các số để điền số tiếp theo chính xác!',
+      type: 'number_pattern',
+      dialogue: { boyQuestion: 'Dãy số 3, 6, 12, 24... số tiếp theo là gì?', girlAnswer: 'Mỗi số gấp đôi số trước, nên số tiếp theo là 24 x 2 = 48!' }
+    }
+  },
+  {
+    id: 5, level: 5, title: 'Ma trận Hạt Dẻ Sudoku', status: 'locked', icon: '🌰',
+    lesson: {
+      badge: 'MA TRẬN LÔ-GÍC',
+      title: 'Ma Trận Ô Số Hạt Dẻ & Phép Suy Luận',
+      subtitle: 'Tư duy loại trừ ô trống để lấp đầy bảng số Sudoku mini!',
+      type: 'sudoku_matrix',
+      dialogue: { boyQuestion: 'Trong ma trận 3x3, mỗi dòng phải chứa đủ 1, 2, 3!', girlAnswer: 'Dòng 1 có 1 và 3 rồi, ô trống còn lại chắc chắn là số 2!' }
+    }
+  },
+  {
+    id: 6, level: 6, title: 'Thử Thách Đĩa Cân 5 Loại Quả', status: 'locked', icon: '🍎',
+    lesson: {
+      badge: 'TƯ DUY CÂN BẰNG',
+      title: 'Bài Toán Đĩa Cân & Tỉ Lệ Trọng Lượng',
+      subtitle: 'Suy luận logic từ 2 đĩa cân để tìm quả nặng nhất hoặc nhẹ nhất!',
+      type: 'scale_balance',
+      dialogue: { boyQuestion: '1 Táo = 2 Cam, 1 Cam = 3 Dâu. 1 Táo bằng mấy Dâu?', girlAnswer: 'Thay 2 Cam = 2 x 3 = 6 Dâu! Vậy 1 Táo bằng 6 Dâu!' }
+    }
+  },
+  { id: 7, level: 7, title: 'Luyện thi IKMC Quốc Tế', status: 'locked', icon: '🏆' },
+  { id: 8, level: 8, title: 'Đấu Trường Cao Thủ 1v1', status: 'locked', icon: '⚔️' },
+  {
+    id: 9, level: 9, title: 'Bài Toán Hơn Kém Nhau', status: 'locked', icon: '📏',
+    lesson: {
+      badge: 'TOÁN ỨNG DỤNG',
+      title: 'Giải Bài Toán Về Hơn Kém Nhau',
+      subtitle: 'Tìm số lớn, số bé khi biết tổng và hiệu hoặc số hơn kém!',
+      type: 'more_less',
+      dialogue: { boyQuestion: 'An có 15 bi, Bình nhiều hơn An 6 bi. Bình có bao nhiêu bi?', girlAnswer: 'Muốn tìm số nhiều hơn, lấy số của An cộng thêm 6: 15 + 6 = 21 bi!' }
+    }
+  },
+  {
+    id: 10, level: 10, title: 'Xem Đồng Hồ & Giờ Phút', status: 'locked', icon: '⏰',
+    lesson: {
+      badge: 'ĐO LƯỜNG THỰC TẾ',
+      title: 'Đọc Đồng Hồ Kim & Bài Toán Thời Gian',
+      subtitle: 'Kim ngắn chỉ giờ, kim dài chỉ phút. 1 giờ = 60 phút!',
+      type: 'clock_time',
+      dialogue: { boyQuestion: 'Kim ngắn chỉ số 4, kim dài chỉ số 3 là mấy giờ?', girlAnswer: 'Số 3 tương ứng 3 x 5 = 15 phút. Đó là 4 giờ 15 phút!' }
+    }
+  },
+  { id: 11, level: 11, title: 'Rương Kho Báu 2', status: 'chest', isChest: true, rewardStars: 25, icon: '🎁' },
+  {
+    id: 12, level: 12, title: 'Hình Học & Khối Lập Phương', status: 'locked', icon: '🧊',
+    lesson: {
+      badge: 'HÌNH HỌC KHÔNG GIAN',
+      title: 'Đếm Số Khối Lập Phương Bị Che Khuất',
+      subtitle: 'Đếm đủ các khối lập phương ở hàng trước và hàng đằng sau!',
+      type: 'cube_counting',
+      dialogue: { boyQuestion: 'Làm sao đếm được số khối bị đè bên dưới?', girlAnswer: 'Đếm từng cột từ trên xuống dưới, không bỏ sót cột nào!' }
+    }
+  },
+  {
+    id: 13, level: 13, title: 'Đơn Vị Đo Lường (Lít, Kg, m)', status: 'locked', icon: '⚖️',
+    lesson: {
+      badge: 'ĐO LƯỜNG CHUẨN SGK',
+      title: 'Chuyển Đổi Đơn Vị Đo Khối Lượng & Dung Tích',
+      subtitle: '1 kg = 1000 g | 1 l = 1000 ml | 1 m = 100 cm',
+      type: 'unit_conversion',
+      dialogue: { boyQuestion: 'Can 5 lít và can 2 lít đong được 3 lít nước bằng cách nào?', girlAnswer: 'Đổ đầy can 5 lít rồi rót sang can 2 lít, trong can 5 lít còn đúng 3 lít!' }
+    }
+  },
+  {
+    id: 14, level: 14, title: 'Bảng Nhân & Tính Nhẩm', status: 'locked', icon: '✖️',
+    lesson: {
+      badge: 'PHÉP NHÂN NỀN TẢNG',
+      title: 'Bản Đồ Bảng Nhân & Mẹo Nhân 5',
+      subtitle: 'Mọi số nhân với 5 đều có tận cùng là 0 hoặc 5!',
+      type: 'multiplication_tables',
+      dialogue: { boyQuestion: 'Mẹo nhớ bảng nhân 5 siêu tốc là gì?', girlAnswer: 'Số chẵn x 5 đuôi là 0, số lẻ x 5 đuôi là 5!' }
+    }
+  },
+  { id: 15, level: 15, title: 'Rương Kho Báu Vàng', status: 'chest', isChest: true, rewardStars: 50, icon: '👑' }
+]
+
+export function getDynamicQuizForNode(node, grade = 2) {
+  const nType = node.lesson?.type || 'quick_addition'
+
+  if (nType === 'quick_addition') {
+    const a = Math.floor(Math.random() * 30) + 12
+    const b = Math.floor(Math.random() * 30) + 15
+    const c = 20 - (a % 10)
+    const ans = a + b + c
+    return {
+      question: `Bé hãy tính nhẩm siêu tốc biểu thức: (${a} + ${b} + ${c}) = ❓`,
+      options: [`${ans}`, `${ans - 2}`, `${ans + 5}`, `${ans - 10}`],
+      correctAnswer: 0,
+      explanation: `🎉 Xuất sắc! Nhóm (${a} + ${c}) = ${a + c}, sau đó + ${b} = ${ans}!`
+    }
+  }
+
+  if (nType === 'roman_numerals') {
+    const vals = [
+      { r: 'XIV', n: 14 }, { r: 'XIX', n: 19 }, { r: 'XXIV', n: 24 }, { r: 'XXIX', n: 29 }, { r: 'XLV', n: 45 }
+    ]
+    const pick = vals[Math.floor(Math.random() * vals.length)]
+    return {
+      question: `Chữ số La Mã "${pick.r}" biểu diễn số nào trong hệ số thập phân?`,
+      options: [`${pick.n}`, `${pick.n + 2}`, `${pick.n - 5}`, `${pick.n + 10}`],
+      correctAnswer: 0,
+      explanation: `🎉 Chính xác! ${pick.r} chính là số ${pick.n}!`
+    }
+  }
+
+  if (nType === 'number_pattern') {
+    const start = Math.floor(Math.random() * 5) + 2
+    const step = Math.floor(Math.random() * 4) + 3
+    const n1 = start
+    const n2 = start + step
+    const n3 = start + step * 2
+    const n4 = start + step * 3
+    const ans = start + step * 4
+    return {
+      question: `Tìm số tiếp theo trong dãy số quy luật: ${n1}, ${n2}, ${n3}, ${n4}, ❓`,
+      options: [`${ans}`, `${ans + 2}`, `${ans - 3}`, `${ans + 5}`],
+      correctAnswer: 0,
+      explanation: `🎉 Tuyệt vời! Quy luật là mỗi số sau bằng số trước cộng ${step}. Vậy số tiếp theo là ${ans}!`
+    }
+  }
+
+  if (nType === 'scale_balance') {
+    const apples = Math.floor(Math.random() * 3) + 2
+    const oranges = apples * 2
+    return {
+      question: `Nếu 1 Quả Táo 🍎 nặng bằng 2 Quả Cam 🍊. Vậy ${apples} Quả Táo 🍎 nặng bằng bao nhiêu Quả Cam 🍊?`,
+      options: [`${oranges} Quả Cam 🍊`, `${oranges + 2} Quả Cam`, `${oranges - 1} Quả Cam`, `${oranges * 2} Quả Cam`],
+      correctAnswer: 0,
+      explanation: `🎉 Giỏi quá! 1 Táo = 2 Cam, nên ${apples} Táo = ${apples} x 2 = ${oranges} Cam!`
+    }
+  }
+
+  if (nType === 'clock_time') {
+    const hour = Math.floor(Math.random() * 11) + 1
+    const minPos = Math.floor(Math.random() * 4) * 3 + 3 // 3, 6, 9, 12
+    const mins = minPos === 12 ? 0 : minPos * 5
+    return {
+      question: `Đồng hồ có kim ngắn chỉ số ${hour}, kim dài chỉ số ${minPos}. Lúc này là mấy giờ?`,
+      options: [
+        `${hour} giờ ${mins > 0 ? mins + ' phút' : 'đúng'}`,
+        `${hour + 1} giờ 15 phút`,
+        `${hour} giờ 45 phút`,
+        `${hour - 1} giờ 30 phút`
+      ],
+      correctAnswer: 0,
+      explanation: `🎉 Chuẩn xác! Kim dài chỉ số ${minPos} tương ứng ${mins} phút, vậy đó là ${hour} giờ ${mins > 0 ? mins + ' phút' : 'đúng'}!`
+    }
+  }
+
+  if (nType === 'more_less') {
+    const a = Math.floor(Math.random() * 20) + 10
+    const diff = Math.floor(Math.random() * 8) + 2
+    const ans = a + diff
+    return {
+      question: `Bạn An có ${a} hòn bi, bạn Bình có nhiều hơn bạn An ${diff} hòn bi. Hỏi bạn Bình có bao nhiêu hòn bi?`,
+      options: [`${ans} hòn bi`, `${ans - diff}`, `${ans + 5}`, `${ans - 2}`],
+      correctAnswer: 0,
+      explanation: `🎉 Đúng rồi! Muốn tìm số bi của Bình, ta lấy số bi của An cộng với số bi nhiều hơn: ${a} + ${diff} = ${ans} hòn bi!`
+    }
+  }
+
+  // Fallback default quiz
+  return {
+    question: `Em hãy chọn đáp án đúng cho phép tính: ${grade * 12} + ${grade * 8} = ❓`,
+    options: [`${grade * 20}`, `${grade * 20 - 5}`, `${grade * 20 + 10}`, `${grade * 15}`],
+    correctAnswer: 0,
+    explanation: `🎉 Đúng rồi! ${grade * 12} + ${grade * 8} = ${grade * 20}!`
+  }
+}
+

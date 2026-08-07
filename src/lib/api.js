@@ -229,6 +229,17 @@ export async function deactivateReward(rewardId) {
   if (error) throw error
 }
 
+export async function updateReward(rewardId, updates) {
+  const { data, error } = await supabase
+    .from('rewards')
+    .update(updates)
+    .eq('id', rewardId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 // ---------- Đổi quà ----------
 export async function fetchRedemptions() {
   const { data, error } = await supabase

@@ -40,7 +40,21 @@ export default function PikaTutorModal({
   const sendMessageRef = useRef(null)
   const sessionLoggedRef = useRef(false)
 
-  // Khởi tạo tin nhắn chào mừng ban đầu — tự động phân tích & giảng bài chủ động nếu có sgkContext
+  const childId = profile?.child?.id || 'default'
+  const storageKey = `pika_chat_history_${childId}`
+
+  // Tự động lưu lịch sử hội thoại vào localStorage
+  useEffect(() => {
+    if (messages.length > 0 && !sgkContext) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(messages.slice(-50)))
+      } catch (e) {
+        console.warn('Lỗi lưu lịch sử Pika:', e)
+      }
+    }
+  }, [messages, sgkContext, storageKey])
+
+  // Khởi tạo tin nhắn chào mừng ban đầu hoặc nạp lại lịch sử trò chuyện
   useEffect(() => {
     let isCancelled = false
 
@@ -48,7 +62,6 @@ export default function PikaTutorModal({
       let initialGreeting = `Pika chào ${childName}! 🐥`
 
       if (sgkContext) {
-        // Đặt tin nhắn tạm thời trong lúc AI phân tích bài
         const tempMsg = {
           id: 'init-1',
           role: 'pika',
@@ -58,7 +71,6 @@ export default function PikaTutorModal({
         setMessages([tempMsg])
         setPikaState('thinking')
 
-        // Gọi AI chủ động giảng bài theo nội dung SGK
         const promptText = sgkContext.pageText
           ? `Pika ơi, con đang mở bài SGK "${sgkContext.title}" ở trang này. Chữ trong trang sách là: "${sgkContext.pageText.slice(0, 800)}". Pika hãy chủ động phân tích bài học, giải thích từ ngữ ấn tượng và đặt 1 câu hỏi gợi mở đầu tiên cho con nhé!`
           : `Pika ơi, con đang mở bài SGK "${sgkContext.title}" thuộc môn ${sgkContext.subject || 'SGK'}. Pika hãy chủ động giảng bài và hướng dẫn con nhé!`
@@ -84,6 +96,20 @@ export default function PikaTutorModal({
           else setPikaState('idle')
         }
       } else {
+        // Nạp lại lịch sử trò chuyện cũ từ localStorage (nếu có)
+        try {
+          const saved = localStorage.getItem(storageKey)
+          if (saved) {
+            const parsed = JSON.parse(saved)
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setMessages(parsed)
+              return
+            }
+          }
+        } catch (e) {
+          console.warn('Lỗi đọc lịch sử Pika:', e)
+        }
+
         initialGreeting = `Pika chào ${childName}! 🐥 Hôm nay con muốn Pika hỗ trợ giải đáp môn Toán, Ngữ Văn, Tiếng Anh hay làm bài tập nào nè?`
         setMessages([
           {
@@ -102,7 +128,21 @@ export default function PikaTutorModal({
     return () => {
       isCancelled = true
     }
-  }, [sgkContext, childName])
+  }, [sgkContext, childName, storageKey])
+
+  const handleClearChatHistory = () => {
+    if (window.confirm('Con có muốn làm mới cuộc trò chuyện để bắt đầu chủ đề mới cùng Pika không?')) {
+      try { localStorage.removeItem(storageKey) } catch {}
+      const freshMsg = {
+        id: Date.now().toString(),
+        role: 'pika',
+        text: `Pika chào ${childName}! 🐥 Cuộc trò chuyện đã được làm mới. Con muốn Pika giúp bài học nào nè?`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setMessages([freshMsg])
+      stopSpeaking()
+    }
+  }
 
   // Cuộn xuống tin nhắn mới nhất
   useEffect(() => {
@@ -303,6 +343,15 @@ export default function PikaTutorModal({
         </div>
 
         <div className="pika-header-actions">
+          <button
+            type="button"
+            onClick={handleClearChatHistory}
+            className="pika-btn-icon"
+            title="Làm mới cuộc trò chuyện"
+          >
+            🗑️
+          </button>
+
           <button
             type="button"
             onClick={() => setIsAutoSpeak(!isAutoSpeak)}

@@ -10,7 +10,7 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 // trang để bé (và bố mẹ) biết đang ở đâu.
 const MIN_SWIPE_PX = 50
 
-export default function PdfPageFlipViewer({ url, onPageChange }) {
+export default function PdfPageFlipViewer({ url, initialPage = 1, onPageChange }) {
   const stageRef = useRef(null)      // vùng chứa, dùng để đo chiều rộng
   const canvasRef = useRef(null)
   const docRef = useRef(null)
@@ -18,7 +18,7 @@ export default function PdfPageFlipViewer({ url, onPageChange }) {
   const touchRef = useRef(null)
 
   const [doc, setDoc] = useState(null)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(initialPage || 1)
   const [rendering, setRendering] = useState(false)
   const [error, setError] = useState(null)
   const [flipDir, setFlipDir] = useState('next')
@@ -27,7 +27,7 @@ export default function PdfPageFlipViewer({ url, onPageChange }) {
   useEffect(() => {
     let cancelled = false
     setDoc(null)
-    setPage(1)
+    setPage(initialPage || 1)
     setRendering(false)
     setError(null)
 

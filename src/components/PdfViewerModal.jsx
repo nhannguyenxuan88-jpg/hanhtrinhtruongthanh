@@ -44,7 +44,7 @@ export default function PdfViewerModal({ pdf, onClose, onOpenPika }) {
             </button>
           </div>
         </div>
-        <PdfPageFlipViewer url={pdf.url} onPageChange={setPageInfo} />
+        <PdfPageFlipViewer url={pdf.url} initialPage={pdf.page || 1} onPageChange={setPageInfo} />
       </div>
     </div>
   )

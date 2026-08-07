@@ -22,6 +22,7 @@ import {
   reviewCompletion,
   fetchRewards,
   addReward,
+  updateReward,
   deactivateReward,
   fetchRedemptions,
   redeemReward,
@@ -58,8 +59,28 @@ import {
 import { LEARNING_AREAS, AREA_ORDER, areaItems, areaBadge } from './lib/assignables'
 import { getTone, REWARD_SUGGESTIONS, isTeenGrade } from './lib/tone'
 import SgkPdfButton from './components/SgkPdfButton'
+import { textbookPdfFor, getExactPdfPage } from './lib/textbookPdfs'
 import PikaTutorModal from './components/PikaTutor/PikaTutorModal'
 import PikaAvatar from './components/PikaTutor/PikaAvatar'
+import MathHub from './components/MathHub/MathHub'
+import StoryStreamView from './components/StoryStreamView'
+
+export const DEFAULT_SAMPLE_REWARDS = [
+  { id: 'sample_rw_1', title: '🍦 Đi ăn kem cùng gia đình', cost: 10, emoji: '🍦' },
+  { id: 'sample_rw_2', title: '🎮 30 phút chơi Game / Xem TV', cost: 15, emoji: '🎮' },
+  { id: 'sample_rw_3', title: '🍕 Bữa tiệc Pizza / Gà rán yêu thích', cost: 20, emoji: '🍕' },
+  { id: 'sample_rw_4', title: '📚 Sách / Truyện tranh mới', cost: 25, emoji: '📚' },
+  { id: 'sample_rw_5', title: '🎬 Xem phim rạp cuối tuần', cost: 30, emoji: '🎬' },
+  { id: 'sample_rw_6', title: '🧸 Bộ đồ chơi yêu thích', cost: 40, emoji: '🧸' },
+  { id: 'sample_rw_7', title: '🚴‍♂️ 1 Ngày dã ngoại / Đạp xe', cost: 45, emoji: '🚴‍♂️' },
+  { id: 'sample_rw_8', title: '🎡 Vé đi công viên nước / Khu vui chơi', cost: 50, emoji: '🎡' },
+  { id: 'sample_rw_9', title: '🍰 Bánh ngọt & Trà sữa tùy chọn', cost: 15, emoji: '🍰' },
+  { id: 'sample_rw_10', title: '📱 Thêm 1 giờ dùng máy tính bảng', cost: 20, emoji: '📱' },
+]
+
+export const PRESET_REWARD_EMOJIS = ['🍦', '🎮', '🍕', '📚', '🎬', '🧸', '🚴‍♂️', '🎡', '🍰', '📱', '🍿', '🏊‍♂️', '🎁', '⭐']
+import FreePlayDrawer from './components/FreePlayDrawer'
+import ParentQuickInbox from './components/ParentQuickInbox'
 import './App.css'
 
 const ANIMAL_EMOJIS = ['🦊', '🐨', '🦁', '🐯', '🐼', '🐰', '🐸', '🦄', '🐷', '🐱', '🐶', '🐵']
@@ -215,7 +236,8 @@ function AppContent() {
   
   // Trạng thái chung UI
   const [loadingData, setLoadingData] = useState(false)
-  const [activeTab, setActiveTab] = useState('')
+  const [activeTab, setActiveTab] = useState('stream')
+  const [isFreePlayOpen, setIsFreePlayOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
 
   // Trạng thái cho Thư viện sách (Reading Corner)
@@ -231,6 +253,100 @@ function AppContent() {
   // component TopicReader tự giữ; ở đây chỉ cần biết đang mở chủ đề nào.
   const [selectedMathTopic, setSelectedMathTopic] = useState(null)
   const [selectedExploreTopic, setSelectedExploreTopic] = useState(null)
+
+  // Trạng thái Mục Tiêu Đổi Quà (Target Reward Goal)
+  const [targetGoal, setTargetGoal] = useState(null)
+
+  useEffect(() => {
+    if (profile?.child?.id) {
+      try {
+        const saved = localStorage.getItem(`target_reward_goal_${profile.child.id}`)
+        if (saved) setTargetGoal(JSON.parse(saved))
+        else setTargetGoal(null)
+      } catch (e) {
+        console.warn('Lỗi đọc mục tiêu đổi quà:', e)
+      }
+    }
+  }, [profile?.child?.id])
+
+  const handleSetTargetGoal = (reward) => {
+    if (!profile?.child?.id) return
+    try {
+      localStorage.setItem(`target_reward_goal_${profile.child.id}`, JSON.stringify(reward))
+      setTargetGoal(reward)
+      showToast(`🎯 Đã chọn "${reward.title}" làm mục tiêu phấn đấu! Cố gắng tích lũy sao nhé con! 🎉`)
+    } catch (e) {
+      console.warn('Lỗi lưu mục tiêu đổi quà:', e)
+    }
+  }
+
+  // Trạng thái Quản Lý Phần Thưởng Cho Bố Mẹ
+  const [editingReward, setEditingReward] = useState(null)
+  const [showAddRewardForm, setShowAddRewardForm] = useState(false)
+
+  const handleSaveEditReward = async () => {
+    if (!editingReward || !editingReward.title.trim()) return
+    try {
+      if (String(editingReward.id).startsWith('sample_rw_')) {
+        const created = await addReward(familyId, {
+          title: editingReward.title.trim(),
+          cost: Number(editingReward.cost) || 10,
+          emoji: editingReward.emoji || '🎁'
+        })
+        setRewards(prev => [...prev.filter(r => r.id !== editingReward.id), created])
+      } else {
+        const updated = await updateReward(editingReward.id, {
+          title: editingReward.title.trim(),
+          cost: Number(editingReward.cost) || 10,
+          emoji: editingReward.emoji || '🎁'
+        })
+        setRewards(prev => prev.map(r => r.id === updated.id ? updated : r))
+      }
+      showToast('🎉 Đã cập nhật phần quà thành công!')
+      setEditingReward(null)
+    } catch (err) {
+      console.error('Lỗi cập nhật phần quà:', err)
+      showToast('Lỗi cập nhật phần quà: ' + err.message)
+    }
+  }
+
+  const handleDeleteReward = async (reward) => {
+    if (!window.confirm(`Bố mẹ có chắc muốn xóa phần quà "${reward.title}"?`)) return
+    try {
+      if (!String(reward.id).startsWith('sample_rw_')) {
+        await deactivateReward(reward.id)
+      }
+      setRewards(prev => prev.filter(r => r.id !== reward.id))
+      showToast('🗑️ Đã xóa phần quà!')
+    } catch (err) {
+      console.error('Lỗi xóa quà:', err)
+      showToast('Lỗi xóa phần quà.')
+    }
+  }
+
+  const handleAddCustomReward = async (e) => {
+    if (e) e.preventDefault()
+    if (!newRewardTitle.trim()) {
+      showToast('Vui lòng nhập tên phần quà!')
+      return
+    }
+    try {
+      const created = await addReward(familyId, {
+        title: newRewardTitle.trim(),
+        cost: Number(newRewardCost) || 10,
+        emoji: newRewardEmoji || '🎁'
+      })
+      setRewards(prev => [...prev, created])
+      setNewRewardTitle('')
+      setNewRewardCost(15)
+      setNewRewardEmoji('🎁')
+      setShowAddRewardForm(false)
+      showToast('✨ Đã thêm phần quà mới vào cửa hàng!')
+    } catch (err) {
+      console.error('Lỗi thêm quà mới:', err)
+      showToast('Lỗi thêm quà: ' + err.message)
+    }
+  }
 
   // Trạng thái cho Sách Giáo Khoa (SGK)
   const [selectedTextbook, setSelectedTextbook] = useState(null)   // sách đang chọn
@@ -619,7 +735,7 @@ function AppContent() {
       if (profile?.type === 'parent') {
         setActiveTab('approvals')
       } else if (profile?.type === 'child') {
-        setActiveTab('plan')
+        setActiveTab('stream')
       }
     }
   }, [session, profile, configured, loadAppData])
@@ -722,6 +838,12 @@ function AppContent() {
     } finally {
       setLoadingData(false)
     }
+  }
+
+  const handleOpenParentPin = () => {
+    setPinProfile('parent')
+    setPinInput('')
+    setPinError('')
   }
 
   // Thêm hồ sơ con mới
@@ -850,6 +972,72 @@ function AppContent() {
       loadAppData()
     } catch (err) {
       showToast('Lỗi giao bài: ' + err.message)
+    }
+  }
+
+  // Bố mẹ bấm nút "⚡ Giao tự động Tuần hiện tại"
+  const handleAutoAssignForChild = async (childId) => {
+    const child = children.find(c => c.id === childId)
+    if (!child) return
+    const week = currentSchoolWeek()
+    const weekItems = lessonsOfWeek(child.grade || 2, week)
+
+    try {
+      setLoadingData(true)
+      // 1. Tự động lưu Kế hoạch tuần vào Database
+      const days = autoAssignPlanDays(weekItems)
+      await upsertWeeklyPlan(familyId, childId, week, days)
+
+      // 2. Tự động tạo các Nhiệm Vụ Ngày
+      if (weekItems.length > 0) {
+        const first = weekItems[0]
+        await addTask(familyId, {
+          title: `📗 Bài SGK Lớp ${child.grade || 2} (Tuần ${week}): ${first.lesson.title}`,
+          description: `Học bài SGK và hoàn thành bài trắc nghiệm 10 phút để tích lũy Sao!`,
+          stars: 10,
+          recurrence: 'once',
+          child_id: childId,
+          task_type: 'sgk',
+          content_ref: String(first.lesson.id),
+        })
+      } else {
+        await addTask(familyId, {
+          title: `📗 Ôn tập Toán & Tiếng Việt Tuần ${week}`,
+          description: `Đọc bài và làm bài trắc nghiệm SGK rèn luyện tư duy!`,
+          stars: 10,
+          recurrence: 'once',
+          child_id: childId,
+          task_type: 'sgk',
+          content_ref: null,
+        })
+      }
+
+      await addTask(familyId, {
+        title: `📖 Đọc truyện Cổ tích Lô-gíc Tuần ${week}`,
+        description: `Đọc một câu chuyện ý nghĩa và trả lời câu hỏi tư duy!`,
+        stars: 5,
+        recurrence: 'once',
+        child_id: childId,
+        task_type: 'book',
+        content_ref: null,
+      })
+
+      await addTask(familyId, {
+        title: `🧹 Rèn thói quen: Tự dọn dẹp góc học tập & đồ dùng`,
+        description: `Tự sắp xếp góc học tập sạch sẽ gọn gàng sau khi học xong!`,
+        stars: 5,
+        recurrence: 'daily',
+        child_id: childId,
+        task_type: 'chore',
+        content_ref: null,
+      })
+
+      showToast(`🎉 Đã giao tự động lộ trình Tuần ${week} cho ${child.name}!`)
+      await loadAppData()
+    } catch (err) {
+      showToast('Lỗi giao bài tự động: ' + err.message)
+    } finally {
+      setLoadingData(false)
     }
   }
 
@@ -1277,8 +1465,14 @@ function AppContent() {
     }
 
     try {
-      await redeemReward(familyId, profile.child.id, reward)
-      showToast(`Đổi quà thành công! Hãy báo bố mẹ trao món quà "${reward.title}" nhé 🎁`)
+      let targetReward = reward
+      if (String(reward.id).startsWith('sample_rw_')) {
+        const created = await addReward(familyId, { title: reward.title, cost: reward.cost, emoji: reward.emoji })
+        targetReward = created
+        setRewards(prev => [...prev, created])
+      }
+      await redeemReward(familyId, profile.child.id, targetReward)
+      showToast(`Đổi quà thành công! Hãy báo bố mẹ trao món quà "${targetReward.title}" nhé 🎁`)
       // Hiệu ứng pháo hoa rực rỡ
       celebrate({
         particleCount: 150,
@@ -1641,99 +1835,29 @@ function AppContent() {
     )
   }
 
-  // Màn hình 3: Giao diện dành cho Bố Mẹ
+  // Màn hình 3: Giao diện dành cho Bố Mẹ (ParentQuickInbox 1-Click)
   if (profile.type === 'parent') {
     return (
-      <div className="dashboard-container">
-        {/* Header Góc Bố Mẹ */}
-        <header className="dashboard-header glass">
-          <div className="header-brand">
-            <span className="logo-emoji">🔑</span>
-            <div>
-              <h2>Góc Quản Lý Bố Mẹ {loadingData && <span className="spinner-sm"></span>}</h2>
-              <p className="subtitle">Phê duyệt yêu cầu và giao việc rèn luyện cho các con</p>
-            </div>
-          </div>
-          <div className="header-actions">
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => selectProfile(null)}>
-              🔁 Đổi hồ sơ
-            </button>
-            <button type="button" className="btn btn-danger btn-sm" onClick={signOut}>
-              🚪 Đăng xuất
-            </button>
-          </div>
-        </header>
+      <ParentQuickInbox
+        childrenList={children}
+        completions={completions}
+        redemptions={redemptions}
+        tasks={tasks}
+        weeklyPlans={weeklyPlans}
+        learningSessions={learningSessions}
+        onApproveCompletion={(comp, action) => {
+          setActiveApprovalCompletion({ ...comp, action })
+          setParentFeedbackText('')
+        }}
+        onApproveRedemption={(red, approve) => handleReviewRedemption(red.id, approve)}
+        onAssignLesson={(childId) => handleAutoAssignForChild(childId)}
+        onSignOut={signOut}
+        onSwitchProfile={() => selectProfile(null)}
+      />
+    )
+  }
 
-        {/* Tab Navigation */}
-        <nav className="dashboard-nav-tabs">
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'approvals' ? 'active' : ''}`}
-            onClick={() => setActiveTab('approvals')}
-          >
-            📥 Duyệt yêu cầu
-            {(completions.filter(c => c.status === 'pending').length > 0 || 
-              redemptions.filter(r => r.status === 'pending').length > 0) && (
-              <span className="badge-count">
-                {completions.filter(c => c.status === 'pending').length + 
-                 redemptions.filter(r => r.status === 'pending').length}
-              </span>
-            )}
-          </button>
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tasks')}
-          >
-            📋 Quản lý Nhiệm vụ
-          </button>
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'plan' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('plan')
-              if (planChildId === null && children.length > 0) {
-                setPlanChildId(children[0].id)
-                loadPlanDays(children[0].id, planWeek)
-              }
-            }}
-          >
-            📅 Kế hoạch tuần
-          </button>
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'rewards' ? 'active' : ''}`}
-            onClick={() => setActiveTab('rewards')}
-          >
-            🎁 Cửa hàng quà tặng
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'learning' ? 'active' : ''}`}
-            onClick={() => setActiveTab('learning')}
-          >
-            📖 Lịch sử học tập
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'stats' ? 'active' : ''}`}
-            onClick={() => setActiveTab('stats')}
-          >
-            📊 Thống Kê
-          </button>
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
-          >
-            ⚙ Cài đặt PIN
-          </button>
-        </nav>
 
-        {/* Nội dung chính các Tab */}
-        <main className="dashboard-main-content">
-          
-          {/* Tab 1: Phê duyệt yêu cầu */}
           {activeTab === 'approvals' && (
             <div className="tab-pane">
               {/* Phê duyệt làm xong việc */}
@@ -2044,7 +2168,6 @@ function AppContent() {
                       const areaTask = findAreaTask(tasks, newTaskChildId, assignArea)
                       return (
                         <>
-                          {/* Mức 1: mở cả khu, con tự đi lần lượt */}
                           <div className="assign-area-row">
                             {areaTask ? (
                               <>
@@ -2070,11 +2193,8 @@ function AppContent() {
                             )}
                           </div>
 
-                          {/* Mức 2: giao đúng từng bài */}
                           <div className="assign-item-list">
                             {assignList.map((item, idx) => {
-                              // Đọc đúng luật khoá mà con đang chịu, để bố mẹ
-                              // thấy chính xác cái con thấy
                               const { isDone, isAssigned, isUnlocked } = learningItemState({
                                 tasks, completions, childId: newTaskChildId,
                                 kind: assignArea, prefix: area.prefix,
@@ -2126,11 +2246,9 @@ function AppContent() {
                 )}
               </section>
 
-              {/* Form Thêm nhiệm vụ */}
               <section className="card glass">
                 <h3>Thêm Nhiệm Vụ Mới</h3>
 
-                {/* Bảng Đề xuất Nhiệm vụ Khoa học */}
                 <div className="scientific-suggestions">
                   <span className="suggestions-title">💡 Chọn nhanh nhiệm vụ gợi ý khoa học:</span>
                   <div className="suggestions-tabs">
@@ -2156,8 +2274,6 @@ function AppContent() {
                           setNewTaskDesc(task.desc)
                           setNewTaskStars(task.stars)
                           setNewTaskRecurrence(task.recurrence)
-                          // Gợi ý nào trỏ vào nội dung trong app thì mang theo
-                          // khu đó, để nhiệm vụ tạo ra mở khoá được bài cho con
                           setNewTaskType(task.taskType || '')
                           showToast(`Đã chọn: ${task.title} ✨`)
                         }}
@@ -2172,8 +2288,6 @@ function AppContent() {
                 </div>
 
                 <form onSubmit={handleCreateTask} className="form-group text-left">
-                  {/* Nhiệm vụ đang gắn với một khu nội dung — bố mẹ bỏ được nếu
-                      chỉ muốn nhắc miệng mà không mở khoá bài */}
                   {newTaskType && LEARNING_AREAS[newTaskType] && (
                     <div className="task-link-note">
                       <span>🔗 Mở khu {areaBadge(newTaskType)} cho con</span>
@@ -2297,787 +2411,84 @@ function AppContent() {
             </div>
           )}
 
-          {/* Tab 3: Quản lý Cửa hàng Quà */}
-          {activeTab === 'rewards' && (
-            <div className="tab-pane-grid">
-              {/* Form Thêm Quà */}
-              <section className="card glass">
-                <h3>Thêm Quà Mới</h3>
-                <form onSubmit={handleCreateReward} className="form-group text-left">
-                  <label htmlFor="reward-title-input">Tên phần quà</label>
-                  <input 
-                    id="reward-title-input"
-                    type="text" 
-                    placeholder="Đi xem phim, mua kem, xem TV 30 phút..." 
-                    value={newRewardTitle}
-                    onChange={(e) => setNewRewardTitle(e.target.value)}
-                    required
-                  />
-
-                  <div className="form-row-2">
-                    <div>
-                      <label htmlFor="reward-emoji-select">Chọn biểu tượng quà</label>
-                      <select 
-                        id="reward-emoji-select"
-                        value={newRewardEmoji}
-                        onChange={(e) => setNewRewardEmoji(e.target.value)}
-                      >
-                        <option value="🎁">🎁 Hộp quà</option>
-                        <option value="🍦">🍦 Ăn kem</option>
-                        <option value="🎡">🎡 Đi chơi</option>
-                        <option value="📺">📺 Xem TV</option>
-                        <option value="🧸">🧸 Đồ chơi</option>
-                        <option value="🍕">🍕 Pizza</option>
-                        <option value="🎨">🎨 Tô tượng</option>
-                        <option value="📚">📚 Truyện tranh</option>
-                        <option value="🎮">🎮 Chơi game</option>
-                        <option value="🍚">🍚 Chọn món ăn</option>
-                        <option value="🚲">🚲 Đi công viên</option>
-                        <option value="🌙">🌙 Ngủ trễ</option>
-                        <option value="🎟️">🎟️ Phiếu ưu tiên</option>
-                        <option value="👵">👵 Về quê thăm Ông Bà</option>
-                        <option value="🕐">🕐 Tự quản thời gian</option>
-                        <option value="🛹">🛹 Đi chơi với bạn</option>
-                        <option value="🗺️">🗺️ Tự chọn hoạt động</option>
-                        <option value="💻">💻 Dùng máy tính</option>
-                        <option value="💰">💰 Tiền tiêu vặt</option>
-                        <option value="🤝">🤝 Được tin tưởng</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label htmlFor="reward-cost-input">Giá sao đổi</label>
-                      <input 
-                        id="reward-cost-input"
-                        type="number" 
-                        min="1" 
-                        value={newRewardCost}
-                        onChange={(e) => setNewRewardCost(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <button type="submit" className="btn btn-primary margin-top">Thêm Quà Vào Shop</button>
-                </form>
-
-                {/* Gợi ý phần thưởng theo độ tuổi.
-                    Trẻ nhỏ thích quà vặt và sự chiều chuộng; tuổi teen coi trọng
-                    QUYỀN TỰ CHỦ và được tin tưởng hơn nhiều — quà kiểu "được bố mẹ
-                    cõng đi dạo" với bạn lớp 8 là phản tác dụng. */}
-                <div className="reward-suggestions">
-                  <div className="reward-sugg-tabs">
-                    <span className="reward-sugg-label">💡 Gợi ý cho:</span>
-                    <button
-                      type="button"
-                      className={`reward-sugg-tab ${suggAge === 'kid' ? 'active' : ''}`}
-                      onClick={() => setRewardSuggAge('kid')}
-                    >
-                      Tiểu học
-                    </button>
-                    <button
-                      type="button"
-                      className={`reward-sugg-tab ${suggAge === 'teen' ? 'active' : ''}`}
-                      onClick={() => setRewardSuggAge('teen')}
-                    >
-                      Lớp 6 trở lên
-                    </button>
-                  </div>
-                  <div className="reward-sugg-list">
-                    {REWARD_SUGGESTIONS[suggAge].map(s => (
-                      <button
-                        key={s.title}
-                        type="button"
-                        className="reward-sugg-pill"
-                        title="Bấm để điền nhanh vào form bên trên"
-                        onClick={() => {
-                          setNewRewardTitle(s.title)
-                          setNewRewardEmoji(s.emoji)
-                          setNewRewardCost(s.cost)
-                        }}
-                      >
-                        <span className="reward-sugg-emoji">{s.emoji}</span>
-                        <span className="reward-sugg-text">{s.title}</span>
-                        <span className="reward-sugg-cost">{s.cost} ⭐</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* Danh sách quà trong Shop */}
-              <section className="card glass">
-                <h3>Quà Tặng Trong Cửa Hàng</h3>
-                {rewards.length === 0 ? (
-                  <p className="empty-message">Hiện chưa có phần quà nào trong cửa hàng.</p>
-                ) : (
-                  <div className="elements-list">
-                    {rewards.map((reward) => (
-                      <div key={reward.id} className="list-element-card">
-                        <div className="element-main row-layout">
-                          <span className="gift-emoji">{reward.emoji}</span>
-                          <div>
-                            <h4>{reward.title}</h4>
-                            <span className="price-tag">Cần {reward.cost} ⭐️ để đổi</span>
-                          </div>
-                        </div>
-                        <div className="element-action">
-                          <button 
-                            type="button"
-                            className="btn btn-danger btn-xs"
-                            onClick={() => handleDeactivateReward(reward.id)}
-                          >
-                            Gỡ bỏ
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
-          )}
-
-          {/* Tab 4: Cài đặt PIN & Tài khoản */}
-          {activeTab === 'settings' && (
-            <div className="tab-pane-grid">
-              {/* Đổi PIN Bố Mẹ */}
-              <section className="card glass">
-                <h3>Đổi Mã PIN Bố Mẹ</h3>
-                <p className="subtitle">Dùng để hạn chế các con tự vào Góc Bố Mẹ thay đổi cấu hình.</p>
-                <form onSubmit={handleChangeParentPin} className="form-group text-left">
-                  <label htmlFor="current-pin-input">Mã PIN hiện tại</label>
-                  <input 
-                    id="current-pin-input"
-                    type="password" 
-                    maxLength="4"
-                    placeholder="0000"
-                    value={currentParentPin}
-                    onChange={(e) => setCurrentParentPin(e.target.value.replace(/[^0-9]/g, ''))}
-                    required
-                  />
-                  <label htmlFor="new-pin-input">Mã PIN mới (4 chữ số)</label>
-                  <input 
-                    id="new-pin-input"
-                    type="password" 
-                    maxLength="4"
-                    placeholder="Mã PIN 4 số mới"
-                    value={newParentPin}
-                    onChange={(e) => setNewParentPin(e.target.value.replace(/[^0-9]/g, ''))}
-                    required
-                  />
-
-                  {parentPinError && <div className="error-banner">{parentPinError}</div>}
-                  {parentPinSuccess && <div className="success-banner">{parentPinSuccess}</div>}
-
-                  <button type="submit" className="btn btn-primary margin-top">Cập Nhật PIN Bố Mẹ</button>
-                </form>
-              </section>
-
-              {/* Danh sách quản lý PIN của con */}
-              <section className="card glass">
-                <h3>Quản Lý Mã PIN Các Bé</h3>
-                <p className="subtitle">Bố mẹ có thể xem hoặc đặt lại mã PIN của con nếu con quên.</p>
-                <div className="elements-list">
-                  {children.map((child) => (
-                    <div key={child.id} className="list-element-card text-left">
-                      <div className="element-main">
-                        <h4>{child.avatar} {child.name}</h4>
-                        <p className="subtitle">Mã PIN hiện tại: <strong>{child.pin}</strong></p>
-                      </div>
-                      
-                      <div className="element-action">
-                        {editingChildPinId === child.id ? (
-                          <div className="row-layout gap-sm">
-                            <input 
-                              aria-label="Mã PIN mới của bé"
-                              type="text" 
-                              maxLength="4" 
-                              placeholder="Mới" 
-                              className="input-xs"
-                              value={newChildPinValue}
-                              onChange={(e) => setNewChildPinValue(e.target.value.replace(/[^0-9]/g, ''))}
-                            />
-                            <button 
-                              type="button"
-                              className="btn btn-primary btn-xs"
-                              onClick={() => handleUpdateChildPin(child.id)}
-                            >
-                              Lưu
-                            </button>
-                            <button 
-                              type="button"
-                              className="btn btn-secondary btn-xs"
-                              onClick={() => setEditingChildPinId('')}
-                            >
-                              Hủy
-                            </button>
-                          </div>
-                        ) : (
-                          <button 
-                            type="button"
-                            className="btn btn-secondary btn-xs" 
-                            onClick={() => {
-                              setEditingChildPinId(child.id)
-                              setNewChildPinValue('')
-                            }}
-                          >
-                            Đổi PIN
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          )}
-
-          {/* Modal Bố Mẹ Duyệt Kèm Lời Phê */}
-          {/* Dự phòng khi trình duyệt không cho ghi clipboard */}
-          {digestFallbackText && (
-            <div className="pin-overlay">
-              <div className="card glass add-child-dialog">
-                <h3>📋 Sao chép bản tin</h3>
-                <p className="subtitle">
-                  Trình duyệt không cho tự động sao chép. Bố mẹ bôi đen nội dung dưới đây rồi
-                  copy thủ công nhé.
-                </p>
-                <textarea
-                  readOnly
-                  className="digest-fallback-textarea"
-                  value={digestFallbackText}
-                  onFocus={(e) => e.target.select()}
-                />
-                <div className="dialog-actions-row">
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-block"
-                    onClick={() => setDigestFallbackText(null)}
-                  >
-                    Đóng
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeApprovalCompletion && (
-            <div className="pin-overlay">
-              <div className="card glass add-child-dialog">
-                <h3>Xác nhận phê duyệt nhiệm vụ</h3>
-                <p className="subtitle">
-                  {activeApprovalCompletion.action === 'approve' 
-                    ? 'Bạn đang phê duyệt và cộng sao cho con. Hãy gửi kèm lời nhắn khen ngợi nhé!' 
-                    : 'Bạn đang từ chối yêu cầu này. Hãy gửi kèm lời nhắn giải thích cho con nhé!'}
-                </p>
-
-                <div className="form-group text-left">
-                  <label htmlFor="parent-feedback-textarea">✍️ Lời phê/góp ý gửi đến con (tùy chọn)</label>
-                  <textarea
-                    id="parent-feedback-textarea"
-                    placeholder={activeApprovalCompletion.action === 'approve' 
-                      ? 'Con làm rất tốt, bố mẹ rất tự hào về con! ❤️' 
-                      : 'Nhiệm vụ chưa hoàn thành sạch sẽ lắm con ơi, hãy dọn lại nhé!'}
-                    value={parentFeedbackText}
-                    onChange={(e) => setParentFeedbackText(e.target.value)}
-                  />
-
-                  <div className="quick-templates">
-                    <span className="text-small">Khen nhanh:</span>
-                    <div className="template-pills">
-                      {[
-                        'Bố mẹ rất tự hào về con! ❤️',
-                        'Sạch gọn tuyệt vời con ơi! 👍',
-                        'Cố gắng phát huy nhé con! 🌟',
-                        'Cố lên con yêu! 💪'
-                      ].map((tpl) => (
-                        <button
-                          key={tpl}
-                          type="button"
-                          className="template-pill-btn"
-                          onClick={() => setParentFeedbackText(tpl)}
-                        >
-                          {tpl}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="dialog-actions-row">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => {
-                        setActiveApprovalCompletion(null)
-                        setParentFeedbackText('')
-                      }}
-                    >
-                      Đóng
-                    </button>
-                    <button
-                      type="button"
-                      className={activeApprovalCompletion.action === 'approve' ? 'btn btn-success' : 'btn btn-danger'}
-                      onClick={handleConfirmApprovalReview}
-                    >
-                      {activeApprovalCompletion.action === 'approve' ? 'Duyệt & Cộng Sao ✔' : 'Từ chối yêu cầu ✕'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal xem sách gốc PDF: đúng bản in với đầy đủ tranh minh hoạ */}
-          <PdfViewerModal pdf={sgkPdfOpen} onClose={() => setSgkPdfOpen(null)} />
-          
-          {/* Tab 6: Thống Kê Tiến Độ */}
-          {/* Tab: Lịch sử học tập chi tiết của các con */}
-          {activeTab === 'learning' && (
-            <div className="tab-pane">
-              <h3 className="section-title">📖 Lịch Sử Học Tập Của Các Con</h3>
-              <p className="subtitle">
-                Mỗi lượt bé làm bài đều được ghi lại, kể cả những lần ôn lại bài cũ không còn nhận sao.
-              </p>
-
-              {/* Bộ lọc theo bé */}
-              <div className="learning-filter-bar">
-                <button
-                  type="button"
-                  className={`learning-filter-btn ${historyChildId === 'all' ? 'active' : ''}`}
-                  onClick={() => setHistoryChildId('all')}
-                >
-                  👨‍👩‍👧‍👦 Tất cả
-                </button>
-                {children.map(kid => (
-                  <button
-                    key={kid.id}
-                    type="button"
-                    className={`learning-filter-btn ${historyChildId === kid.id ? 'active' : ''}`}
-                    onClick={() => setHistoryChildId(kid.id)}
-                  >
-                    {kid.avatar} {kid.name}
-                  </button>
-                ))}
-              </div>
-
-              {/* Bản tin tuần: bố mẹ nắm tình hình trong 30 giây, không cần mở app mỗi ngày */}
-              <WeeklyDigestPanel
-                sessions={historyChildId === 'all'
-                  ? learningSessions
-                  : learningSessions.filter(s => s.child_id === historyChildId)}
-                childName={historyChildId === 'all'
-                  ? 'các con'
-                  : (children.find(c => c.id === historyChildId)?.name || 'con')}
-                dueReviews={historyChildId === 'all'
-                  ? dueReviews
-                  : dueReviews.filter(r => r.childId === historyChildId)}
-                onCopied={() => showToast('📋 Đã sao chép bản tin. Bố mẹ dán vào Zalo được rồi!')}
-                onCopyFailed={(text) => setDigestFallbackText(text)}
-              />
-
-              {(() => {
-                const rows = historyChildId === 'all'
-                  ? learningSessions
-                  : learningSessions.filter(s => s.child_id === historyChildId)
-
-                if (rows.length === 0) {
-                  return (
-                    <p className="empty-message">
-                      Chưa có lượt học nào được ghi lại. Khi bé làm xong phần trắc nghiệm của một bài,
-                      lượt học sẽ xuất hiện tại đây.
-                    </p>
-                  )
-                }
-
-                const kindMeta = {
-                  sgk:  { icon: '📗', label: 'SGK' },
-                  book: { icon: '📚', label: 'Đọc sách' },
-                  math: { icon: '🧮', label: 'Toán tư duy' },
-                }
-                const childName = (id) => children.find(c => c.id === id)?.name || 'Bé'
-                const totalMinutes = Math.round(rows.reduce((s, r) => s + (r.duration_seconds || 0), 0) / 60)
-                const totalWrong = rows.reduce((s, r) => s + (r.wrong_attempts || 0), 0)
-                const distinctLessons = new Set(rows.map(r => r.kind + '-' + r.ref_id)).size
-
-                // Những câu bé hay sai nhất — nền tảng cho ôn tập lặp lại
-                const missTally = new Map()
-                rows.forEach(r => {
-                  (r.wrong_answers || []).forEach(w => {
-                    if (!w?.q) return
-                    const key = w.q
-                    const cur = missTally.get(key) || { q: w.q, correct: w.correct, count: 0, title: r.title }
-                    cur.count += 1
-                    missTally.set(key, cur)
-                  })
-                })
-                const topMisses = Array.from(missTally.values())
-                  .sort((a, b) => b.count - a.count)
-                  .slice(0, 5)
-
-                return (
-                  <>
-                    <div className="stats-overview-grid">
-                      <div className="stat-kpi-card">
-                        <span className="stat-kpi-icon">📝</span>
-                        <div>
-                          <div className="stat-kpi-val">{rows.length}</div>
-                          <div className="stat-kpi-label">Lượt học đã ghi</div>
-                        </div>
-                      </div>
-                      <div className="stat-kpi-card">
-                        <span className="stat-kpi-icon">📘</span>
-                        <div>
-                          <div className="stat-kpi-val">{distinctLessons}</div>
-                          <div className="stat-kpi-label">Bài học khác nhau</div>
-                        </div>
-                      </div>
-                      <div className="stat-kpi-card">
-                        <span className="stat-kpi-icon">⏱️</span>
-                        <div>
-                          <div className="stat-kpi-val">{totalMinutes}</div>
-                          <div className="stat-kpi-label">Tổng số phút học</div>
-                        </div>
-                      </div>
-                      <div className="stat-kpi-card">
-                        <span className="stat-kpi-icon">🤔</span>
-                        <div>
-                          <div className="stat-kpi-val">{totalWrong}</div>
-                          <div className="stat-kpi-label">Lần trả lời sai</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {topMisses.length > 0 && (
-                      <section className="dashboard-section card glass review-section">
-                        <h4 className="review-title">🎯 Những câu bé hay sai — nên ôn lại cùng con</h4>
-                        <ul className="review-list">
-                          {topMisses.map((m, i) => (
-                            <li key={i} className="review-item">
-                              <span className="review-count">{m.count}×</span>
-                              <div>
-                                <p className="review-q">{m.q}</p>
-                                <p className="review-a">Đáp án đúng: <strong>{m.correct}</strong></p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    )}
-
-                    <section className="dashboard-section card glass">
-                      <h4 className="review-title">🕒 Dòng thời gian học tập</h4>
-                      <div className="learning-log">
-                        {rows.map(r => {
-                          const meta = kindMeta[r.kind] || { icon: '📄', label: r.kind }
-                          const mins = Math.round((r.duration_seconds || 0) / 60)
-                          const hasDetail = (r.wrong_answers || []).length > 0
-                          return (
-                            <div key={r.id} className="learning-log-item">
-                              <span className="learning-log-icon">{meta.icon}</span>
-                              <div className="learning-log-body">
-                                <div className="learning-log-head">
-                                  <strong className="learning-log-title">{r.title}</strong>
-                                  {r.attempt_no > 1 && (
-                                    <span className="learning-badge badge-repeat">Lần {r.attempt_no}</span>
-                                  )}
-                                  {r.stars_earned > 0 && (
-                                    <span className="learning-badge badge-star">+{r.stars_earned} ⭐</span>
-                                  )}
-                                </div>
-                                <div className="learning-log-meta">
-                                  {historyChildId === 'all' && <span>👦 {childName(r.child_id)}</span>}
-                                  <span>{meta.label}{r.subject && r.subject !== meta.label ? ` · ${r.subject}` : ''}</span>
-                                  {r.week ? <span>Tuần {r.week}</span> : null}
-                                  <span>{formatTime(r.studied_at)}</span>
-                                  {mins > 0 && <span>⏱️ {mins} phút</span>}
-                                </div>
-                                <div className="learning-log-result">
-                                  {r.quiz_total > 0 ? (
-                                    <>
-                                      <span className="result-chip chip-good">
-                                        Đúng ngay lần đầu: {r.quiz_first_try}/{r.quiz_total}
-                                      </span>
-                                      <span className={`result-chip ${r.wrong_attempts > 0 ? 'chip-warn' : 'chip-good'}`}>
-                                        {r.wrong_attempts > 0 ? `${r.wrong_attempts} lần chọn sai` : 'Không sai câu nào 🎉'}
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="result-chip chip-muted">
-                                      Lượt học cũ — chưa có dữ liệu trắc nghiệm chi tiết
-                                    </span>
-                                  )}
-                                </div>
-                                {hasDetail && (
-                                  <details className="learning-detail">
-                                    <summary>Xem {r.wrong_answers.length} câu bé chọn sai</summary>
-                                    <ul>
-                                      {r.wrong_answers.map((w, wi) => (
-                                        <li key={wi}>
-                                          <p className="detail-q">{w.q}</p>
-                                          <p className="detail-wrong">Bé chọn: {w.chose}</p>
-                                          <p className="detail-right">Đáp án đúng: {w.correct}</p>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </details>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </section>
-                  </>
-                )
-              })()}
-            </div>
-          )}
-
-          {activeTab === 'stats' && (
-            <div className="tab-pane">
-              <h3 className="section-title">📊 Thống Kê Tiến Độ Rèn Luyện & Học Tập</h3>
-              
-              {/* Thẻ KPI tổng quan */}
-              <div className="stats-overview-grid">
-                <div className="stat-kpi-card">
-                  <span className="stat-kpi-icon">👶</span>
-                  <div>
-                    <div className="stat-kpi-val">{children.length}</div>
-                    <div className="stat-kpi-label">Hồ sơ trẻ em</div>
-                  </div>
-                </div>
-                <div className="stat-kpi-card">
-                  <span className="stat-kpi-icon">⭐</span>
-                  <div>
-                    <div className="stat-kpi-val">{completions.filter(c => c.status === 'approved').reduce((s, c) => s + (c.stars || 0), 0)}</div>
-                    <div className="stat-kpi-label">Tổng Sao Thưởng Đã Duyệt</div>
-                  </div>
-                </div>
-                <div className="stat-kpi-card">
-                  <span className="stat-kpi-icon">🎯</span>
-                  <div>
-                    <div className="stat-kpi-val">{completions.filter(c => c.status === 'approved').length}</div>
-                    <div className="stat-kpi-label">Lượt Hoàn Thành Bài / Nhiệm Vụ</div>
-                  </div>
-                </div>
-                <div className="stat-kpi-card">
-                  <span className="stat-kpi-icon">🎁</span>
-                  <div>
-                    <div className="stat-kpi-val">{redemptions.filter(r => r.status === 'fulfilled').length}</div>
-                    <div className="stat-kpi-label">Phần Thưởng Đã Trao</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Biểu đồ cột CSS 7 ngày gần nhất */}
-              {(() => {
-                const days7 = []
-                const now = new Date()
-                for (let i = 6; i >= 0; i--) {
-                  const d = new Date(now)
-                  d.setDate(now.getDate() - i)
-                  const dStr = d.toISOString().split('T')[0]
-                  const dayLabel = i === 0 ? 'Hôm nay' : `${d.getDate()}/${d.getMonth() + 1}`
-                  const dayStars = completions
-                    .filter(c => c.status === 'approved' && c.created_at?.startsWith(dStr))
-                    .reduce((sum, c) => sum + (c.stars || 0), 0)
-                  days7.push({ dateStr: dStr, label: dayLabel, stars: dayStars })
-                }
-                const maxStarsInWeek = Math.max(10, ...days7.map(d => d.stars))
-
-                return (
-                  <div className="chart-container-card">
-                    <h4>📈 Sao Kiếm Được Trong 7 Ngày Gần Nhất</h4>
-                    <p className="subtitle" style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
-                      Biểu đồ phản ánh mức độ tích cực học tập & làm việc nhà của các con
-                    </p>
-                    <div className="css-bar-chart">
-                      {days7.map((d, i) => {
-                        const pct = Math.round((d.stars / maxStarsInWeek) * 100)
-                        return (
-                          <div key={i} className="chart-col">
-                            {d.stars > 0 && <span className="chart-bar-val">+{d.stars}</span>}
-                            <div className="chart-bar-fill" style={{ height: `${Math.max(4, pct)}%` }}></div>
-                            <span className="chart-col-label">{d.label}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })()}
-            </div>
-          )}
-
-        </main>
-      </div>
-    )
-  }
-
-  // Màn hình 4: Giao diện dành cho các con
+  // Màn hình 4: Giao diện dành cho các con (Luồng Thẻ 1-Chạm StoryStreamView)
   if (profile.type === 'child') {
     const levelInfo = getLevelInfo(childBalance)
     const streakInfo = calculateStreak(completions, childTransactions)
     const badgesList = calculateBadges(completions, childTransactions, streakInfo.currentStreak)
 
+    // Dynamic Today Assigned Items for Story Cards
+    const childTasks = tasks.filter(t => t.child_id === profile.child.id)
+    const sgkTask = childTasks.find(t => t.task_type === 'sgk' || t.task_type === 'math')
+    const bookTask = childTasks.find(t => t.task_type === 'book')
+    const choreTask = childTasks.find(t => !t.task_type || t.task_type === 'chore')
+
+    const todayLesson = {
+      title: sgkTask?.title || 'Bài 5: Phép cộng có nhớ trong phạm vi 100',
+      subtitle: sgkTask?.description || 'Học 10 phút để rèn tư duy và tích lũy +10 Sao thưởng nhé!',
+      isDone: sgkTask ? completions.some(c => c.child_id === profile.child.id && c.task_id === sgkTask.id && c.status === 'approved') : false
+    }
+
+    const todayBook = {
+      title: bookTask?.title || 'Cổ tích Lô-gíc: Bí mật kẻ ăn vụng cá',
+      subtitle: bookTask?.description || 'Đọc một câu chuyện ngắn thú vị để nhận +5 Sao thưởng nào!',
+      isDone: bookTask ? completions.some(c => c.child_id === profile.child.id && c.task_id === bookTask.id && c.status === 'approved') : false
+    }
+
+    const todayChore = {
+      title: choreTask?.title || 'Tự dọn dẹp đồ chơi sau khi chơi xong',
+      description: choreTask?.description || 'Hoàn thành việc nhà bố mẹ giao để mở Rương Kho Báu Ngày!',
+      isDone: choreTask ? completions.some(c => c.child_id === profile.child.id && c.task_id === choreTask.id && c.status === 'approved') : false
+    }
+
     return (
       <div className={`dashboard-container kid-theme ${tone.bodyClass}`}>
-        {/* Header con */}
-        <header className="dashboard-header glass kid-header">
-          <div className="header-brand">
-            <span className="child-avatar-display">{profile.child.avatar}</span>
-            <div>
-              <h2>{tone.headerPrefix}{profile.child.name} {loadingData && <span className="spinner-sm"></span>}{tone.headerSuffix}</h2>
-              <p className="subtitle">
-                {tone.isTeen
-                  ? 'Tiến độ học tập và phần thưởng của con.'
-                  : 'Bé đang làm rất tốt! Cố gắng tích lũy thêm sao nhé.'}
-              </p>
-            </div>
-          </div>
-
-          {/* Level Widget & Streak Widget */}
-          <div className="kid-header-widgets">
-            <div className="level-badge-widget">
-              <span className="level-icon">{levelInfo.emoji}</span>
-              <div className="level-details">
-                <span className="level-title">Lv.{levelInfo.level} {levelInfo.name}</span>
-                <div className="xp-progress-bar-track">
-                  <div className="xp-progress-bar-fill" style={{ width: `${levelInfo.progressPct}%` }}></div>
-                </div>
-                <span className="xp-text">{levelInfo.starsToNext > 0 ? `Còn ${levelInfo.starsToNext} ⭐ lên ${levelInfo.nextLevelName}` : 'Cấp tối đa!'}</span>
-              </div>
-            </div>
-
-            <div className="streak-widget">
-              <span className="streak-fire-anim">🔥</span>
-              <div>
-                <span className="streak-count">{streakInfo.currentStreak}</span>
-                <span className="streak-label"> Ngày Streak</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Star Badge hiển thị nổi bật */}
-          <div className="star-balance-widget">
-            <span className="star-icon">⭐</span>
-            <div className="count-info">
-              <span className="count-number">{childBalance}</span>
-              <span className="count-label">SAO ĐANG CÓ</span>
-            </div>
-          </div>
-
-          <div className="header-actions">
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => selectProfile(null)}>
-              🔁 Đổi hồ sơ
+        {/* Story Stream Main View (Default No-Tab Mode) */}
+        {activeTab === 'stream' ? (
+          <StoryStreamView
+            profile={profile}
+            familyId={familyId}
+            tone={tone}
+            childBalance={childBalance}
+            streakInfo={streakInfo}
+            todayLesson={todayLesson}
+            todayBook={todayBook}
+            todayChore={todayChore}
+            targetGoal={targetGoal}
+            onOpenShop={() => setActiveTab('shop')}
+            onOpenLesson={() => setActiveTab('sgk')}
+            onOpenBook={() => setActiveTab('books')}
+            onCompleteChore={() => handleToggleTaskCompletion(tasks[0]?.id || '')}
+            onOpenParentPin={handleOpenParentPin}
+            onOpenFreePlay={() => setIsFreePlayOpen(true)}
+            celebrate={celebrate}
+          />
+        ) : (
+          /* Top Back Bar when exploring sub-features */
+          <div className="sub-feature-header-bar glass text-center padding-sm flex items-center justify-between gap-md">
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm glow"
+              onClick={() => setActiveTab('stream')}
+            >
+              ⬅️ Trở Về Hôm Nay (Thẻ Nhiệm Vụ)
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-warning btn-sm"
+              onClick={handleOpenParentPin}
+            >
+              🔑 Bố Mẹ
             </button>
           </div>
-        </header>
+        )}
 
-        {/* Tabs dành cho con */}
-        <nav className="dashboard-nav-tabs kid-tabs">
-          <button 
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'plan' ? 'active' : ''}`}
-            onClick={() => setActiveTab('plan')}
-          >
-            {tone.tabs.plan}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'pika' ? 'active' : ''}`}
-            onClick={() => {
-              setPikaSgkContext(null)
-              setActiveTab('pika')
-            }}
-          >
-            {tone.tabs.pika}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tasks')}
-          >
-            {tone.tabs.tasks}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'books' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('books')
-              setReadingBook(null)
-            }}
-          >
-            {tone.tabs.books}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'math' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('math')
-              setSelectedMathTopic(null)
-            }}
-          >
-            {tone.tabs.math}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'explore' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('explore')
-              setSelectedExploreTopic(null)
-            }}
-          >
-            {tone.tabs.explore}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'sgk' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('sgk')
-              setSelectedTextbook(null)
-              setSelectedLesson(null)
-            }}
-          >
-            {tone.tabs.sgk}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'review' ? 'active' : ''}`}
-            onClick={() => setActiveTab('review')}
-          >
-            {tone.tabs.review}
-            {dueReviews.length > 0 && <span className="nav-tab-dot">{dueReviews.length}</span>}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'badges' ? 'active' : ''}`}
-            onClick={() => setActiveTab('badges')}
-          >
-            {tone.tabs.badges}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'arcade' ? 'active' : ''}`}
-            onClick={() => setActiveTab('arcade')}
-          >
-            {tone.tabs.arcade}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'shop' ? 'active' : ''}`}
-            onClick={() => setActiveTab('shop')}
-          >
-            {tone.tabs.shop}
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            {tone.tabs.history}
-          </button>
-        </nav>
+        {/* Free Play Drawer Modal */}
+        <FreePlayDrawer
+          isOpen={isFreePlayOpen}
+          onClose={() => setIsFreePlayOpen(false)}
+          onSelectFeature={(featureId) => setActiveTab(featureId)}
+        />
 
         {/* Nội dung chính của con */}
         <main className="dashboard-main-content">
@@ -3325,42 +2736,275 @@ function AppContent() {
               )}
             </div>
           )}
-
-          {/* Tab con 2: Cửa hàng Quà */}
           {activeTab === 'shop' && (
             <div className="tab-pane">
-              <h3 className="section-title text-center">{tone.shopTitle}</h3>
-              {rewards.length === 0 ? (
-                <p className="empty-message">Hiện shop quà tặng đang trống, bé hãy nhắc bố mẹ thêm nhé!</p>
-              ) : (
-                <div className="rewards-grid">
-                  {rewards.map((reward) => {
-                    const canAfford = childBalance >= reward.cost
-                    const pointsNeeded = reward.cost - childBalance
-                    return (
-                      <div key={reward.id} className={`reward-kid-card glass ${!canAfford ? 'locked' : ''}`}>
-                        <span className="reward-emoji">{reward.emoji}</span>
-                        <h4>{reward.title}</h4>
-                        <div className="reward-price">✨ {reward.cost} Sao</div>
-                        
-                        {canAfford ? (
-                          <button 
+              <h3 className="section-title text-center">🎁 Cửa Hàng Quà &amp; Kế Hoạch Đổi Quà</h3>
+              <p className="subtitle text-center">Bé chọn 1 phần quà làm <strong>🎯 Mục tiêu phấn đấu</strong> hoặc Bố Mẹ chỉnh sửa / thêm quà mới dễ dàng!</p>
+
+              {/* Thanh công cụ quản lý của Bố Mẹ */}
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <span className="text-xs text-amber-200 font-semibold">
+                  🎁 Tổng cộng {rewards.length > 0 ? rewards.length : 5} phần thưởng trong cửa hàng
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-warning btn-sm font-bold shadow flex items-center gap-1 cursor-pointer"
+                  onClick={() => setShowAddRewardForm(!showAddRewardForm)}
+                >
+                  {showAddRewardForm ? '✕ Đóng Form' : '➕ Thêm Quà Mới'}
+                </button>
+              </div>
+
+              {/* Form Thêm Quà Mới */}
+              {showAddRewardForm && (
+                <form onSubmit={handleAddCustomReward} className="bg-slate-800/90 border border-amber-400/50 p-4 rounded-2xl mb-4 text-left animate-fade-in shadow-xl">
+                  <h4 className="text-amber-300 font-extrabold text-sm mb-3">➕ Thêm Phần Thưởng Mới Cho Bé</h4>
+                  
+                  {/* Danh sách quà gợi ý sẵn */}
+                  <div className="mb-4">
+                    <label className="text-xs text-amber-200 font-bold block mb-1.5">⚡ Danh Sách Quà Gợi Ý Sẵn (Bấm 1 nhấp để điền nhanh Icon &amp; Tiêu đề):</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-900/60 rounded-xl border border-white/10">
+                      {DEFAULT_SAMPLE_REWARDS.map(preset => (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          className="p-2 bg-slate-800 hover:bg-slate-700 active:bg-amber-500/20 rounded-lg text-center cursor-pointer border border-white/5 hover:border-amber-400/50 transition flex flex-col justify-between"
+                          onClick={() => {
+                            setNewRewardTitle(preset.title)
+                            setNewRewardCost(preset.cost)
+                            setNewRewardEmoji(preset.emoji)
+                            showToast(`Đã chọn "${preset.title}". Bố mẹ có thể điều chỉnh số Sao hoặc tiêu đề bên dưới!`)
+                          }}
+                        >
+                          <span className="text-xl">{preset.emoji}</span>
+                          <span className="text-[11px] font-semibold text-gray-200 line-clamp-2 mt-1">{preset.title}</span>
+                          <span className="text-[10px] font-extrabold text-amber-300 mt-1">✨ {preset.cost} Sao</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                    <div>
+                      <label className="text-xs text-gray-300 font-bold block mb-1">Tên phần quà:</label>
+                      <input
+                        type="text"
+                        className="form-control text-sm py-1.5"
+                        placeholder="VD: 15p chơi game, Ăn pizza..."
+                        value={newRewardTitle}
+                        onChange={(e) => setNewRewardTitle(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-300 font-bold block mb-1">Biểu tượng (Icon Emoji):</label>
+                      <input
+                        type="text"
+                        className="form-control text-sm py-1.5 mb-1"
+                        placeholder="🍕, 🎮, 🍦, 🧸..."
+                        value={newRewardEmoji}
+                        onChange={(e) => setNewRewardEmoji(e.target.value)}
+                        required
+                      />
+                      {/* Thước chọn Icon Emoji nhanh */}
+                      <div className="flex items-center gap-1 flex-wrap p-1.5 bg-slate-900/80 rounded-lg border border-white/10">
+                        {PRESET_REWARD_EMOJIS.map(emo => (
+                          <button
+                            key={emo}
                             type="button"
-                            className="btn btn-primary btn-block animate-pulse"
-                            onClick={() => handleChildRedeem(reward)}
+                            className={`text-base p-1 rounded hover:bg-amber-400/20 transition cursor-pointer ${newRewardEmoji === emo ? 'bg-amber-400/40 border border-amber-400' : ''}`}
+                            onClick={() => setNewRewardEmoji(emo)}
                           >
-                            Đổi Quà 🎁
+                            {emo}
                           </button>
-                        ) : (
-                          <button type="button" className="btn btn-block btn-locked" disabled>
-                            🔒 Thiếu {pointsNeeded} ⭐
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-300 font-bold block mb-1">Số Sao để đổi:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="500"
+                        className="form-control text-sm py-1.5"
+                        value={newRewardCost}
+                        onChange={(e) => setNewRewardCost(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-3">
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddRewardForm(false)}>Hủy</button>
+                    <button type="submit" className="btn btn-primary btn-sm font-bold">Lưu phần quà ✨</button>
+                  </div>
+                </form>
+              )}
+
+              {/* Modal Chỉnh Sửa Quà */}
+              {editingReward && (
+                <div className="pin-overlay" onClick={() => setEditingReward(null)}>
+                  <div className="card glass p-6 max-w-md w-full text-left" onClick={(e) => e.stopPropagation()}>
+                    <h3 className="text-lg font-extrabold text-amber-300 mb-3">✏️ Chỉnh Sửa Phần Quà</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs text-gray-300 font-bold block mb-1">Tên phần quà:</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={editingReward.title}
+                          onChange={(e) => setEditingReward({ ...editingReward, title: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-300 font-bold block mb-1">Biểu tượng (Icon Emoji):</label>
+                        <input
+                          type="text"
+                          className="form-control mb-1"
+                          value={editingReward.emoji}
+                          onChange={(e) => setEditingReward({ ...editingReward, emoji: e.target.value })}
+                        />
+                        {/* Thước chọn Icon Emoji nhanh trong Modal Sửa */}
+                        <div className="flex items-center gap-1 flex-wrap p-1.5 bg-slate-900/80 rounded-lg border border-white/10">
+                          {PRESET_REWARD_EMOJIS.map(emo => (
+                            <button
+                              key={emo}
+                              type="button"
+                              className={`text-base p-1 rounded hover:bg-amber-400/20 transition cursor-pointer ${editingReward.emoji === emo ? 'bg-amber-400/40 border border-amber-400' : ''}`}
+                              onClick={() => setEditingReward({ ...editingReward, emoji: emo })}
+                            >
+                              {emo}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-300 font-bold block mb-1">Số Sao đổi quà:</label>
+                        <input
+                          type="number"
+                          min="1"
+                          className="form-control"
+                          value={editingReward.cost}
+                          onChange={(e) => setEditingReward({ ...editingReward, cost: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => setEditingReward(null)}>Đóng</button>
+                      <button type="button" className="btn btn-success btn-sm font-bold" onClick={handleSaveEditReward}>Lưu Thay Đổi 💾</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mục tiêu hiện tại */}
+              {targetGoal && (
+                <div className="target-goal-shop-card glass card margin-bottom flex items-center justify-between gap-3 p-4 border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-yellow-500/10 rounded-2xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{targetGoal.emoji || '🎁'}</span>
+                    <div>
+                      <h4 className="m-0 text-amber-300 font-extrabold text-base">🎯 Mục Tiêu Phấn Đấu Hiện Tại: {targetGoal.title}</h4>
+                      <p className="m-0 text-xs text-gray-200 mt-1">
+                        Giá trị: <strong>{targetGoal.cost} ⭐</strong> • Bé có <strong>{childBalance}/{targetGoal.cost} ⭐</strong>
+                        {childBalance < targetGoal.cost && ` (Còn thiếu ${targetGoal.cost - childBalance} ⭐)`}
+                      </p>
+                    </div>
+                  </div>
+                  {childBalance >= targetGoal.cost && (
+                    <button
+                      type="button"
+                      className="btn btn-success glow animate-pulse font-bold px-4 py-2 text-sm"
+                      onClick={() => handleChildRedeem(targetGoal)}
+                    >
+                      🎁 Đổi Quà Ngay!
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Hiển thị danh sách quà (nếu DB chưa có thì dùng bộ 5 quà mẫu) */}
+              {(() => {
+                const displayRewards = rewards.length > 0 ? rewards : DEFAULT_SAMPLE_REWARDS
+                return (
+                  <>
+                    {rewards.length === 0 && (
+                      <div className="bg-amber-500/20 border border-amber-400/40 rounded-2xl p-4 mb-4 text-center">
+                        <p className="text-amber-200 font-extrabold text-sm m-0 mb-2">
+                          💡 Đã khởi tạo 5 quà mẫu chuẩn để bé chọn ngay!
+                        </p>
+                        {profile?.type === 'parent' && (
+                          <button
+                            type="button"
+                            className="btn btn-warning btn-sm font-bold shadow"
+                            onClick={handleCreateDefaultRewards}
+                          >
+                            ⚡ Lưu 5 Phần Quà Mẫu Này Vào Cửa Hàng
                           </button>
                         )}
                       </div>
-                    )
-                  })}
-                </div>
-              )}
+                    )}
+
+                    <div className="rewards-grid">
+                      {displayRewards.map((reward) => {
+                        const canAfford = childBalance >= reward.cost
+                        const pointsNeeded = reward.cost - childBalance
+                        const isCurrentTarget = targetGoal?.id === reward.id
+
+                        return (
+                          <div key={reward.id} className={`reward-kid-card glass ${!canAfford ? 'locked' : ''} ${isCurrentTarget ? 'border-amber-400 border-2 shadow-lg' : ''}`}>
+                            <span className="reward-emoji">{reward.emoji}</span>
+                            <h4>{reward.title}</h4>
+                            <div className="reward-price">✨ {reward.cost} Sao</div>
+                            
+                            <div className="flex flex-col gap-2 w-full mt-3">
+                              <button
+                                type="button"
+                                className={`btn btn-block btn-xs ${isCurrentTarget ? 'btn-warning text-amber-950 font-bold' : 'btn-secondary opacity-90'}`}
+                                onClick={() => handleSetTargetGoal(reward)}
+                              >
+                                {isCurrentTarget ? '🎯 Đang làm mục tiêu' : '🎯 Đặt làm mục tiêu'}
+                              </button>
+
+                              {canAfford ? (
+                                <button 
+                                  type="button"
+                                  className="btn btn-primary btn-block animate-pulse font-bold"
+                                  onClick={() => handleChildRedeem(reward)}
+                                >
+                                  Đổi Quà 🎁
+                                </button>
+                              ) : (
+                                <button type="button" className="btn btn-block btn-locked" disabled>
+                                  🔒 Thiếu {pointsNeeded} ⭐
+                                </button>
+                              )}
+
+                              {/* Nút Quản Lý Sửa / Xóa Cho Bố Mẹ */}
+                              <div className="flex items-center gap-1 mt-1 border-t border-white/10 pt-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary btn-xs font-bold text-amber-300 flex-1 cursor-pointer"
+                                  onClick={() => setEditingReward({ ...reward })}
+                                  title="Chỉnh sửa phần quà này"
+                                >
+                                  ✏️ Sửa
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-xs font-bold flex-1 cursor-pointer"
+                                  onClick={() => handleDeleteReward(reward)}
+                                  title="Xóa phần quà này"
+                                >
+                                  🗑️ Xóa
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )
+              })()}
             </div>
           )}
 
@@ -3683,53 +3327,23 @@ function AppContent() {
             </div>
           )}
 
-          {/* Tab con 5: Sân Chơi Toán Tư Duy */}
+          {/* Tab con 5: Sân Chơi Toán Tư Duy (Kurio Math Hub Nâng Cấp) */}
           {activeTab === 'math' && (
             <div className="tab-pane">
-              {!selectedMathTopic ? (
-                <>
-                  <h3 className="section-title text-center">🧮 Sân Chơi Toán Tư Duy</h3>
-                  <p className="subtitle text-center">
-                    {tone.isTeen
-                      ? 'Chọn một chủ đề để rèn tư duy logic và tích luỹ sao.'
-                      : 'Bé hãy chọn một chủ đề toán học để rèn luyện tư duy logic và nhận thêm Sao nhé!'}
-                  </p>
-
-                  <div className="age-group-toggle">
-                    <button
-                      type="button"
-                      className={`toggle-age-btn ${kidAgeGroup === 'kids' ? 'active' : ''}`}
-                      onClick={() => setKidAgeGroup('kids')}
-                    >
-                      🧸 Toán Tiểu Học
-                    </button>
-                    <button
-                      type="button"
-                      className={`toggle-age-btn ${kidAgeGroup === 'teens' ? 'active' : ''}`}
-                      onClick={() => setKidAgeGroup('teens')}
-                    >
-                      🧭 Tư Duy Tuổi Teen
-                    </button>
-                  </div>
-
-                  {renderTopicGrid({
-                    topics: mathData[kidAgeGroup],
-                    catalogKey: 'math',
-                    cardSubtitle: (topic) => `${topic.quizzes.length} thử thách trắc nghiệm tư duy`,
-                    onOpen: setSelectedMathTopic,
-                    lockedToast: '🔒 Chủ đề Toán này chưa được giao. Con nhờ Bố Mẹ mở: Nhiệm vụ ➜ 🎯 Giao bài học ➜ 🧮 Toán tư duy nhé! 😊',
-                  })}
-                </>
-              ) : (
-                <TopicReader
-                  key={selectedMathTopic.id}
-                  topic={selectedMathTopic}
-                  tone={tone}
-                  theme="math"
-                  onClose={() => setSelectedMathTopic(null)}
-                  onFinished={(result) => handleTopicFinished(selectedMathTopic, 'math', result)}
-                />
-              )}
+              <MathHub
+                profile={profile}
+                familyId={familyId}
+                tone={tone}
+                kidAgeGroup={kidAgeGroup}
+                setKidAgeGroup={setKidAgeGroup}
+                selectedMathTopic={selectedMathTopic}
+                setSelectedMathTopic={setSelectedMathTopic}
+                onFinishedTopic={(topic, catalogKey, result) => handleTopicFinished(topic, catalogKey, result)}
+                renderTopicGrid={renderTopicGrid}
+                addStars={addStars}
+                safeLogLearningSession={safeLogLearningSession}
+                showToast={showToast}
+              />
             </div>
           )}
 
@@ -3821,8 +3435,12 @@ function AppContent() {
                     </div>
                   </div>
 
-                  <div className="sgk-subject-grid">
-                    {sgkBooks.map((book) => (
+                  {/* Phân nhóm: SGK Chuẩn Bộ GD&ĐT vs Sách Nâng Cao Bổ Trợ */}
+                  {(() => {
+                    const coreBooks = sgkBooks.filter(b => !b.id.includes('_adv'))
+                    const advBooks = sgkBooks.filter(b => b.id.includes('_adv'))
+
+                    const renderBookCard = (book) => (
                       <div
                         key={book.id}
                         role="button"
@@ -3835,36 +3453,70 @@ function AppContent() {
                         }}
                       >
                         <SgkPdfButton book={book} onOpen={setSgkPdfOpen} />
-                          <div className="sgk-subject-top">
-                            <span className="sgk-subject-emoji">{book.emoji}</span>
-                            <div className="sgk-subject-sparkles">✨</div>
-                          </div>
-                          <div className="sgk-subject-name">{book.subject}</div>
-                          <div className="sgk-subject-vol">{book.volume}</div>
-                          <div className="sgk-subject-pills">
-                            <span className="sgk-pill-lesson">📖 {book.lessons.length} bài</span>
-                            <span className="sgk-pill-star">⭐ {book.stars} sao/bài</span>
-                          </div>
-                          {(() => {
-                            const prog = sgkBookProgress(book)
-                            return (
-                              <div className="sgk-book-progress">
-                                <div className="sgk-book-progress-track">
-                                  <div
-                                    className="sgk-book-progress-fill"
-                                    style={{ width: `${prog.pct}%` }}
-                                  />
-                                </div>
-                                <span className="sgk-book-progress-label">
-                                  {prog.pct === 100 ? '🏆 Đã hoàn thành cả quyển!' : `⚡ ${prog.done}/${prog.total} bài đã học`}
-                                </span>
-                              </div>
-                            )
-                          })()}
-                          <div className="sgk-subject-cta">Học ngay →</div>
+                        <div className="sgk-subject-top">
+                          <span className="sgk-subject-emoji">{book.emoji}</span>
+                          <div className="sgk-subject-sparkles">✨</div>
                         </div>
-                    ))}
-                  </div>
+                        <div className="sgk-subject-name">{book.subject}</div>
+                        <div className="sgk-subject-vol">{book.volume}</div>
+                        <div className="sgk-subject-pills">
+                          <span className="sgk-pill-lesson">📖 {book.lessons.length} bài</span>
+                          <span className="sgk-pill-star">⭐ {book.stars} sao/bài</span>
+                        </div>
+                        {(() => {
+                          const prog = sgkBookProgress(book)
+                          return (
+                            <div className="sgk-book-progress">
+                              <div className="sgk-book-progress-track">
+                                <div
+                                  className="sgk-book-progress-fill"
+                                  style={{ width: `${prog.pct}%` }}
+                                />
+                              </div>
+                              <span className="sgk-book-progress-label">
+                                {prog.pct === 100 ? '🏆 Đã hoàn thành cả quyển!' : `⚡ ${prog.done}/${prog.total} bài đã học`}
+                              </span>
+                            </div>
+                          )
+                        })()}
+                        <div className="sgk-subject-cta">Học ngay →</div>
+                      </div>
+                    )
+
+                    return (
+                      <>
+                        <div className="sgk-section-divider text-left margin-bottom">
+                          <h3 className="text-white text-lg font-extrabold flex items-center gap-2 m-0">
+                            <span>📘 CHƯƠNG TRÌNH SGK CHUẨN BỘ GD&ĐT</span>
+                            <span className="text-xs bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full font-bold">
+                              Tuần 1 - 35 Học Trên Lớp
+                            </span>
+                          </h3>
+                        </div>
+
+                        <div className="sgk-subject-grid mb-8">
+                          {coreBooks.map(renderBookCard)}
+                        </div>
+
+                        {advBooks.length > 0 && (
+                          <>
+                            <div className="sgk-section-divider text-left margin-bottom pt-4 border-t border-white/10">
+                              <h3 className="text-white text-lg font-extrabold flex items-center gap-2 m-0">
+                                <span>🌟 SÁCH BỔ TRỢ & TƯ DUY NÂNG CAO</span>
+                                <span className="text-xs bg-purple-400/20 text-purple-300 border border-purple-400/40 px-2.5 py-0.5 rounded-full font-bold">
+                                  Nguồn G:\Sách giáo khoa
+                                </span>
+                              </h3>
+                            </div>
+
+                            <div className="sgk-subject-grid">
+                              {advBooks.map(renderBookCard)}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )
+                  })()}
                 </>
               )}
 
@@ -3919,7 +3571,17 @@ function AppContent() {
                         <div
                           key={lesson.id}
                           className={`sgk-lesson-card ${isDone ? 'lesson-card-done' : ''} ${!isUnlocked ? 'locked' : ''}`}
-                          style={{ background: isDone ? 'linear-gradient(135deg, #d1fae5, #a7f3d0)' : !isUnlocked ? 'linear-gradient(135deg, #e2e8f0, #cbd5e1)' : color.bg }}
+                          style={{
+                            background: isDone ? 'linear-gradient(135deg, #d1fae5, #a7f3d0)' : !isUnlocked ? 'linear-gradient(135deg, #e2e8f0, #cbd5e1)' : color.bg,
+                            cursor: (isUnlocked || isDone) ? 'pointer' : 'not-allowed'
+                          }}
+                          onClick={() => {
+                            if (isUnlocked || isDone) {
+                              setSelectedLesson(lesson)
+                              setSgkLessonView('content')
+                              resetSgkQuiz()
+                            }
+                          }}
                         >
                           {/* Số bài */}
                           <div className="sgk-lesson-num" style={{ color: isDone ? '#059669' : !isUnlocked ? '#64748b' : color.accent }}>
@@ -3934,8 +3596,43 @@ function AppContent() {
                             <span>🧩 {lesson.quizzes.length} câu hỏi</span>
                             <span>⭐ {selectedTextbook.stars} sao</span>
                           </div>
+
+                          {/* Nút xem trang PDF gốc theo tuần */}
+                          {(() => {
+                            const pdfInfo = textbookPdfFor(selectedTextbook)
+                            if (!pdfInfo) return null
+                            const targetPage = getExactPdfPage(selectedTextbook.id, idx, lesson.pdfPage)
+                            return (
+                              <button
+                                type="button"
+                                className="btn btn-amber text-[11px] font-extrabold shadow-sm my-1 py-1 px-2 rounded-xl border border-amber-400/40 w-full text-amber-950 bg-gradient-to-r from-amber-300 to-yellow-400 hover:brightness-110 flex items-center justify-center gap-1 cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setSgkPdfOpen({
+                                    url: '/' + pdfInfo.file,
+                                    page: targetPage,
+                                    label: `${selectedTextbook.subject} - Tuần ${lesson.week} (Trang ${targetPage})`
+                                  })
+                                }}
+                              >
+                                📕 Trang sách gốc PDF (Trang {targetPage})
+                              </button>
+                            )
+                          })()}
+
                           {isDone ? (
-                            <div className="sgk-done-stamp">🏆 Hoàn thành!</div>
+                            <button
+                              type="button"
+                              className="sgk-lesson-start-btn done cursor-pointer"
+                              style={{ background: '#059669', color: '#ffffff', fontWeight: 'bold' }}
+                              onClick={() => {
+                                setSelectedLesson(lesson)
+                                setSgkLessonView('content')
+                                resetSgkQuiz()
+                              }}
+                            >
+                              🏆 Đã xong • Bấm để đọc lại &amp; ôn tập 📚
+                            </button>
                           ) : isUnlocked ? (
                             <button
                               type="button"
@@ -3990,6 +3687,29 @@ function AppContent() {
                         </div>
                       </div>
                     </div>
+                    {/* Nút xem trực tiếp trang sách PDF gốc của tuần này */}
+                    {(() => {
+                      const pdfInfo = textbookPdfFor(selectedTextbook)
+                      if (!pdfInfo) return null
+                      const idx = selectedTextbook.lessons.findIndex(l => l.id === selectedLesson.id)
+                      const targetPage = getExactPdfPage(selectedTextbook.id, idx >= 0 ? idx : 0, selectedLesson.pdfPage)
+                      return (
+                        <button
+                          type="button"
+                          className="btn btn-amber btn-sm font-extrabold shadow flex items-center gap-1 cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 border border-amber-300/50"
+                          onClick={() => {
+                            setSgkPdfOpen({
+                              url: '/' + pdfInfo.file,
+                              page: targetPage,
+                              label: `${selectedTextbook.subject} - ${selectedLesson.title} (Trang ${targetPage})`
+                            })
+                          }}
+                        >
+                          📕 Trang sách gốc PDF ({targetPage})
+                        </button>
+                      )
+                    })()}
+
                     <button
                       type="button"
                       className="btn btn-warning btn-sm shadow flex items-center gap-1"
@@ -4581,6 +4301,65 @@ function AppContent() {
                 await safeLogLearningSession(familyId, profile.child.id, sessionData)
               }}
             />
+          )}
+
+          {/* Modal Nhập PIN khi bấm 🔑 Bố Mẹ */}
+          {pinProfile && (
+            <div className="pin-overlay">
+              <div className="pin-dialog glass card">
+                <h3>Nhập mã PIN</h3>
+                <p className="subtitle">
+                  Để truy cập vào hồ sơ{' '}
+                  <strong>{pinProfile === 'parent' ? 'Bố Mẹ' : pinProfile.name}</strong>
+                </p>
+
+                <div className="pin-display">
+                  {[0, 1, 2, 3].map((idx) => (
+                    <div 
+                      key={idx} 
+                      className={`pin-dot ${pinInput.length > idx ? 'filled' : ''}`}
+                    ></div>
+                  ))}
+                </div>
+
+                {pinError && <div className="error-banner pin-error">{pinError}</div>}
+
+                {/* Bàn phím số trên màn hình */}
+                <div className="pin-keypad">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                    <button 
+                      key={num} 
+                      type="button"
+                      className="keypad-btn" 
+                      onClick={() => handlePinKeyPress(num.toString())}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                  <button 
+                    type="button"
+                    className="keypad-btn btn-danger" 
+                    onClick={() => setPinProfile(null)}
+                  >
+                    Hủy
+                  </button>
+                  <button 
+                    type="button"
+                    className="keypad-btn" 
+                    onClick={() => handlePinKeyPress('0')}
+                  >
+                    0
+                  </button>
+                  <button 
+                    type="button"
+                    className="keypad-btn btn-secondary" 
+                    onClick={handlePinDelete}
+                  >
+                    ⌫
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
         </main>

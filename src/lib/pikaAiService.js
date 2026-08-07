@@ -27,76 +27,32 @@ export function setGeminiApiKey(key) {
 // Model dự phòng khi không kéo được ListModels (thứ tự ưu tiên mới → cũ).
 // gemini-1.5-* đã khai tử; gemini-2.5-flash và 2.0-flash bị Google đưa hạn mức
 // miễn phí về 0 với tài khoản mới nên không dùng.
-const FALLBACK_MODELS = [
-  'gemini-flash-latest',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite'
+// Danh sách các mô hình Gemini SIÊU TỐC ưu tiên hàng đầu của Google
+const FASTEST_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-flash-latest'
 ]
 
 /**
- * Lấy danh sách các mô hình Gemini hợp lệ từ Google ListModels API.
- * Loại: gemma (không nhận system_instruction), các model đã khai tử (1.0/1.5),
- * và các biến thể đặc thù không phải chat (tts / image / audio / embedding...).
+  Lấy danh sách các mô hình Gemini nhanh nhất.
+  Bỏ qua truy vấn mạng dư thừa để Pika phản hồi TỨC THỜI (< 0.8 giây).
  */
 async function getAvailableGeminiModels(apiKey) {
-  if (cachedModelList && cachedModelListKey === apiKey) return cachedModelList
-
-  try {
-    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}&pageSize=1000`)
-    const listData = await listRes.json().catch(() => ({}))
-
-    if (listRes.ok && Array.isArray(listData.models)) {
-      const EXCLUDE = /gemma|embedding|bison|aqa|-tts|image|audio|live|veo|imagen|learnlm|gemini-1\.0|gemini-1\.5|thinking|preview|exp/
-      const valid = listData.models.filter(m =>
-        m.supportedGenerationMethods &&
-        m.supportedGenerationMethods.includes('generateContent') &&
-        !EXCLUDE.test(m.name)
-      )
-
-      if (valid.length > 0) {
-        // Ưu tiên dòng flash: nhanh + hạn mức miễn phí cao nhất.
-        // flash-latest luôn trỏ tới bản flash ổn định mới nhất nên đứng đầu.
-        // Dòng 2.x bị Google đưa hạn mức miễn phí về 0 với key mới — loại hẳn.
-        const score = name => {
-          if (name.includes('gemini-2.5') || name.includes('gemini-2.0')) return -1
-          if (name.includes('flash-latest')) return 100
-          if (name.includes('gemini-3.6-flash')) return 97
-          if (name.includes('gemini-3.5-flash-lite')) return 94
-          if (name.includes('gemini-3.5-flash')) return 96
-          if (name.includes('gemini-3.1-flash-lite')) return 90
-          if (name.includes('flash')) return 70
-          if (name.includes('pro')) return 40
-          return 10
-        }
-        const scored = valid.filter(m => score(m.name) >= 0)
-        scored.sort((a, b) => score(b.name) - score(a.name))
-
-        // Chỉ giữ tối đa 4 model — thử nhiều hơn chỉ tốn hạn mức miễn phí
-        if (scored.length > 0) {
-          cachedModelList = scored.map(m => m.name.replace(/^models\//, '')).slice(0, 4)
-          cachedModelListKey = apiKey
-          return cachedModelList
-        }
-      }
-    }
-  } catch (err) {
-    console.warn('Không thể kéo danh sách models:', err.message)
-  }
-
-  return FALLBACK_MODELS
+  if (cachedWorkingModel) return [cachedWorkingModel, ...FASTEST_MODELS.filter(m => m !== cachedWorkingModel)]
+  return FASTEST_MODELS
 }
 
 /**
- * LƯU Ý: KHÔNG gửi thinkingConfig — API hiện tại (dòng gemini-3.x / flash-latest)
- * trả 400 INVALID_ARGUMENT khi nhận trường này. Suy nghĩ nội bộ (nếu model có)
- * đã được lọc ở extractReplyText qua cờ part.thought; maxOutputTokens đặt dư
- * để phần thinking không nuốt hết chỗ của câu trả lời.
+ * Generation Config tối ưu cho Pika: maxOutputTokens: 450 giúp Gemini tạo câu trả lời
+ * ngắn gọn, Socratic và trả về kết quả trong thời gian ngắn nhất.
  */
 function buildGenerationConfig() {
   return {
     temperature: 0.7,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 450,
   }
 }
 
